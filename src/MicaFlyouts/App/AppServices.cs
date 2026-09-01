@@ -10,6 +10,7 @@ using MicaFlyouts.Infrastructure.Settings;
 using MicaFlyouts.Infrastructure.State;
 using MicaFlyouts.Infrastructure.Updates;
 using MicaFlyouts.Infrastructure.Windows;
+using MicaFlyouts.UI.Components;
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
 using MicaFlyouts.UI.Animation;
@@ -201,13 +202,11 @@ public sealed class AppServices : IDisposable
     {
         if (_tray is null)
             return;
-        _tray.ShowFlyout(MenuItems(
-            MenuItem("Settings", OpenSettings, "Setting"),
-            MenuSeparator(),
-            MenuItem("Repository", () => OpenUrl("https://github.com/unchihugo/FluentFlyout"), "Document"),
-            MenuItem("View logs", () => OpenUrl($"file:///{_logger.LogDirectory.Replace('\\', '/') }"), "Folder"),
-            MenuSeparator(),
-            MenuItem("Quit", Exit, "Close")));
+        _tray.ShowFlyout(Component<TrayMenu, TrayMenuProps>(new(
+            OpenSettings,
+            () => OpenUrl("https://github.com/unchihugo/FluentFlyout"),
+            () => OpenUrl($"file:///{_logger.LogDirectory.Replace('\\', '/') }"),
+            Exit)));
     }
 
     private static void OpenUrl(string url)

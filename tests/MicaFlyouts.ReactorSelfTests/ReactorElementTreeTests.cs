@@ -1,6 +1,7 @@
 using MicaFlyouts.Features.LockKeys;
 using MicaFlyouts.Features.Media;
 using MicaFlyouts.Features.Settings;
+using MicaFlyouts.UI.Components;
 using MicaFlyouts.UI.Toolkit;
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
@@ -62,15 +63,15 @@ public sealed class ReactorElementTreeTests
     }
 
     [Fact]
-    public void TrayMenu_BuiltInHandlerIsRegisteredBeforeMount()
+    public void TrayMenu_UsesAMountableRoot()
     {
-        ReactorApp.RegisterAllBuiltIns();
+        var menu = Component<TrayMenu, TrayMenuProps>(new(
+            static () => { },
+            static () => { },
+            static () => { },
+            static () => { }));
 
-        var menu = MenuItems(
-            MenuItem("Settings", static () => { }, "Setting"),
-            MenuSeparator(),
-            MenuItem("Quit", static () => { }, "Close"));
-
-        Assert.IsType<MenuFlyoutContentElement>(menu);
+        Assert.IsAssignableFrom<ComponentElement>(menu);
+        Assert.IsNotType<MenuFlyoutContentElement>(menu);
     }
 }
