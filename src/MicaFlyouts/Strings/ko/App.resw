@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="TitleText" xml:space="preserve">
+    <value>FluentFlyout 설정</value>
+  </data>
+  <data name="MediaFlyoutTitle" xml:space="preserve">
+    <value>미디어 Flyout</value>
+  </data>
+  <data name="MediaFlyoutDescription" xml:space="preserve">
+    <value>미디어를 재생할 때 키보드의 미디어 또는 볼륨 키 (재생/일시정지, 볼륨 높이기/낮추기 등)를 눌러 Flyout을 표시합니다. 재생 제어 기능과 함께 미디어 정보를 표시합니다.</value>
+  </data>
+  <data name="TextBlockText1" xml:space="preserve">
+    <value>미디어 Flyout 활성화</value>
+  </data>
+  <data name="TextBlockText3" xml:space="preserve">
+    <value>미디어 키를 누를 때 Flyout 표시</value>
+  </data>
+  <data name="TextBlockText2" xml:space="preserve">
+    <value>배경 흐림 스타일을 목록에서 선택</value>
+  </data>
+  <data name="BackgroundBlurOption1" xml:space="preserve">
+    <value> 없음</value>
+  </data>
+  <data name="BackgroundBlurOption2" xml:space="preserve">
+    <value> 스타일 1 (앨범아트 글로우)</value>
+  </data>
+  <data name="BackgroundBlurOption3" xml:space="preserve">
+    <value> 스타일 2 (상승 글로우)</value>
+  </data>
+  <data name="BackgroundBlurOption4" xml:space="preserve">
+    <value> 스타일 3 (흐림 효과)</value>
+  </data>
+  <data name="BackgroundBlurTitle" xml:space="preserve">
+    <value>배경 블러</value>
+  </data>
+  <data name="AcrylicWindowTitle" xml:space="preserve">
+    <value>아크릴풍 Flyout</value>
+  </data>
+  <data name="AcrylicWindowDescription" xml:space="preserve">
+    <value>Flyout에 투명한 아크릴 블러 효과를 적용</value>
+  </data>
+  <data name="CompactLayoutTitle" xml:space="preserve">
+    <value>레이아웃 간소화</value>
+  </data>
+  <data name="CompactLayoutDescription" xml:space="preserve">
+    <value>더 슬림하고 덜 거슬리는 레이아웃
+반복, 셔플, 플레이어 정보를 숨김</value>
+  </data>
+  <data name="FlyoutPositionTitle" xml:space="preserve">
+    <value>Flyout 위치</value>
+  </data>
+  <data name="PositionBottomLeft" xml:space="preserve">
+    <value> 좌측 하단</value>
+  </data>
+  <data name="PositionBottomCenter" xml:space="preserve">
+    <value> 중앙 하단</value>
+  </data>
+  <data name="PositionBottomRight" xml:space="preserve">
+    <value> 우측 하단</value>
+  </data>
+  <data name="PositionTopLeft" xml:space="preserve">
+    <value> 좌측 상단</value>
+  </data>
+  <data name="PositionTopCenter" xml:space="preserve">
+    <value> 상단 중앙</value>
+  </data>
+  <data name="PositionTopRight" xml:space="preserve">
+    <value> 우측 상단</value>
+  </data>
+  <data name="FlyoutStayDurationTitle" xml:space="preserve">
+    <value>Flyout 표시 지속 시간</value>
+  </data>
+  <data name="FlyoutStayDurationDescription" xml:space="preserve">
+    <value>(기본값: 3000 ms)</value>
+  </data>
+  <data name="MillisecondsUnit" xml:space="preserve">
+    <value>ms</value>
+  </data>
+  <data name="CenterTitleArtistTitle" xml:space="preserve">
+    <value>제목 및 아티스트 가운데 정렬</value>
+  </data>
+  <data name="CenterTitleArtistDescription" xml:space="preserve">
+    <value>텍스트를 왼쪽 대신 가운데로 정렬</value>
+  </data>
+  <data name="ShowMediaPlayerNameTitle" xml:space="preserve">
+    <value>미디어 플레이어 이름 표시</value>
+  </data>
+  <data name="RepeatButtonTitle" xml:space="preserve">
+    <value>반복 버튼*</value>
+  </data>
+  <data name="RepeatButtonDescription" xml:space="preserve">
+    <value>모두 반복 또는 한 곡 반복 선택, 적용 시 Flyout 너비 증가</value>
+  </data>
+  <data name="ShuffleButtonTitle" xml:space="preserve">
+    <value>셔플 버튼*</value>
+  </data>
+  <data name="ShuffleButtonDescription" xml:space="preserve">
+    <value>적용 시 Flyout 너비 증가</value>
+  </data>
+  <data name="ShowSeekbarTitle" xml:space="preserve">
+    <value>진행 바 표시*</value>
+  </data>
+  <data name="ShowSeekbarDescription" xml:space="preserve">
+    <value>플레이어가 지원하는 경우 상호 작용 가능한 진행 바가 자동으로 표시</value>
+  </data>
+  <data name="UnsupportedControlsWarning" xml:space="preserve">
+    <value>*일부 브라우저/플레이어는 반복, 셔플 및 진행 바 제어를 지원하지 않습니다.</value>
+  </data>
+  <data name="PauseOtherMediaTitle" xml:space="preserve">
+    <value>다른 미디어 자동 일시 정지</value>
+  </data>
+  <data name="PauseOtherMediaDescription" xml:space="preserve">
+    <value>새로운 미디어를 재생하거나 포커싱을 변경하면, 다른 활성 세션들은 자동으로 일시 정지됨</value>
+  </data>
+  <data name="NextUpCustomizationTitle" xml:space="preserve">
+    <value>현재 재생 정보 Flyout</value>
+  </data>
+  <data name="MediaFlyoutAlwaysDisplay" xml:space="preserve">
+    <value>항상 표시</value>
+  </data>
+  <data name="NextUpDescription" xml:space="preserve">
+    <value>노래/영상이 끝날 때 Flyout에 새로 재생되는 미디어 정보가 표시됩니다. 이 Flyout은 미디어가 자동으로 재생될 경우에만 나타납니다. 만약 다음/이전 버튼을 수동으로 누르면 기본 Flyout이 대신 나타납니다.</value>
+  </data>
+  <data name="EnableNextUpTitle" xml:space="preserve">
+    <value>현재 재생 정보 Flyout 활성화</value>
+  </data>
+  <data name="EnableNextUpDescription" xml:space="preserve">
+    <value>음악/영상이 끝날 때 현재 미디어 정보를 표시</value>
+  </data>
+  <data name="NextUpStayDurationTitle" xml:space="preserve">
+    <value>현재 재생 정보 표시 지속 시간</value>
+  </data>
+  <data name="NextUpStayDurationDescription" xml:space="preserve">
+    <value>(기본값: 2000 ms)</value>
+  </data>
+  <data name="LockKeysCustomizationTitle" xml:space="preserve">
+    <value>토글 키 Flyout</value>
+  </data>
+  <data name="LockKeysDescription" xml:space="preserve">
+    <value>토글 키 상태를 한눈에 확인하세요. Caps Lock, Num Lock 또는 Scroll Lock을 누르면 나타납니다. 토글 키 표시등이 없는 노트북/키보드에 편리합니다.</value>
+  </data>
+  <data name="EnableLockKeysTitle" xml:space="preserve">
+    <value>토글 키 Flyout 활성화</value>
+  </data>
+  <data name="EnableLockKeysDescription" xml:space="preserve">
+    <value>지정한 토글 키의 활성화/비활성화를 시각적으로 표시</value>
+  </data>
+  <data name="LockKeysStayDurationTitle" xml:space="preserve">
+    <value>토글 키 표시 지속 시간</value>
+  </data>
+  <data name="LockKeysStayDurationDescription" xml:space="preserve">
+    <value>(기본값: 2000 ms)</value>
+  </data>
+  <data name="LockKeysBoldUITitle" xml:space="preserve">
+    <value>기호 및 글꼴 굵게 표시</value>
+  </data>
+  <data name="LockKeysBoldUIDescription" xml:space="preserve">
+    <value>Flyout 기호 및 글꼴을 굵게 표시</value>
+  </data>
+  <data name="EnableInsertKeyTitle" xml:space="preserve">
+    <value>Insert 키 팝업 활성화</value>
+  </data>
+  <data name="EnableInsertKeyDescription" xml:space="preserve">
+    <value>Insert/Overwrite 키를 누를 때 Flyout 표시 여부 설정</value>
+  </data>
+  <data name="LaunchOnStartupDescription" xml:space="preserve">
+    <value>Windows 로그인 시 트레이로 최소화하여 시작</value>
+  </data>
+  <data name="StartupAppsHyperlinkText" xml:space="preserve">
+    <value>시작 프로그램</value>
+  </data>
+  <data name="StartupAppsSettingsInfo" xml:space="preserve">
+    <value>이 설정이 올바르게 작동하지 않을 경우 윈도우 설정을 확인하세요:</value>
+  </data>
+  <data name="AppThemeTitle" xml:space="preserve">
+    <value>앱 테마</value>
+  </data>
+  <data name="AppThemeDefault" xml:space="preserve">
+    <value> Windows 기본 설정</value>
+  </data>
+  <data name="AppThemeDark" xml:space="preserve">
+    <value> 다크</value>
+  </data>
+  <data name="TrayIconLeftClickBehaviorTitle" xml:space="preserve">
+    <value>트레이 아이콘 왼쪽 클릭 동작</value>
+  </data>
+  <data name="TrayIconLeftClickBehaviorDescription" xml:space="preserve">
+    <value>트레이 아이콘을 마우스 좌클릭했을 때 실행될 동작 선택</value>
+  </data>
+  <data name="TrayIconLeftClickOption1" xml:space="preserve">
+    <value> 설정 열기</value>
+  </data>
+  <data name="TrayIconLeftClickOption2" xml:space="preserve">
+    <value> 미디어 Flyout 표시</value>
+  </data>
+  <data name="Win11TrayIconTitle" xml:space="preserve">
+    <value>Windows 11 스타일 트레이 아이콘</value>
+  </data>
+  <data name="Win11TrayIconDescription" xml:space="preserve">
+    <value>Windows 11 기본 테마 스타일의 트레이 아이콘을 사용 (활성화 시 테마 새로고침)</value>
+  </data>
+  <data name="AnimationSettingsTitle" xml:space="preserve">
+    <value>애니메이션 설정</value>
+  </data>
+  <data name="AnimationSettingsDescription" xml:space="preserve">
+    <value>애니메이션을 원하는 대로 조정</value>
+  </data>
+  <data name="AnimationDurationScaleTitle" xml:space="preserve">
+    <value>애니메이션 지속 시간 배율</value>
+  </data>
+  <data name="AnimationDurationScaleDescription" xml:space="preserve">
+    <value>Flyout 애니메이션 속도 조절 (기본값: 1x)</value>
+  </data>
+  <data name="AnimationSpeedOff" xml:space="preserve">
+    <value>끄기</value>
+  </data>
+  <data name="AnimationEasingStyleTitle" xml:space="preserve">
+    <value>애니메이션 움직임 스타일</value>
+  </data>
+  <data name="AnimationEasingStyleDescription" xml:space="preserve">
+    <value>(기본값: 매끄럽게)</value>
+  </data>
+  <data name="EasingLinear" xml:space="preserve">
+    <value> 일정하게</value>
+  </data>
+  <data name="EasingSine" xml:space="preserve">
+    <value> 부드럽게</value>
+  </data>
+  <data name="EasingQuadratic" xml:space="preserve">
+    <value> 매끄럽게</value>
+  </data>
+  <data name="EasingCubic" xml:space="preserve">
+    <value> 활기차게</value>
+  </data>
+  <data name="NativeExperienceInfo" xml:space="preserve">
+    <value>이질감 없는 Windows 11 경험을 위해서는, 설정을 기본값으로 유지해야 합니다.</value>
+  </data>
+  <data name="DisableOnFullscreenTitle" xml:space="preserve">
+    <value>DirectX 전체 화면 프로그램이 감지되면 Flyout 비활성화</value>
+  </data>
+  <data name="DisableOnFullscreenDescription" xml:space="preserve">
+    <value>Flyout이 나타날 때 DirectX 게임이 최소화되는 것을 방지</value>
+  </data>
+  <data name="GitHubRepoLink" xml:space="preserve">
+    <value>GitHub 저장소</value>
+  </data>
+  <data name="CloseButton" xml:space="preserve">
+    <value>닫기</value>
+  </data>
+  <data name="AppLanguageTitle" xml:space="preserve">
+    <value>앱 언어</value>
+  </data>
+  <data name="AppLanguageDescription" xml:space="preserve">
+    <value>사용하시는 언어가 목록에 없거나 번역이 불완전한 경우, 기본적으로 영어로 표시됩니다.
+번역에 기여하고 싶으시면 다음 링크에서 참여하실 수 있습니다</value>
+  </data>
+  <data name="AppLanguageDescriptionLink" xml:space="preserve">
+    <value>Weblate</value>
+  </data>
+  <data name="SystemSettingsTitle" xml:space="preserve">
+    <value>시스템</value>
+  </data>
+  <data name="LaunchOnStartupTitle" xml:space="preserve">
+    <value>시작 시 실행</value>
+  </data>
+  <data name="AppThemeLight" xml:space="preserve">
+    <value> 라이트</value>
+  </data>
+  <data name="LockWindow_LockOn" xml:space="preserve">
+    <value>켜짐</value>
+  </data>
+  <data name="LockWindow_LockOff" xml:space="preserve">
+    <value>꺼짐</value>
+  </data>
+  <data name="LockWindow_CapsLock" xml:space="preserve">
+    <value>Caps Lock</value>
+  </data>
+  <data name="LockWindow_NumLock" xml:space="preserve">
+    <value>Num Lock</value>
+  </data>
+  <data name="LockWindow_ScrollLock" xml:space="preserve">
+    <value>Scroll Lock</value>
+  </data>
+  <data name="LockWindow_InsertPressed" xml:space="preserve">
+    <value>Insert 키 누름</value>
+  </data>
+  <data name="NextUpWindow_UpNextText" xml:space="preserve">
+    <value>이번 미디어:</value>
+  </data>
+  <data name="TrayIcon_SettingsOption" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="TrayIcon_GitHubRepositoryOption" xml:space="preserve">
+    <value>저장소</value>
+  </data>
+  <data name="TrayIcon_ReportBugOption" xml:space="preserve">
+    <value>오류 보고</value>
+  </data>
+  <data name="TrayIcon_QuitOption" xml:space="preserve">
+    <value>FluentFlyout 종료</value>
+  </data>
+  <data name="HomeTitle" xml:space="preserve">
+    <value>홈</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>사용 중</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>사용 안함</value>
+  </data>
+  <data name="MediaFlyoutExcludeVolumeTitle" xml:space="preserve">
+    <value>볼륨 키 입력 무시</value>
+  </data>
+  <data name="MediaFlyoutExcludeVolumeDescription" xml:space="preserve">
+    <value>볼륨 높이기/줄이기/음소거를 누를 때 Flyout을 표시하지 않기</value>
+  </data>
+  <data name="SelectedMonitorTitle" xml:space="preserve">
+    <value>Flyout 표시 디스플레이</value>
+  </data>
+  <data name="MediaFlyoutAlwaysDisplayDescription" xml:space="preserve">
+    <value>Flyout이 닫기 버튼을 누를 때까지 계속 표시됨</value>
+  </data>
+  <data name="TaskbarWidgetCustomizationTitle" xml:space="preserve">
+    <value>작업 표시줄 위젯</value>
+  </data>
+  <data name="TaskbarWidgetDescription" xml:space="preserve">
+    <value>Windows 작업 표시줄에 내장되어 미디어에 바로 접근할 수 있는 컴팩트한 위젯입니다. 위젯을 클릭하면 미디어 Flyout을 확장하여 확인할 수 있습니다.</value>
+  </data>
+  <data name="TaskbarWidgetEnabledTitle" xml:space="preserve">
+    <value>작업 표시줄 위젯 활성화</value>
+  </data>
+  <data name="TaskbarWidgetEnabledDescription" xml:space="preserve">
+    <value>작업 표시줄에 컴팩트 미디어 위젯을 표시</value>
+  </data>
+  <data name="TaskbarWidgetVisualIssuesWarning" xml:space="preserve">
+    <value>표시 문제가 있을 경우 아래의 옵션을 설정해주세요.</value>
+  </data>
+  <data name="TaskbarWidgetSelectedMonitorTitle" xml:space="preserve">
+    <value>위젯 표시 디스플레이</value>
+  </data>
+  <data name="TaskbarWidgetPosition" xml:space="preserve">
+    <value>위젯 위치</value>
+  </data>
+  <data name="TaskbarWidgetPaddingSettingsTitle" xml:space="preserve">
+    <value>위젯 여백 설정</value>
+  </data>
+  <data name="TaskbarWidgetPaddingSettingsDescription" xml:space="preserve">
+    <value>작업 표시줄 스타일에 맞게 위젯의 여백을 조정</value>
+  </data>
+  <data name="TaskbarWidgetPaddingTitle" xml:space="preserve">
+    <value>Windows 위젯 버튼용 자동 여백</value>
+  </data>
+  <data name="TaskbarWidgetPaddingDescription" xml:space="preserve">
+    <value>Windows 위젯을 활성화했을 때 이 기능 켜기</value>
+  </data>
+  <data name="TaskbarWidgetManualPaddingTitle" xml:space="preserve">
+    <value>여백 사용자 정의</value>
+  </data>
+  <data name="TaskbarWidgetManualPaddingDescription" xml:space="preserve">
+    <value>더 많은 여백 추가 (기본: 0px)</value>
+  </data>
+  <data name="TaskbarWidgetClickableTitle" xml:space="preserve">
+    <value>미디어가 재생 중일 때 클릭하여 미디어 Flyout을 표시</value>
+  </data>
+  <data name="TaskbarWidgetClickableDescription" xml:space="preserve">
+    <value>작업 표시줄 위젯을 클릭하면 Flyout이 표시됩니다</value>
+  </data>
+  <data name="TaskbarWidgetBackgroundBlurTitle" xml:space="preserve">
+    <value>배경 블러 효과</value>
+  </data>
+  <data name="TaskbarWidgetBackgroundBlurDescription" xml:space="preserve">
+    <value>작업 표시줄 위젯에 배경 블러 효과를 적용</value>
+  </data>
+  <data name="TaskbarWidgetHideCompletelyTitle" xml:space="preserve">
+    <value>재생 중인 미디어가 없을 때 완전히 숨기기</value>
+  </data>
+  <data name="TaskbarWidgetHideCompletelyDescription" xml:space="preserve">
+    <value>재생 중인 미디어가 없을 때, 미디어 아이콘을 표시하는 대신 위젯을 숨김</value>
+  </data>
+  <data name="TaskbarWidgetControlsTitle" xml:space="preserve">
+    <value>위젯 미디어 컨트롤</value>
+  </data>
+  <data name="TaskbarWidgetControlsDescription" xml:space="preserve">
+    <value>위젯에 미디어 컨트롤 버튼을 표시</value>
+  </data>
+  <data name="TaskbarWidgetAnimatedTitle" xml:space="preserve">
+    <value>위젯 애니메이션</value>
+  </data>
+  <data name="TaskbarWidgetAnimatedDescription" xml:space="preserve">
+    <value>위젯에 자연스러운 애니메이션 효과 적용</value>
+  </data>
+  <data name="TaskbarVisualizerTitle" xml:space="preserve">
+    <value>작업 표시줄 비주얼라이저</value>
+  </data>
+  <data name="TaskbarVisualizerDescription" xml:space="preserve">
+    <value>작업 표시줄에 실시간 오디오 비주얼라이저를 표시합니다. 최신 시스템에서 성능에 최소한의 영향만 주도록 설계되었습니다.</value>
+  </data>
+  <data name="TaskbarVisualizerEnabledTitle" xml:space="preserve">
+    <value>작업 표시줄 비주얼라이저 활성화 (실험적 기능)</value>
+  </data>
+  <data name="TaskbarVisualizerEnabledDescription" xml:space="preserve">
+    <value>실험중인 기능: 이 기능은 작업 표시줄 위젯이 켜져있을 때만 작동</value>
+  </data>
+  <data name="TaskbarVisualizerPositionTitle" xml:space="preserve">
+    <value>작업 표시줄 위젯에서 비주얼라이저를 표시할 위치</value>
+  </data>
+  <data name="TaskbarVisualizerBarCountTitle" xml:space="preserve">
+    <value>바 개수</value>
+  </data>
+  <data name="TaskbarVisualizerBarCountDescription" xml:space="preserve">
+    <value>비주얼라이저에 표시되는 바의 개수 설정</value>
+  </data>
+  <data name="TaskbarWidgetCloseableFlyoutTitle" xml:space="preserve">
+    <value>두 번 클릭하여 Flyout 닫기</value>
+  </data>
+  <data name="TaskbarWidgetCloseableFlyoutDescription" xml:space="preserve">
+    <value>Flyout이 열려 있을 때 작업 표시줄 위젯을 클릭하여 닫기</value>
+  </data>
+  <data name="TaskbarWidgetControlsPositionTitle" xml:space="preserve">
+    <value>미디어 컨트롤 위치</value>
+  </data>
+  <data name="TaskbarWidgetControlsPositionDescription" xml:space="preserve">
+    <value>미디어 컨트롤 버튼을 표시할 위치를 선택</value>
+  </data>
+  <data name="PositionLeft" xml:space="preserve">
+    <value>왼쪽</value>
+  </data>
+  <data name="PositionRight" xml:space="preserve">
+    <value>오른쪽</value>
+  </data>
+  <data name="TaskbarVisualizerCenteredBarsTitle" xml:space="preserve">
+    <value>바 중앙에 정렬</value>
+  </data>
+  <data name="TaskbarVisualizerCenteredBarsDescription" xml:space="preserve">
+    <value>바가 아래에서 올라오는 대신 중앙을 중심으로 확장됨</value>
+  </data>
+  <data name="TaskbarVisualizerBaselineTitle" xml:space="preserve">
+    <value>기준선 표시</value>
+  </data>
+  <data name="TaskbarVisualizerBaselineDescription" xml:space="preserve">
+    <value>오디오 출력이 0일 때 얇은 선 표시</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSensitivityTitle" xml:space="preserve">
+    <value>오디오 민감도</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSensitivityDescription" xml:space="preserve">
+    <value>바가 움직이기 시작하는 최소 음량</value>
+  </data>
+  <data name="TaskbarVisualizerAudioPeakLevelTitle" xml:space="preserve">
+    <value>오디오 피크 임계값</value>
+  </data>
+  <data name="TaskbarVisualizerAudioPeakLevelDescription" xml:space="preserve">
+    <value>바가 최대 높이에 도달하기 위한 음량</value>
+  </data>
+  <data name="TaskbarVisualizerOutputDeviceTitle" xml:space="preserve">
+    <value>출력 장치</value>
+  </data>
+  <data name="TaskbarVisualizerOutputDeviceDescription" xml:space="preserve">
+    <value>FluentFlyout의 오디오 출력 장치를 변경해 비주얼라이저가 표시하는 오디오 장치를 변경합니다.</value>
+  </data>
+  <data name="LockKeysCursorUITitle" xml:space="preserve">
+    <value>표시 디스플레이</value>
+  </data>
+  <data name="LockKeysCursorUIDescription" xml:space="preserve">
+    <value>Flyout을 표시할 디스플레이를 선택합니다.</value>
+  </data>
+  <data name="DefaultLockLayoutPosition" xml:space="preserve">
+    <value>기본값 (Flyout 표시 디스플레이)</value>
+  </data>
+  <data name="MonitorWithFocusedWindow" xml:space="preserve">
+    <value>현재 사용 중인 모니터</value>
+  </data>
+  <data name="MonitorWithCursor" xml:space="preserve">
+    <value>마우스 커서가 있는 모니터</value>
+  </data>
+  <data name="HideTrayIconTitle" xml:space="preserve">
+    <value>트레이 아이콘 숨기기</value>
+  </data>
+  <data name="HideTrayIconDescription" xml:space="preserve">
+    <value>프로그램을 두 번 실행하여 설정 표시</value>
+  </data>
+  <data name="AcrylicBlurOpacityTitle" xml:space="preserve">
+    <value>아크릴 블러 불투명도</value>
+  </data>
+  <data name="AcrylicBlurOpacityDescription" xml:space="preserve">
+    <value>Flyout의 아크릴 블러 효과 투명도를 조정합니다 (기본값 : 175)</value>
+  </data>
+  <data name="HomeUpdateDescription" xml:space="preserve">
+    <value>변경사항 확인하기</value>
+  </data>
+  <data name="HomeDashboardTitle" xml:space="preserve">
+    <value>대시보드</value>
+  </data>
+  <data name="AppearanceBehaviorSectionTitle" xml:space="preserve">
+    <value>외형 및 동작</value>
+  </data>
+  <data name="TrayIconSectionTitle" xml:space="preserve">
+    <value>트레이 아이콘</value>
+  </data>
+  <data name="UpdatesSectionTitle" xml:space="preserve">
+    <value>업데이트</value>
+  </data>
+  <data name="SystemConfigure" xml:space="preserve">
+    <value>설정 및 구성</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>정보</value>
+  </data>
+  <data name="AboutContributorsTitle" xml:space="preserve">
+    <value>❤️ 제작에 도움을 주신 분들</value>
+  </data>
+  <data name="AboutContributorsDescription" xml:space="preserve">
+    <value>FluentFlyout의 개발과 성공에 기여해 주신 모든 멋진 분들께 진심으로 감사의 인사를 전합니다!</value>
+  </data>
+  <data name="DevelopersTitle" xml:space="preserve">
+    <value>개발</value>
+  </data>
+  <data name="TranslatorsTitle" xml:space="preserve">
+    <value>번역</value>
+  </data>
+  <data name="AboutOpenSourceLicensesTitle" xml:space="preserve">
+    <value>오픈 소스 라이선스</value>
+  </data>
+  <data name="AboutOpenSourceLicensesDescription" xml:space="preserve">
+    <value>FluentFlyout는 다음의 오픈 소스 패키지들을 사용하여 제작되었습니다:</value>
+  </data>
+  <data name="SponsorMeLink" xml:space="preserve">
+    <value>후원하기</value>
+  </data>
+  <data name="BuyMeCoffeeLink" xml:space="preserve">
+    <value>커피 한 잔 사주기</value>
+  </data>
+  <data name="TrayIcon_ViewLogsOption" xml:space="preserve">
+    <value>로그 보기</value>
+  </data>
+  <data name="PixelsUnit" xml:space="preserve">
+    <value>px</value>
+  </data>
+  <data name="UpdateToastTitle" xml:space="preserve">
+    <value>FluentFlyout이 업데이트되었습니다!</value>
+  </data>
+  <data name="UpdateToastMessage" xml:space="preserve">
+    <value>현재 버전은 {0} 입니다.</value>
+  </data>
+  <data name="UpdateToastButton" xml:space="preserve">
+    <value>업데이트 보기</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>업데이트 가능</value>
+  </data>
+  <data name="UpToDate" xml:space="preserve">
+    <value>최신 버전</value>
+  </data>
+  <data name="LastChecked" xml:space="preserve">
+    <value>최종 확인: {0}</value>
+  </data>
+  <data name="CheckingForUpdates" xml:space="preserve">
+    <value>확인 중...</value>
+  </data>
+  <data name="UpdateAvailableNotificationTitle" xml:space="preserve">
+    <value>업데이트 가능!</value>
+  </data>
+  <data name="UpdateAvailableNotificationMessage" xml:space="preserve">
+    <value>새로운 버전 {0}을 이용 가능합니다.</value>
+  </data>
+  <data name="UpdateAvailableNotificationButton" xml:space="preserve">
+    <value>업데이트 다운로드</value>
+  </data>
+  <data name="ShowUpdateNotificationsTitle" xml:space="preserve">
+    <value>새 업데이트가 있을 시 알림 표시</value>
+  </data>
+  <data name="BackupRestoreSectionTitle" xml:space="preserve">
+    <value>백업 및 복원</value>
+  </data>
+  <data name="BackupRestoreCardTitle" xml:space="preserve">
+    <value>설정을 백업하거나 복원</value>
+  </data>
+  <data name="ExportSettings" xml:space="preserve">
+    <value>내보내기</value>
+  </data>
+  <data name="ImportSettings" xml:space="preserve">
+    <value>가져오기</value>
+  </data>
+  <data name="ExportSuccessful" xml:space="preserve">
+    <value>내보내기 성공</value>
+  </data>
+  <data name="ExportFailed" xml:space="preserve">
+    <value>내보내기 실패</value>
+  </data>
+  <data name="ImportSuccessful" xml:space="preserve">
+    <value>가져오기 성공</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>가져오기 실패</value>
+  </data>
+  <data name="SettingsExportedSuccessfully" xml:space="preserve">
+    <value>설정 내보내기에 성공했습니다!</value>
+  </data>
+  <data name="FailedToExportSettings" xml:space="preserve">
+    <value>설정 내보내기에 실패했습니다. 자세한 내용은 로그를 확인하세요.</value>
+  </data>
+  <data name="SettingsImportedSuccessfully" xml:space="preserve">
+    <value>설정 가져오기에 성공했습니다! 변경사항 반영을 위해 앱이 재시작됩니다.</value>
+  </data>
+  <data name="ImportSettingsWarning" xml:space="preserve">
+    <value>이 작업은 현재 설정을 덮어씁니다. 계속하시겠습니까?</value>
+  </data>
+  <data name="FailedToImportSettings" xml:space="preserve">
+    <value>설정 가져오기에 실패하였습니다. 자세한 내용은 로그를 확인하세요.</value>
+  </data>
+  <data name="TaskbarVisualizerClickableTitle" xml:space="preserve">
+    <value>클릭하여 설정 열기</value>
+  </data>
+  <data name="TaskbarVisualizerClickableDescription" xml:space="preserve">
+    <value>비주얼라이저를 클릭하여 설정 페이지 열기</value>
+  </data>
+  <data name="UseAlbumArtAccentColorTitle" xml:space="preserve">
+    <value>앨범 아트를 강조 색상으로 사용</value>
+  </data>
+  <data name="UseAlbumArtAccentColorDescription" xml:space="preserve">
+    <value>시스템 테마 대신 앨범 아트의 색상을 UI 요소에 적용</value>
+  </data>
+  <data name="AdvancedSettingsTitle" xml:space="preserve">
+    <value>고급 설정</value>
+  </data>
+  <data name="LegacyTaskbarWidthTitle" xml:space="preserve">
+    <value>레거시 작업 표시줄 너비</value>
+  </data>
+  <data name="LegacyTaskbarWidthDescription" xml:space="preserve">
+    <value>작업 표시줄 위젯의 너비 계산에 기존 방식 사용</value>
+  </data>
+  <data name="TaskbarWidgetAutoHideTitle" xml:space="preserve">
+    <value>위젯 자동 숨기기</value>
+  </data>
+  <data name="TaskbarWidgetAutoHideDescription" xml:space="preserve">
+    <value>미디어가 중지되면 자동으로 위젯 숨기기</value>
+  </data>
+  <data name="LockKeysAnimatedTitle" xml:space="preserve">
+    <value>팝업 애니메이션</value>
+  </data>
+  <data name="LockKeysAnimatedDescription" xml:space="preserve">
+    <value>토글 키 팝업에 부드러운 애니메이션 활성화</value>
+  </data>
+  <data name="TaskbarWidgetShowPauseOverlayTitle" xml:space="preserve">
+    <value>일시정지 아이콘 오버레이</value>
+  </data>
+  <data name="TaskbarWidgetShowPauseOverlayDescription" xml:space="preserve">
+    <value>미디어가 일시정지 되었을 때, 앨범아트 위에 일시정지 아이콘 표시</value>
+  </data>
+  <data name="VolumeFlyoutTitle" xml:space="preserve">
+    <value>볼륨 Flyout</value>
+  </data>
+  <data name="VolumeFlyoutDescription" xml:space="preserve">
+    <value>Windows 기본 볼륨 인터페이스를 대체하는, 볼륨 믹서로 확장 가능한 독립형 볼륨 제어 flyout입니다.</value>
+  </data>
+  <data name="EnableVolumeFlyoutTitle" xml:space="preserve">
+    <value>볼륨 Flyout 활성화</value>
+  </data>
+  <data name="EnableVolumeFlyoutDescription" xml:space="preserve">
+    <value>Windows 기본 볼륨 flyout을 대체</value>
+  </data>
+  <data name="VolumeAboveMediaFlyoutTitle" xml:space="preserve">
+    <value>미디어 Flyout 위에 볼륨 Flyout 표시</value>
+  </data>
+  <data name="VolumeFlyoutStayDurationTitle" xml:space="preserve">
+    <value>볼륨 Flyout 표시 지속 시간</value>
+  </data>
+  <data name="VolumeMixerSectionTitle" xml:space="preserve">
+    <value>볼륨 믹서</value>
+  </data>
+  <data name="EnableVolumeMixerTitle" xml:space="preserve">
+    <value>볼륨 믹서 활성화</value>
+  </data>
+  <data name="EnableVolumeMixerDescription" xml:space="preserve">
+    <value>개별 앱 볼륨 상세 조절</value>
+  </data>
+  <data name="VolumeMixerHighlightTitle" xml:space="preserve">
+    <value>오디오 재생 중인 앱 강조</value>
+  </data>
+  <data name="VolumeMixerHighlightDescription" xml:space="preserve">
+    <value>현재 오디오를 출력 중인 앱을 확인</value>
+  </data>
+  <data name="MasterVolumeText" xml:space="preserve">
+    <value>마스터 볼륨</value>
+  </data>
+  <data name="TaskbarWidgetFixedWidthTitle" xml:space="preserve">
+    <value>고정된 위젯 너비</value>
+  </data>
+  <data name="TaskbarWidgetFixedWidthDescription" xml:space="preserve">
+    <value>아티스트와 제목 텍스트에 맞춰 크기가 변경되는 대신 고정된 너비를 유지</value>
+  </data>
+  <data name="EnableCapsTitle" xml:space="preserve">
+    <value>Caps Lock 키 팝업 활성화</value>
+  </data>
+  <data name="EnableCapsDescription" xml:space="preserve">
+    <value>Caps Lock 키를 누를 때 Flyout 표시 여부 설정</value>
+  </data>
+  <data name="EnableNumTitle" xml:space="preserve">
+    <value>Num Lock 키 팝업 활성화</value>
+  </data>
+  <data name="EnableNumDescription" xml:space="preserve">
+    <value>Num Lock 키를 누를 때 Flyout 표시 여부 설정</value>
+  </data>
+  <data name="EnableScrollTitle" xml:space="preserve">
+    <value>Scroll Lock 키 팝업 활성화</value>
+  </data>
+  <data name="EnableScrollDescription" xml:space="preserve">
+    <value>Scroll Lock 키를 누를 때 Flyout 표시 여부 설정</value>
+  </data>
+  <data name="AppFilteringTitle" xml:space="preserve">
+    <value>앱 필터링</value>
+  </data>
+  <data name="AppFilteringRulesDescription" xml:space="preserve">
+    <value>어떤 프로그램에서 미디어를 표시할지 설정</value>
+  </data>
+  <data name="EnableAppFilteringTitle" xml:space="preserve">
+    <value>필터링 활성화</value>
+  </data>
+  <data name="AppFilteringModeTitle" xml:space="preserve">
+    <value>필터링 형태</value>
+  </data>
+  <data name="AppFilteringModeDescription" xml:space="preserve">
+    <value>앱을 허용할지 차단할지 선택</value>
+  </data>
+  <data name="AppFilteringModeBlacklist" xml:space="preserve">
+    <value>차단 목록</value>
+  </data>
+  <data name="AppFilteringModeWhitelist" xml:space="preserve">
+    <value>허용 목록</value>
+  </data>
+  <data name="AllowedAppsTitle" xml:space="preserve">
+    <value>허용된 앱</value>
+  </data>
+  <data name="AllowedAppsDescription" xml:space="preserve">
+    <value>이 목록에 추가된 앱만, 미디어가 표시됩니다.</value>
+  </data>
+  <data name="BlockedAppsTitle" xml:space="preserve">
+    <value>제외된 앱</value>
+  </data>
+  <data name="BlockedAppsDescription" xml:space="preserve">
+    <value>미디어 정보를 표시하지 않도록 앱 제외</value>
+  </data>
+  <data name="AddAppManuallyText" xml:space="preserve">
+    <value>앱을 찾을 수 없나요? 아래에 입력하세요:</value>
+  </data>
+  <data name="AppFilteringPlaceholderSpotify" xml:space="preserve">
+    <value>예) Spotify.exe</value>
+  </data>
+  <data name="AppFilteringPlaceholderChrome" xml:space="preserve">
+    <value>예) Chrome.exe</value>
+  </data>
+  <data name="AppFilteringComboBoxHint" xml:space="preserve">
+    <value>현재 재생 중인 앱 선택</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>추가</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>제거</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>이전</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>다음</value>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>완료</value>
+  </data>
+  <data name="OnboardingStepsCounter" xml:space="preserve">
+    <value>{1} 중 {0}</value>
+  </data>
+  <data name="TaskbarVisualizerBaselineAutoHideDescription" xml:space="preserve">
+    <value>오디오가 재생되고 있지 않을 때 기준선 자동 숨기기</value>
+  </data>
+  <data name="AnonymousUsageDataTitle" xml:space="preserve">
+    <value>익명 사용 데이터 전송</value>
+  </data>
+  <data name="AnonymousUsageDataDescription" xml:space="preserve">
+    <value>익명 사용 데이터를 전송하여, 앱을 개선하는데 도움 주기</value>
+  </data>
+  <data name="SearchSettings" xml:space="preserve">
+    <value>검색 설정</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTextTitle" xml:space="preserve">
+    <value>텍스트 스크롤</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTitle" xml:space="preserve">
+    <value>스크롤 켜기</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTextDescription" xml:space="preserve">
+    <value>긴 텍스트를 자동으로 스크롤하기</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTextLoopForeverTitle" xml:space="preserve">
+    <value>연속 스크롤</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTextLoopForeverDescription" xml:space="preserve">
+    <value>텍스트를 한 방향으로 계속 스크롤하기.</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTextSpeedTitle" xml:space="preserve">
+    <value>스크롤 속도</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTextSpeedDescription" xml:space="preserve">
+    <value>텍스트 스크롤 속도 설정(픽셀/초). 기본값은 20.</value>
+  </data>
+</root>

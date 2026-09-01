@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="TitleText" xml:space="preserve">
+    <value>Nastavení FluentFlyout</value>
+  </data>
+  <data name="MediaFlyoutTitle" xml:space="preserve">
+    <value>Plovoucí přehrávač</value>
+  </data>
+  <data name="MediaFlyoutDescription" xml:space="preserve">
+    <value>Při poslechu médií stiskněte libovolnou klávesu pro ovládání médií nebo hlasitosti (přehrávání/pozastavení, zvýšení/snížení hlasitosti atd.) na klávesnici, aby se zobrazilo plovoucí okno. Zobrazuje informace o médiích spolu s ovládacími prvky přehrávání a dalšími funkcemi.</value>
+  </data>
+  <data name="TextBlockText1" xml:space="preserve">
+    <value>Povolit plovoucí přehrávač</value>
+  </data>
+  <data name="TextBlockText3" xml:space="preserve">
+    <value>Zobrazí plovoucí okno při zmáčknutí klávesy pro ovládání médií</value>
+  </data>
+  <data name="TextBlockText2" xml:space="preserve">
+    <value>Vyberte si z moderních stylů rozostření pozadí</value>
+  </data>
+  <data name="BackgroundBlurOption1" xml:space="preserve">
+    <value> Žádné</value>
+  </data>
+  <data name="BackgroundBlurOption2" xml:space="preserve">
+    <value> Styl 1 (Cover Glow)</value>
+  </data>
+  <data name="BackgroundBlurOption3" xml:space="preserve">
+    <value> Styl 2 (Rising Glow)</value>
+  </data>
+  <data name="BackgroundBlurOption4" xml:space="preserve">
+    <value> Styl 3 (Blur)</value>
+  </data>
+  <data name="BackgroundBlurTitle" xml:space="preserve">
+    <value>Rozmazání pozadí</value>
+  </data>
+  <data name="AcrylicWindowTitle" xml:space="preserve">
+    <value>Akrylový efekt</value>
+  </data>
+  <data name="AcrylicWindowDescription" xml:space="preserve">
+    <value>Aplikuje průhledný akrylový efekt rozmazání na plovoucí okno (při vypnutém použije Mica)</value>
+  </data>
+  <data name="CompactLayoutTitle" xml:space="preserve">
+    <value>Kompaktní rozvržení</value>
+  </data>
+  <data name="CompactLayoutDescription" xml:space="preserve">
+    <value>Užší a méně rušivé rozvržení
+skryje opakování,náhodné přehrávání a informace přehrávače</value>
+  </data>
+  <data name="FlyoutPositionTitle" xml:space="preserve">
+    <value>Pozice plovoucího přehrávače</value>
+  </data>
+  <data name="PositionBottomLeft" xml:space="preserve">
+    <value> Dole vlevo</value>
+  </data>
+  <data name="PositionBottomCenter" xml:space="preserve">
+    <value> Dole uprostřed</value>
+  </data>
+  <data name="PositionBottomRight" xml:space="preserve">
+    <value> Dole vpravo</value>
+  </data>
+  <data name="PositionTopLeft" xml:space="preserve">
+    <value> Nahoře vlevo</value>
+  </data>
+  <data name="PositionTopCenter" xml:space="preserve">
+    <value> Nahoře uprostřed</value>
+  </data>
+  <data name="PositionTopRight" xml:space="preserve">
+    <value> Nahoře vpravo</value>
+  </data>
+  <data name="FlyoutStayDurationTitle" xml:space="preserve">
+    <value>Zmizení plovoucího přehrávače</value>
+  </data>
+  <data name="FlyoutStayDurationDescription" xml:space="preserve">
+    <value>(výchozí: 3000ms)</value>
+  </data>
+  <data name="MillisecondsUnit" xml:space="preserve">
+    <value>ms</value>
+  </data>
+  <data name="MediaFlyoutAlwaysDisplay" xml:space="preserve">
+    <value>Vždy zobrazovat</value>
+  </data>
+  <data name="CenterTitleArtistTitle" xml:space="preserve">
+    <value>Vycentrovat název písničky a autora</value>
+  </data>
+  <data name="CenterTitleArtistDescription" xml:space="preserve">
+    <value>Vycentruje text doprostřed místo doleva</value>
+  </data>
+  <data name="ShowMediaPlayerNameTitle" xml:space="preserve">
+    <value>Ukazovat název přehrávače</value>
+  </data>
+  <data name="EasingLinear" xml:space="preserve">
+    <value> Lineárně</value>
+  </data>
+  <data name="EasingSine" xml:space="preserve">
+    <value> Sinus</value>
+  </data>
+  <data name="RepeatButtonTitle" xml:space="preserve">
+    <value>Tlačítko opakování*</value>
+  </data>
+  <data name="RepeatButtonDescription" xml:space="preserve">
+    <value>Vyberte si mezi opakování všech nebo jedné písničky, rozšíří plovoucí přehrávač</value>
+  </data>
+  <data name="ShuffleButtonTitle" xml:space="preserve">
+    <value>Tlačítko náhodného přehrávání*</value>
+  </data>
+  <data name="ShuffleButtonDescription" xml:space="preserve">
+    <value>Rozšíří plovoucí okno</value>
+  </data>
+  <data name="ShowSeekbarTitle" xml:space="preserve">
+    <value>Ukazovat časovou osu*</value>
+  </data>
+  <data name="ShowSeekbarDescription" xml:space="preserve">
+    <value>Automaticky zobrazí interaktivní časovou osu, pokud ji přehrávač podporuje</value>
+  </data>
+  <data name="UnsupportedControlsWarning" xml:space="preserve">
+    <value>*Některé prohlížeče/přehrávače nepodporují opakování, náhodné přehrávání a ovládání časové osy.</value>
+  </data>
+  <data name="PauseOtherMediaTitle" xml:space="preserve">
+    <value>Automaticky zastaví ostatní média</value>
+  </data>
+  <data name="PauseOtherMediaDescription" xml:space="preserve">
+    <value>Když přehráváte nebo se soustředíte na nová média, ostatní aktivní relace se automaticky pozastaví</value>
+  </data>
+  <data name="NextUpCustomizationTitle" xml:space="preserve">
+    <value>Okno Další skladba</value>
+  </data>
+  <data name="NextUpDescription" xml:space="preserve">
+    <value>Zobrazí se plovoucí okno s následující písničkou poté, co skončí písnička/video. Zobrazí se pouze, pokud se další v pořadí spouští automaticky, pokud zmáčknete tlačítko další nebo předešlé skladby, ukáže se místo toho hlavní plovoucí přehrávač.</value>
+  </data>
+  <data name="EnableNextUpTitle" xml:space="preserve">
+    <value>Povolit plovoucí okno Další skladby</value>
+  </data>
+  <data name="EnableNextUpDescription" xml:space="preserve">
+    <value>Ukáže, jaká skladba následuje po konci písničky/videa</value>
+  </data>
+  <data name="NextUpStayDurationTitle" xml:space="preserve">
+    <value>Zmizení Další skladby</value>
+  </data>
+  <data name="NextUpStayDurationDescription" xml:space="preserve">
+    <value>(výchozí: 2000 ms)</value>
+  </data>
+  <data name="LockKeysCustomizationTitle" xml:space="preserve">
+    <value>Okno Lock Keys</value>
+  </data>
+  <data name="LockKeysDescription" xml:space="preserve">
+    <value>Zkontrolujte stav Lock key na první pohled. Zobrazí se po stisknutí klávesy Caps Lock, Num Lock nebo Scroll Lock. Praktické pro notebooky/klávesnice bez indikátorů klávesy Lock.</value>
+  </data>
+  <data name="EnableLockKeysTitle" xml:space="preserve">
+    <value>Povolit plovoucí okno Lock Keys</value>
+  </data>
+  <data name="EnableLockKeysDescription" xml:space="preserve">
+    <value>Zobrazí, jestli daná lock key je zapnutá nebo vypnutá</value>
+  </data>
+  <data name="LockKeysStayDurationTitle" xml:space="preserve">
+    <value>Zmizení Lock Keys</value>
+  </data>
+  <data name="LockKeysStayDurationDescription" xml:space="preserve">
+    <value>(výchozí: 2000 ms)</value>
+  </data>
+  <data name="LockKeysBoldUITitle" xml:space="preserve">
+    <value>Tučný symbol a písmo</value>
+  </data>
+  <data name="LockKeysBoldUIDescription" xml:space="preserve">
+    <value>Zvýrazní symbol a písmo v plovoucím okně</value>
+  </data>
+  <data name="EnableInsertKeyTitle" xml:space="preserve">
+    <value>Povolit vyskakovací okno klávesy Insert</value>
+  </data>
+  <data name="EnableInsertKeyDescription" xml:space="preserve">
+    <value>Určuje, zda se po stisknutí tlačítka insert/overwrite zobrazí plovoucí okno</value>
+  </data>
+  <data name="SystemSettingsTitle" xml:space="preserve">
+    <value>Systém</value>
+  </data>
+  <data name="LaunchOnStartupTitle" xml:space="preserve">
+    <value>Spustit při startu počítače</value>
+  </data>
+  <data name="LaunchOnStartupDescription" xml:space="preserve">
+    <value>Po přihlášení do systému Windows se spustí minimalizované do systémové oblasti</value>
+  </data>
+  <data name="StartupAppsHyperlinkText" xml:space="preserve">
+    <value>Aplikace při spuštení</value>
+  </data>
+  <data name="StartupAppsSettingsInfo" xml:space="preserve">
+    <value>Pokud toto nastavení nefunguje podle očekávání, zkontrolujte</value>
+  </data>
+  <data name="AppThemeTitle" xml:space="preserve">
+    <value>Vzhled aplikace</value>
+  </data>
+  <data name="AppThemeDefault" xml:space="preserve">
+    <value> Systém</value>
+  </data>
+  <data name="AppThemeLight" xml:space="preserve">
+    <value> Světlý</value>
+  </data>
+  <data name="AppThemeDark" xml:space="preserve">
+    <value> Tmavý</value>
+  </data>
+  <data name="TrayIconLeftClickBehaviorTitle" xml:space="preserve">
+    <value>Chování ikony v systémové oblasti při levém kliknutí</value>
+  </data>
+  <data name="TrayIconLeftClickBehaviorDescription" xml:space="preserve">
+    <value>Vyberte, co se stane, když kliknete levím tlačítkem na ikony v systémové oblasti</value>
+  </data>
+  <data name="TrayIconLeftClickOption1" xml:space="preserve">
+    <value> Otevřít nastavení</value>
+  </data>
+  <data name="TrayIconLeftClickOption2" xml:space="preserve">
+    <value> Ukázat ploovucí přehrávač</value>
+  </data>
+  <data name="Win11TrayIconTitle" xml:space="preserve">
+    <value>Ikona v systémové oblasti ve stylu Windows 11</value>
+  </data>
+  <data name="Win11TrayIconDescription" xml:space="preserve">
+    <value>Použije ikonu v systémové oblasti, která zapadá do Windows 11 (přepnutím změníš vzhled)</value>
+  </data>
+  <data name="AnimationSettingsTitle" xml:space="preserve">
+    <value>Nastavení animací</value>
+  </data>
+  <data name="AnimationSettingsDescription" xml:space="preserve">
+    <value>Upravte animace podle svých představ</value>
+  </data>
+  <data name="AnimationDurationScaleTitle" xml:space="preserve">
+    <value>Délka animace</value>
+  </data>
+  <data name="AnimationDurationScaleDescription" xml:space="preserve">
+    <value>Rychlejší nebo pomalejší rychlost animace plovoucího okna (výchozí: 1x)</value>
+  </data>
+  <data name="AnimationSpeedOff" xml:space="preserve">
+    <value>Vypnuto</value>
+  </data>
+  <data name="AnimationEasingStyleTitle" xml:space="preserve">
+    <value>Styl animace objevení/zmizení</value>
+  </data>
+  <data name="AnimationEasingStyleDescription" xml:space="preserve">
+    <value>(výchozí: Kvadratická)</value>
+  </data>
+  <data name="EasingQuadratic" xml:space="preserve">
+    <value> Kvadraticky</value>
+  </data>
+  <data name="EasingCubic" xml:space="preserve">
+    <value> Čtvereční</value>
+  </data>
+  <data name="NativeExperienceInfo" xml:space="preserve">
+    <value>Pro nativní prostředí Windows 11 by měla být nastavení ponechána ve výchozím stavu.</value>
+  </data>
+  <data name="DisableOnFullscreenTitle" xml:space="preserve">
+    <value>Zakázat plovoucí okna, pokud je detekován program DirectX na celou obrazovku</value>
+  </data>
+  <data name="DisableOnFullscreenDescription" xml:space="preserve">
+    <value>Zabraňuje minimalizaci her DirectX v exkluzivním režimu celé obrazovky, pokud se objeví plovoucí okno</value>
+  </data>
+  <data name="GitHubRepoLink" xml:space="preserve">
+    <value>GitHub Repozitář</value>
+  </data>
+  <data name="CloseButton" xml:space="preserve">
+    <value>Zavřít</value>
+  </data>
+  <data name="AppLanguageTitle" xml:space="preserve">
+    <value>Jazyk aplikace</value>
+  </data>
+  <data name="AppLanguageDescription" xml:space="preserve">
+    <value>Pokud váš jazyk není uveden nebo je neúplný, bude použita angličtina.
+Můžete pomoct s překlady na</value>
+  </data>
+  <data name="LockWindow_CapsLock" xml:space="preserve">
+    <value>Caps Lock</value>
+  </data>
+  <data name="LockWindow_InsertPressed" xml:space="preserve">
+    <value>Zmáčknut Insert</value>
+  </data>
+  <data name="LockWindow_LockOn" xml:space="preserve">
+    <value>zapnut</value>
+  </data>
+  <data name="LockWindow_LockOff" xml:space="preserve">
+    <value>vypnut</value>
+  </data>
+  <data name="NextUpWindow_UpNextText" xml:space="preserve">
+    <value>Další:</value>
+  </data>
+  <data name="TrayIcon_SettingsOption" xml:space="preserve">
+    <value>Nastavení</value>
+  </data>
+  <data name="TrayIcon_GitHubRepositoryOption" xml:space="preserve">
+    <value>Repositář</value>
+  </data>
+  <data name="TrayIcon_ReportBugOption" xml:space="preserve">
+    <value>Nahlásit chybu</value>
+  </data>
+  <data name="TrayIcon_QuitOption" xml:space="preserve">
+    <value>Zavřít FluentFlyout</value>
+  </data>
+  <data name="AppLanguageDescriptionLink" xml:space="preserve">
+    <value>Weblate</value>
+  </data>
+  <data name="LockWindow_NumLock" xml:space="preserve">
+    <value>Num Lock</value>
+  </data>
+  <data name="LockWindow_ScrollLock" xml:space="preserve">
+    <value>Scroll Lock</value>
+  </data>
+  <data name="SelectedMonitorTitle" xml:space="preserve">
+    <value>Monitor s plovoucími okny</value>
+  </data>
+  <data name="TaskbarWidgetCustomizationTitle" xml:space="preserve">
+    <value>Widget na hlavním panelu</value>
+  </data>
+  <data name="TaskbarWidgetDescription" xml:space="preserve">
+    <value>Kompaktní, zabudovaní widget, který se nachází na hlavním panelu pro rychlý přístup k médiím. Klikni na widget pro rozšíření na celý plovoucí přehrávač.</value>
+  </data>
+  <data name="TaskbarWidgetEnabledTitle" xml:space="preserve">
+    <value>Povolit widget na hlavním panelu</value>
+  </data>
+  <data name="TaskbarWidgetEnabledDescription" xml:space="preserve">
+    <value>Ukazovat kompaktní média widget na hlavním panelu</value>
+  </data>
+  <data name="TaskbarWidgetVisualIssuesWarning" xml:space="preserve">
+    <value>Uprav následující možosti, pokud máš problémy se vzhledem.</value>
+  </data>
+  <data name="TaskbarWidgetPosition" xml:space="preserve">
+    <value>Pozice widgetu</value>
+  </data>
+  <data name="TaskbarWidgetPaddingTitle" xml:space="preserve">
+    <value>Automatické odsazení od tlačítka Windows Widgetů</value>
+  </data>
+  <data name="TaskbarWidgetPaddingDescription" xml:space="preserve">
+    <value>Zapni tuto možnost, pokud máš povolené Windows Widgety</value>
+  </data>
+  <data name="TaskbarWidgetClickableTitle" xml:space="preserve">
+    <value>Kliknutím k otevřít plovoucí přehrávač, pokud je média k dispozici</value>
+  </data>
+  <data name="TaskbarWidgetClickableDescription" xml:space="preserve">
+    <value>Pokud je plovoucí přehrávač zapnutý, otevře se při kliknutí na widget na hlavním panelu</value>
+  </data>
+  <data name="TaskbarWidgetBackgroundBlurTitle" xml:space="preserve">
+    <value>Rozmazání pozadí</value>
+  </data>
+  <data name="TaskbarWidgetBackgroundBlurDescription" xml:space="preserve">
+    <value>Přidá efekt rozmazaného pozadí na widget na hlavním panelu</value>
+  </data>
+  <data name="TaskbarWidgetHideCompletelyTitle" xml:space="preserve">
+    <value>Kompletně skrýt, pokud se žádné médium nepřehrává</value>
+  </data>
+  <data name="TaskbarWidgetHideCompletelyDescription" xml:space="preserve">
+    <value>Skryje celý widget, pokud se nic nepřehrává, místo toho ukáže ikonu médií</value>
+  </data>
+  <data name="HomeTitle" xml:space="preserve">
+    <value>Domů</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Zakázáno</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Povoleno</value>
+  </data>
+  <data name="MediaFlyoutExcludeVolumeDescription" xml:space="preserve">
+    <value>Neukazovat plovoucí přehrávač při změně hlasitosti/zltumení</value>
+  </data>
+  <data name="MediaFlyoutExcludeVolumeTitle" xml:space="preserve">
+    <value>Nedetekovat tlačítka hlasitosti</value>
+  </data>
+  <data name="MediaFlyoutAlwaysDisplayDescription" xml:space="preserve">
+    <value>Plovoucí přehrávač zůstane zobrazený, dokud ho nezavřete tlačítkem</value>
+  </data>
+  <data name="TaskbarWidgetSelectedMonitorTitle" xml:space="preserve">
+    <value>Monitor s Widgetem</value>
+  </data>
+  <data name="TaskbarWidgetPaddingSettingsTitle" xml:space="preserve">
+    <value>Nastavení odsazení u Widgetu</value>
+  </data>
+  <data name="TaskbarWidgetPaddingSettingsDescription" xml:space="preserve">
+    <value>Uprav odsazení okolo Widgetu, aby seděl na tvůj styl hlavního panelu</value>
+  </data>
+  <data name="TaskbarWidgetManualPaddingTitle" xml:space="preserve">
+    <value>Vlastní odsazení</value>
+  </data>
+  <data name="TaskbarWidgetManualPaddingDescription" xml:space="preserve">
+    <value>Přidá odsazení navíc (výchozí: 0px)</value>
+  </data>
+  <data name="TaskbarWidgetControlsTitle" xml:space="preserve">
+    <value>Tlačítka médií na Widgetu</value>
+  </data>
+  <data name="TaskbarWidgetControlsDescription" xml:space="preserve">
+    <value>Ukazovat tlačítka ovládání medií na Widgetu</value>
+  </data>
+  <data name="TaskbarWidgetAnimatedTitle" xml:space="preserve">
+    <value>Animace Widgetu</value>
+  </data>
+  <data name="TaskbarWidgetAnimatedDescription" xml:space="preserve">
+    <value>Povolit jemné animace pro widget</value>
+  </data>
+  <data name="TaskbarVisualizerTitle" xml:space="preserve">
+    <value>Vizualizér na hlavním panelu</value>
+  </data>
+  <data name="TaskbarVisualizerDescription" xml:space="preserve">
+    <value>Vizualizér zvuku v reálném čase na hlavním panelu. Navržen tak, aby měl minimální dopad na výkon moderních systémů.</value>
+  </data>
+  <data name="TaskbarVisualizerEnabledTitle" xml:space="preserve">
+    <value>Povolit Vizualizér na hlavním panelu (Experimentální)</value>
+  </data>
+  <data name="TaskbarVisualizerEnabledDescription" xml:space="preserve">
+    <value>Experiment: Tato funkce bude fungovat pouze pokud je povolený Widget na hlavním panelu</value>
+  </data>
+  <data name="TaskbarVisualizerPositionTitle" xml:space="preserve">
+    <value>Relativní pozice Vizualizéru oproti Widgetu na hlavním panelu</value>
+  </data>
+  <data name="TaskbarVisualizerBarCountTitle" xml:space="preserve">
+    <value>Počet sloupečků</value>
+  </data>
+  <data name="TaskbarVisualizerBarCountDescription" xml:space="preserve">
+    <value>Počet vyobrazovaných sloupečků vizualizéru</value>
+  </data>
+  <data name="TaskbarVisualizerCenteredBarsTitle" xml:space="preserve">
+    <value>Vystředit sloupečky</value>
+  </data>
+  <data name="TaskbarVisualizerCenteredBarsDescription" xml:space="preserve">
+    <value>Sloupečky, které se symetricky rozšiřují od středu, místo aby stoupaly odspodu</value>
+  </data>
+  <data name="TaskbarVisualizerBaselineTitle" xml:space="preserve">
+    <value>Zobrazovat základní úroveň</value>
+  </data>
+  <data name="TaskbarVisualizerBaselineDescription" xml:space="preserve">
+    <value>Zobrazuje tenkou čáru, když jsou úrovně zvuku nulové</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSensitivityTitle" xml:space="preserve">
+    <value>Citlivost zvuku</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSensitivityDescription" xml:space="preserve">
+    <value>Jak hlasitý zvuk musí být, aby se sloupečky začaly hýbat</value>
+  </data>
+  <data name="HideTrayIconTitle" xml:space="preserve">
+    <value>Skrýt ikonu v systémové oblasti</value>
+  </data>
+  <data name="HideTrayIconDescription" xml:space="preserve">
+    <value>Do nastavení se dostaneš pomocí spuštění programu dvakrát</value>
+  </data>
+  <data name="AcrylicBlurOpacityTitle" xml:space="preserve">
+    <value>Průhlednost akrylového rozmazání</value>
+  </data>
+  <data name="AcrylicBlurOpacityDescription" xml:space="preserve">
+    <value>Úprava efektu průhlednosti u Acrylic plovoucích oken (výchozí: 175)</value>
+  </data>
+  <data name="HomeUpdateDescription" xml:space="preserve">
+    <value>Zjisti, co je nového</value>
+  </data>
+  <data name="AppearanceBehaviorSectionTitle" xml:space="preserve">
+    <value>Vzhled a chování</value>
+  </data>
+  <data name="SystemConfigure" xml:space="preserve">
+    <value>Konfigurovat</value>
+  </data>
+  <data name="AboutContributorsTitle" xml:space="preserve">
+    <value>❤️ Seznam se s našimi přispěvateli</value>
+  </data>
+  <data name="AboutContributorsDescription" xml:space="preserve">
+    <value>Velké poděkování všem úžasným lidem, kteří přispěli k vývoji a úspěchu FluentFlyout!</value>
+  </data>
+  <data name="AboutOpenSourceLicensesTitle" xml:space="preserve">
+    <value>Open Source Licence</value>
+  </data>
+  <data name="AboutOpenSourceLicensesDescription" xml:space="preserve">
+    <value>FluentFlyout je sestaven s následujícími balíčky s otevřeným zdrojovým kódem:</value>
+  </data>
+  <data name="SponsorMeLink" xml:space="preserve">
+    <value>Podpoř mě</value>
+  </data>
+  <data name="UpdateToastTitle" xml:space="preserve">
+    <value>FluentFlyout byl aktualizován!</value>
+  </data>
+  <data name="UpdateToastMessage" xml:space="preserve">
+    <value>Nyní jsi na {0}.</value>
+  </data>
+  <data name="UpdateToastButton" xml:space="preserve">
+    <value>Zobrazit aktualizace</value>
+  </data>
+  <data name="LastChecked" xml:space="preserve">
+    <value>Poslední kontrola: {0}</value>
+  </data>
+  <data name="UpdateAvailableNotificationMessage" xml:space="preserve">
+    <value>Nová verze ({0}) je k dispozici.</value>
+  </data>
+  <data name="ShowUpdateNotificationsTitle" xml:space="preserve">
+    <value>Zobrazovat oznámení o nových aktualizacích</value>
+  </data>
+  <data name="HomeDashboardTitle" xml:space="preserve">
+    <value>Ovládací panel</value>
+  </data>
+  <data name="TrayIconSectionTitle" xml:space="preserve">
+    <value>Ikona v systémové oblasti</value>
+  </data>
+  <data name="UpdatesSectionTitle" xml:space="preserve">
+    <value>Aktualizace</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>O programu</value>
+  </data>
+  <data name="DevelopersTitle" xml:space="preserve">
+    <value>Vývojáři</value>
+  </data>
+  <data name="TranslatorsTitle" xml:space="preserve">
+    <value>Překladatelé</value>
+  </data>
+  <data name="BuyMeCoffeeLink" xml:space="preserve">
+    <value>Kupte mi kafe</value>
+  </data>
+  <data name="TrayIcon_ViewLogsOption" xml:space="preserve">
+    <value>Zobrazit logy</value>
+  </data>
+  <data name="PixelsUnit" xml:space="preserve">
+    <value>px</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Dostupná aktualizace</value>
+  </data>
+  <data name="UpToDate" xml:space="preserve">
+    <value>Aktuální</value>
+  </data>
+  <data name="CheckingForUpdates" xml:space="preserve">
+    <value>Probíhá kontrola...</value>
+  </data>
+  <data name="UpdateAvailableNotificationTitle" xml:space="preserve">
+    <value>Dostupná aktualizace!</value>
+  </data>
+  <data name="UpdateAvailableNotificationButton" xml:space="preserve">
+    <value>Stáhnout aktualizaci</value>
+  </data>
+  <data name="TaskbarVisualizerClickableTitle" xml:space="preserve">
+    <value>Zmáčknout pro otevření nastavení</value>
+  </data>
+  <data name="TaskbarVisualizerClickableDescription" xml:space="preserve">
+    <value>Kliknutím na vizualizér otevře stránku nastavení</value>
+  </data>
+  <data name="PositionLeft" xml:space="preserve">
+    <value>Vlevo</value>
+  </data>
+  <data name="PositionRight" xml:space="preserve">
+    <value>Vpravo</value>
+  </data>
+  <data name="TaskbarVisualizerOutputDeviceTitle" xml:space="preserve">
+    <value>Výstupní zařízení</value>
+  </data>
+  <data name="TaskbarWidgetAutoHideTitle" xml:space="preserve">
+    <value>Autoskrytí widgetu</value>
+  </data>
+  <data name="TaskbarWidgetControlsPositionTitle" xml:space="preserve">
+    <value>Pozice média tlačítek</value>
+  </data>
+  <data name="TaskbarWidgetControlsPositionDescription" xml:space="preserve">
+    <value>Vybrat, kde zobrazovat média tlačítka</value>
+  </data>
+  <data name="LockKeysCursorUIDescription" xml:space="preserve">
+    <value>Vybrat monitor na kterém se bude zobrazovat flyout.</value>
+  </data>
+  <data name="DefaultLockLayoutPosition" xml:space="preserve">
+    <value>Defaultní (Cílový Flyout displej)</value>
+  </data>
+  <data name="MonitorWithCursor" xml:space="preserve">
+    <value>Monitor s kurzorem</value>
+  </data>
+  <data name="LockKeysAnimatedTitle" xml:space="preserve">
+    <value>Indikátor animací</value>
+  </data>
+  <data name="LockKeysAnimatedDescription" xml:space="preserve">
+    <value>Zapnout jemné animace pro indikátor zámku</value>
+  </data>
+  <data name="UseAlbumArtAccentColorTitle" xml:space="preserve">
+    <value>Použít obrázek alba jako akcentovou barvu</value>
+  </data>
+  <data name="UseAlbumArtAccentColorDescription" xml:space="preserve">
+    <value>Některé UI elementy použijí barvu z obrázku alba místo systémové barvy</value>
+  </data>
+  <data name="BackupRestoreSectionTitle" xml:space="preserve">
+    <value>Zálohovat &amp; obnovit</value>
+  </data>
+  <data name="BackupRestoreCardTitle" xml:space="preserve">
+    <value>Zálohovat a obnovit vaše nastavení</value>
+  </data>
+  <data name="ExportSettings" xml:space="preserve">
+    <value>Export nastavení</value>
+  </data>
+  <data name="ImportSettings" xml:space="preserve">
+    <value>Importovat nastavení</value>
+  </data>
+  <data name="ExportSuccessful" xml:space="preserve">
+    <value>Export úspěšný</value>
+  </data>
+  <data name="ExportFailed" xml:space="preserve">
+    <value>Export neúspěšný</value>
+  </data>
+  <data name="ImportSuccessful" xml:space="preserve">
+    <value>Import úspěšný</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>Import selhal</value>
+  </data>
+  <data name="SettingsExportedSuccessfully" xml:space="preserve">
+    <value>Nastavení úspěšně exportované!</value>
+  </data>
+  <data name="FailedToExportSettings" xml:space="preserve">
+    <value>Export nastavení neproběhl vpořádku. Podívejte se logů pro více informací.</value>
+  </data>
+  <data name="SettingsImportedSuccessfully" xml:space="preserve">
+    <value>Importování nastavení proběhlo úspěšně! Aplikace se nyní restartuje.</value>
+  </data>
+  <data name="ImportSettingsWarning" xml:space="preserve">
+    <value>Toto přepíše vaše stávajicí nastavení. Pokračovat?</value>
+  </data>
+  <data name="FailedToImportSettings" xml:space="preserve">
+    <value>Import nastavení neproběhl úspěšně. Pro více detailů si zobrazte logy.</value>
+  </data>
+  <data name="AdvancedSettingsTitle" xml:space="preserve">
+    <value>Pokročilé nastavení</value>
+  </data>
+  <data name="LockKeysCursorUITitle" xml:space="preserve">
+    <value>Preferovaný onen displej</value>
+  </data>
+  <data name="TaskbarWidgetAutoHideDescription" xml:space="preserve">
+    <value>Automaticky schová widget, jakmile je přehrávání médií zastaveno</value>
+  </data>
+  <data name="TaskbarVisualizerAudioPeakLevelTitle" xml:space="preserve">
+    <value>Prahová hodnota vrcholu zvuku</value>
+  </data>
+  <data name="TaskbarVisualizerAudioPeakLevelDescription" xml:space="preserve">
+    <value>Jak hlasitý zvuk musí být, aby dosáhly maximální výšky</value>
+  </data>
+  <data name="TaskbarVisualizerOutputDeviceDescription" xml:space="preserve">
+    <value>Uprav, co vizualizér slyší, přepnutím výstupového zařízení pro FluentFlyout.</value>
+  </data>
+  <data name="MonitorWithFocusedWindow" xml:space="preserve">
+    <value>Monitor s aktivním oknem</value>
+  </data>
+  <data name="LegacyTaskbarWidthTitle" xml:space="preserve">
+    <value>Starší systém šířky na hlavním panelu</value>
+  </data>
+  <data name="LegacyTaskbarWidthDescription" xml:space="preserve">
+    <value>Použije starší sytém pro šířku na hlavním panelu pro panelové Widgety</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Finish" xml:space="preserve">
+    <value>Finish</value>
+  </data>
+  <data name="OnboardingStepsCounter" xml:space="preserve">
+    <value>Step {0} of {1}</value>
+  </data>
+  <data name="TaskbarWidgetFixedWidthTitle" xml:space="preserve">
+    <value>Fixed Widget Width</value>
+  </data>
+  <data name="TaskbarWidgetFixedWidthDescription" xml:space="preserve">
+    <value>Keep the widget at a fixed width instead of resizing to fit the title and artist text</value>
+  </data>
+  <data name="TaskbarWidgetShowPauseOverlayTitle" xml:space="preserve">
+    <value>Show Pause Icon Overlay</value>
+  </data>
+  <data name="TaskbarWidgetShowPauseOverlayDescription" xml:space="preserve">
+    <value>When media is paused, display a pause icon over the album art</value>
+  </data>
+  <data name="TaskbarVisualizerBaselineAutoHideDescription" xml:space="preserve">
+    <value>Automatically hides the baseline when no audio is playing</value>
+  </data>
+  <data name="EnableCapsTitle" xml:space="preserve">
+    <value>Enable Caps Lock indicator</value>
+  </data>
+  <data name="EnableCapsDescription" xml:space="preserve">
+    <value>Shows when the Caps Lock key is pressed</value>
+  </data>
+  <data name="EnableNumTitle" xml:space="preserve">
+    <value>Enable Num Lock indicator</value>
+  </data>
+  <data name="EnableNumDescription" xml:space="preserve">
+    <value>Shows when the Num Lock key is pressed</value>
+  </data>
+  <data name="EnableScrollTitle" xml:space="preserve">
+    <value>Enable Scroll Lock indicator</value>
+  </data>
+  <data name="EnableScrollDescription" xml:space="preserve">
+    <value>Shows when the Scroll Lock key is pressed</value>
+  </data>
+  <data name="AnonymousUsageDataTitle" xml:space="preserve">
+    <value>Send Anonymous Usage Data</value>
+  </data>
+  <data name="AnonymousUsageDataDescription" xml:space="preserve">
+    <value>Help improve the app by sending anonymous, non-identifiable usage data</value>
+  </data>
+  <data name="AppFilteringTitle" xml:space="preserve">
+    <value>App Filtering</value>
+  </data>
+  <data name="AppFilteringRulesDescription" xml:space="preserve">
+    <value>Control which applications can display media</value>
+  </data>
+  <data name="EnableAppFilteringTitle" xml:space="preserve">
+    <value>Enable Filtering</value>
+  </data>
+  <data name="AppFilteringModeTitle" xml:space="preserve">
+    <value>Filtering Mode</value>
+  </data>
+  <data name="AppFilteringModeDescription" xml:space="preserve">
+    <value>Choose whether listed apps are allowed or blocked</value>
+  </data>
+  <data name="AppFilteringModeBlacklist" xml:space="preserve">
+    <value>Block List</value>
+  </data>
+  <data name="AppFilteringModeWhitelist" xml:space="preserve">
+    <value>Allow List</value>
+  </data>
+  <data name="AllowedAppsTitle" xml:space="preserve">
+    <value>Allowed Apps</value>
+  </data>
+  <data name="AllowedAppsDescription" xml:space="preserve">
+    <value>If any applications are listed here, only their media will be shown.</value>
+  </data>
+  <data name="BlockedAppsTitle" xml:space="preserve">
+    <value>Excluded Apps</value>
+  </data>
+  <data name="BlockedAppsDescription" xml:space="preserve">
+    <value>Excludes an application from being displayed</value>
+  </data>
+  <data name="AddAppManuallyText" xml:space="preserve">
+    <value>Can't find your app? Type it below:</value>
+  </data>
+  <data name="AppFilteringPlaceholderSpotify" xml:space="preserve">
+    <value>e.g. Spotify.exe</value>
+  </data>
+  <data name="AppFilteringPlaceholderChrome" xml:space="preserve">
+    <value>e.g. Chrome.exe</value>
+  </data>
+  <data name="AppFilteringComboBoxHint" xml:space="preserve">
+    <value>Select a currently playing app to add</value>
+  </data>
+  <data name="AddButton" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="RemoveButton" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="SearchSettings" xml:space="preserve">
+    <value>Search settings</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTextTitle" xml:space="preserve">
+    <value>Scrolling Text</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTitle" xml:space="preserve">
+    <value>Enable Scrolling</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTextDescription" xml:space="preserve">
+    <value>Automatically scroll long text that doesn't fit</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTextLoopForeverTitle" xml:space="preserve">
+    <value>Continuous Scrolling</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTextLoopForeverDescription" xml:space="preserve">
+    <value>Infinitely loop the text in one direction instead of scrolling back and forth.</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTextSpeedTitle" xml:space="preserve">
+    <value>Scroll Speed</value>
+  </data>
+  <data name="TaskbarWidgetScrollingTextSpeedDescription" xml:space="preserve">
+    <value>Speed at which the text scrolls (pixels/second). Default is 20.</value>
+  </data>
+  <data name="VolumeFlyoutTitle" xml:space="preserve">
+    <value>Volume Flyout</value>
+  </data>
+  <data name="VolumeFlyoutDescription" xml:space="preserve">
+    <value>A standalone volume control flyout that expands into a volume mixer, replacing the default Windows volume interface.</value>
+  </data>
+  <data name="EnableVolumeFlyoutTitle" xml:space="preserve">
+    <value>Enable Volume Flyout</value>
+  </data>
+  <data name="EnableVolumeFlyoutDescription" xml:space="preserve">
+    <value>Replace the default Windows volume flyout</value>
+  </data>
+  <data name="VolumeAboveMediaFlyoutTitle" xml:space="preserve">
+    <value>Position Volume Flyout above Media Flyout</value>
+  </data>
+  <data name="VolumeFlyoutStayDurationTitle" xml:space="preserve">
+    <value>Volume Flyout Stay Duration</value>
+  </data>
+  <data name="VolumeMixerSectionTitle" xml:space="preserve">
+    <value>Volume Mixer</value>
+  </data>
+  <data name="EnableVolumeMixerTitle" xml:space="preserve">
+    <value>Enable Volume Mixer</value>
+  </data>
+  <data name="EnableVolumeMixerDescription" xml:space="preserve">
+    <value>Fine control over individual app volumes</value>
+  </data>
+  <data name="VolumeMixerHighlightTitle" xml:space="preserve">
+    <value>Highlight apps playing audio</value>
+  </data>
+  <data name="VolumeMixerHighlightDescription" xml:space="preserve">
+    <value>See which apps are currently outputting audio</value>
+  </data>
+  <data name="MasterVolumeText" xml:space="preserve">
+    <value>Master volume</value>
+  </data>
+  <data name="TaskbarWidgetCloseableFlyoutTitle" xml:space="preserve">
+    <value>Close the Flyout on the second click</value>
+  </data>
+  <data name="TaskbarWidgetCloseableFlyoutDescription" xml:space="preserve">
+    <value>Click the taskbar widget again to close an already-open Media Flyout.</value>
+  </data>
+</root>
