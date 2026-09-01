@@ -168,8 +168,15 @@ public sealed class AppServices : IDisposable
         {
             try
             {
+                var trayIconPath = Path.Combine(
+                    AppContext.BaseDirectory,
+                    "Assets",
+                    "MicaFlyouts.ico");
+                if (!File.Exists(trayIconPath))
+                    _logger.Warn($"Tray icon file was not found: {trayIconPath}");
+
                 _tray = ReactorApp.OpenTrayIcon(new TrayIconSpec(
-                    WindowIcon.FromResource("ms-appx:///Assets/MicaFlyouts.ico"),
+                    WindowIcon.FromPath(trayIconPath),
                     "Mica Flyouts",
                     new WindowKey("tray")));
                 _tray.Click += Tray_Click;
