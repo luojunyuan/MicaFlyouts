@@ -3,13 +3,15 @@
           AfterTargets="Publish"
           Condition="'$(PublishAot)' == 'true' and '$(WindowsPackageType)' == 'None'">
     <ItemGroup>
-      <_WinUIResourcesForAot Include="$(OutputPath)**\*.xbf" />
-      <_WinUIResourcesForAot Include="$(OutputPath)$(AssemblyName).pri"
-                             Condition="Exists('$(OutputPath)$(AssemblyName).pri')" />
+      <_WinUIResourcesForAot Include="$(TargetDir)Reactor\**\*.xbf" />
     </ItemGroup>
     <Copy SourceFiles="@(_WinUIResourcesForAot)"
           DestinationFiles="@(_WinUIResourcesForAot->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           Condition="'@(_WinUIResourcesForAot)' != ''" />
+    <Copy SourceFiles="$(TargetDir)$(AssemblyName).pri"
+          DestinationFiles="$(PublishDir)$(AssemblyName).pri"
+          SkipUnchangedFiles="true"
+          Condition="Exists('$(TargetDir)$(AssemblyName).pri')" />
   </Target>
 </Project>

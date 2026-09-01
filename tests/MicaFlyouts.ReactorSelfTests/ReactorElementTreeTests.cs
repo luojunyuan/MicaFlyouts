@@ -60,4 +60,17 @@ public sealed class ReactorElementTreeTests
         Assert.IsAssignableFrom<Component>(new SettingsWindowComponent());
         Assert.IsType<EmptyElement>(new MediaFlyoutComponent().Render());
     }
+
+    [Fact]
+    public void TrayMenu_BuiltInHandlerIsRegisteredBeforeMount()
+    {
+        ReactorApp.RegisterAllBuiltIns();
+
+        var menu = MenuItems(
+            MenuItem("Settings", static () => { }, "Setting"),
+            MenuSeparator(),
+            MenuItem("Quit", static () => { }, "Close"));
+
+        Assert.IsType<MenuFlyoutContentElement>(menu);
+    }
 }
