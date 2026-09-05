@@ -37,6 +37,9 @@ public sealed class AppServices : IDisposable
     private ReactorTrayIcon? _tray;
     private ReactorWindow? _mainWindow;
     private string _lastTrack = string.Empty;
+    private readonly TrayNotificationGate _trayClickGate = new();
+    private readonly TrayNotificationGate _trayRightClickGate = new();
+    private int _started;
     private int _disposed;
 
     public AppServices(
@@ -143,7 +146,8 @@ public sealed class AppServices : IDisposable
 
     public void Start()
     {
-        if (Volatile.Read(ref _disposed) != 0)
+        if (Volatile.Read(ref _disposed) != 0
+            || Interlocked.Exchange(ref _started, 1) != 0)
             return;
 
         ReactorApp.ShutdownPolicy = ShutdownPolicy.Explicit;
@@ -199,6 +203,11 @@ public sealed class AppServices : IDisposable
 
     private void Tray_Click(object? sender, EventArgs args)
     {
+        // Shell can deliver multiple notification aliases for one gesture;
+        // keep the user command idempotent at the application boundary.
+        if (!_trayClickGate.TryAccept())
+            return;
+
         if (Settings.Snapshot.NIconLeftClick == 1)
             ShowMediaFlyout();
         else
@@ -207,6 +216,9 @@ public sealed class AppServices : IDisposable
 
     private void Tray_RightClick(object? sender, EventArgs args)
     {
+        if (!_trayRightClickGate.TryAccept())
+            return;
+
         if (_tray is null)
             return;
         _tray.ShowFlyout(Component<TrayMenu, TrayMenuProps>(new(
