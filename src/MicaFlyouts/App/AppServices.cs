@@ -39,6 +39,7 @@ public sealed partial class AppServices : IDisposable
     private ReactorWindow? _mainWindow;
     private string _lastTrack = string.Empty;
     private int _started;
+    private int _exitRequested;
     private int _disposed;
 
     public AppServices(
@@ -471,11 +472,20 @@ public sealed partial class AppServices : IDisposable
 
     private void Exit()
     {
+        if (Interlocked.Exchange(ref _exitRequested, 1) != 0)
+            return;
+
+        // The tray callback runs inside H.NotifyIcon's mouse/menu event. Let
+        // that event close the SecondWindow menu before tearing down XAML.
+        if (!UiDispatcher.TryEnqueue(CompleteExit))
+            CompleteExit();
+    }
+
+    private void CompleteExit()
+    {
         // ReactorApp.Exit tears down the WinUI application synchronously.
-        // Release the windowless tray host while the XAML dispatcher is alive.
-        var tray = _tray;
-        _tray = null;
-        tray?.Dispose();
+        // Release the tray host while the XAML dispatcher is still alive.
+        Interlocked.Exchange(ref _tray, null)?.Dispose();
         ReactorApp.Exit();
     }
 

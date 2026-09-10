@@ -27,7 +27,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!--  CS1591 Generate documents "Missing XML comment"  -->
     <NoWarn>$(NoWarn);CS1591</NoWarn>
-    <WarningsAsErrors>$(WarningsAsErrors);CsWinRT1028;CsWinRT1030</WarningsAsErrors>
+    <WarningsAsErrors>$(WarningsAsErrors);CsWinRT1028;CsWinRT1030;IDE0301;IDE0305</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>

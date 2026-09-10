@@ -23,11 +23,14 @@ namespace MicaFlyouts.App;
         "MenuActivation",
         "PopupActivation",
     })]
-[WrapLifecycle(nameof(CreateTrayIcon))]
+[WrapLifecycle(nameof(CreateTrayIcon), OnUnmounted = nameof(DisposeTrayIcon))]
 public partial record TaskbarIconElement
 {
     private static void CreateTrayIcon(H.NotifyIcon.TaskbarIcon taskbarIcon) =>
         taskbarIcon.ForceCreate(enablesEfficiencyMode: false);
+
+    private static void DisposeTrayIcon(H.NotifyIcon.TaskbarIcon taskbarIcon) =>
+        taskbarIcon.Dispose();
 }
 
 /// <summary>Configuration for an H.NotifyIcon tray surface.</summary>
@@ -67,6 +70,7 @@ public sealed partial class HNotifyIconTray : IDisposable
 {
     private readonly ReactorHostControl _host;
     private readonly HNotifyIcon _iconSource;
+    private H.NotifyIcon.TaskbarIcon? _taskbarIcon;
     private int _disposed;
 
     /// <summary>Fires when the user left-clicks the tray icon.</summary>
@@ -79,7 +83,20 @@ public sealed partial class HNotifyIconTray : IDisposable
     {
         _iconSource = iconSource;
         _host = new ReactorHostControl();
-        _host.Mount(new HNotifyIconRoot(iconSource.DrawingIcon, tooltip, contextMenu, RaiseLeftClick));
+        _host.Mount(_ => TaskbarIcon(
+            icon: iconSource.DrawingIcon,
+            toolTipText: tooltip,
+            menuActivation: H.NotifyIcon.Core.PopupActivationMode.RightClick,
+            popupActivation: H.NotifyIcon.Core.PopupActivationMode.None)
+            .Set(taskbarIcon =>
+            {
+                _taskbarIcon = taskbarIcon;
+                taskbarIcon.ContextMenuMode = H.NotifyIcon.ContextMenuMode.SecondWindow;
+                taskbarIcon.ContextFlyout = contextMenu;
+                taskbarIcon.CloseContextMenuOnItemClick = true;
+                taskbarIcon.NoLeftClickDelay = true;
+                taskbarIcon.LeftClickCommand = new HNotifyIconCommand(RaiseLeftClick);
+            }));
     }
 
     internal static HNotifyIconTray Create(HNotifyIconSpec spec)
@@ -195,29 +212,9 @@ public sealed partial class HNotifyIconTray : IDisposable
         if (Interlocked.Exchange(ref _disposed, 1) != 0)
             return;
 
+        Interlocked.Exchange(ref _taskbarIcon, null)?.Dispose();
         _host.Dispose();
     }
-}
-
-file sealed class HNotifyIconRoot(
-    Icon icon,
-    string tooltip,
-    MUXC.MenuFlyout contextMenu,
-    Action onLeftClick) : Component
-{
-    public override Element Render() => TaskbarIcon(
-        icon: icon,
-        toolTipText: tooltip,
-        menuActivation: H.NotifyIcon.Core.PopupActivationMode.RightClick,
-        popupActivation: H.NotifyIcon.Core.PopupActivationMode.None)
-        .Set(taskbarIcon =>
-        {
-            taskbarIcon.ContextMenuMode = H.NotifyIcon.ContextMenuMode.SecondWindow;
-            taskbarIcon.ContextFlyout = contextMenu;
-            taskbarIcon.CloseContextMenuOnItemClick = true;
-            taskbarIcon.NoLeftClickDelay = true;
-            taskbarIcon.LeftClickCommand = new HNotifyIconCommand(onLeftClick);
-        });
 }
 
 file sealed partial class HNotifyIconCommand(Action execute) : ICommand
