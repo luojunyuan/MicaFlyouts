@@ -212,7 +212,9 @@ public sealed partial class HNotifyIconTray : IDisposable
         if (Interlocked.Exchange(ref _disposed, 1) != 0)
             return;
 
-        Interlocked.Exchange(ref _taskbarIcon, null)?.Dispose();
+        var taskbarIcon = _taskbarIcon;
+        _taskbarIcon = null;
+        taskbarIcon?.Dispose();
         _host.Dispose();
     }
 }

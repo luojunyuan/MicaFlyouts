@@ -115,7 +115,10 @@ public sealed partial class VisualizerService : IDisposable
             await foreach (var frame in _frames.Reader.ReadAllAsync(cancellationToken).ConfigureAwait(false))
                 UiDispatcher.EnqueueOrRun(() => _store.Set(frame));
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+            _logger.Info("VisualizerService.ConsumeFramesAsync stopped after OperationCanceledException.");
+        }
     }
 
     private void PublishEmpty()

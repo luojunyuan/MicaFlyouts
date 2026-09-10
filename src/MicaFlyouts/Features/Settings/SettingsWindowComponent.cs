@@ -29,17 +29,31 @@ public sealed class SettingsWindowComponent : Component
         var (query, setQuery) = UseState(string.Empty);
         var menu = SettingsSearchIndex.MenuItems;
         var content = Component<SettingsPageComponent, SettingsPageProps>(new(page, settings));
-        var search = AutoSuggestBox(query, setQuery)
+        var searchEntries = UseMemo(() => SettingsSearchIndex.Query(query), query);
+        var searchSuggestions = UseMemo(
+            () => searchEntries.Select(entry => entry.Title).ToArray(),
+            query);
+        var search = (AutoSuggestBox(
+                query,
+                setQuery,
+                submitted => SelectSearchResult(submitted, setPage)) with
+            {
+                Suggestions = searchSuggestions,
+                OnSuggestionChosen = selected =>
+                {
+                    setQuery(selected);
+                    SelectSearchResult(selected, setPage);
+                },
+            })
+            .Width(320)
+            .PlaceholderText("Search settings")
+            .QueryIcon(SymbolIcon("Find"))
             .AutomationName("Search settings");
-        var searchResults = SettingsSearchIndex.Query(query)
-            .Select(entry => Button(entry.Title, () => setPage(entry.Page))
-                .AutomationName($"Open {entry.Title}")
-                .WithKey(entry.Page.ToString()))
-            .ToArray();
-        var header = VStack(8,
-            TextBlock("Mica Flyouts").FontSize(22).SemiBold(),
-            search,
-            query.Length == 0 ? Empty() : VStack(2, searchResults));
+        var titleBar = (TitleBar("Mica Flyouts") with
+        {
+            Content = search,
+            Icon = AppBranding.TitleBarIcon,
+        }).Grid(row: 0);
         var navigation = NavigationView(menu, content) with
         {
             SelectedTag = SettingsSearchIndex.Tag(page),
@@ -48,12 +62,16 @@ public sealed class SettingsWindowComponent : Component
                 if (SettingsSearchIndex.TryParse(tag, out var selected))
                     setPage(selected);
             },
-            Header = header,
             IsSettingsVisible = false,
             PaneTitle = "Settings",
             IsPaneToggleButtonVisible = true,
+            IsTitleBarAutoPaddingEnabled = false,
         };
-        var surface = Border(navigation)
+        var surface = Border(Grid(
+                columns: [GridSize.Star()],
+                rows: [GridSize.Auto, GridSize.Star()],
+                titleBar,
+                navigation.Grid(row: 1)))
             .Background(SolidBackground)
             .WithBorder(SurfaceStroke, 1)
             .CornerRadius(8)
@@ -64,6 +82,18 @@ public sealed class SettingsWindowComponent : Component
             localization.Language,
             surface,
             services.Localization.ResourceProvider);
+    }
+
+    private static void SelectSearchResult(
+        string query,
+        Action<SettingsPage> setPage)
+    {
+        var results = SettingsSearchIndex.Query(query);
+        if (results.Count == 0)
+            return;
+
+        var result = results[0];
+        setPage(result.Page);
     }
 }
 

@@ -10,6 +10,7 @@
     <WindowsPackageType>None</WindowsPackageType>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ApplicationIcon>Assets\MicaFlyouts.ico</ApplicationIcon>
     <Platforms>x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
     <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' And ('$(Platform)' == '' Or '$(Platform)' == 'AnyCPU' Or '$(Platform)' == 'Any CPU')">$(NETCoreSdkPortableRuntimeIdentifier)</RuntimeIdentifier>
@@ -43,6 +44,7 @@
     <AdditionalFiles Include="Infrastructure\Interop\NativeMethods.txt" />
     <AdditionalFiles Include="Strings\**\*.resw" />
     <EmbeddedResource Include="Assets\MicaFlyouts.ico" LogicalName="MicaFlyouts.Assets.MicaFlyouts.ico" />
+    <Content Include="Assets\MicaFlyouts.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Assets\**\*" Exclude="Assets\MicaFlyouts.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Strings\**\*.resw" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

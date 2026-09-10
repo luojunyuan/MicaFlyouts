@@ -49,6 +49,7 @@ public sealed class VolumeFlyoutComponent : Component
                     Height = 420,
                     MinWidth = 320,
                     MinHeight = 240,
+                    Icon = AppBranding.WindowIcon,
                     StartPosition = WindowStartPosition.CenterOnCurrent,
                     CornerStyle = WindowCornerStyle.Rounded,
                     Backdrop = BackdropChoice.Of(BackdropKind.Mica),

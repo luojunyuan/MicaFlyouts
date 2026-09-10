@@ -1,4 +1,5 @@
 using MicaFlyouts.Domain.Settings;
+using MicaFlyouts.Infrastructure.Logging;
 using MicaFlyouts.Infrastructure.State;
 
 namespace MicaFlyouts.Infrastructure.Settings;
@@ -7,12 +8,14 @@ public sealed partial class SettingsStore : ISettingsStore, IDisposable
 {
     private readonly StateStore<SettingsSnapshot> _state;
     private readonly ISettingsRepository _repository;
+    private readonly AppLogger? _logger;
     private CancellationTokenSource? _saveCancellation;
     private int _disposed;
 
-    public SettingsStore(ISettingsRepository repository)
+    public SettingsStore(ISettingsRepository repository, AppLogger? logger = null)
     {
         _repository = repository;
+        _logger = logger;
         _state = new StateStore<SettingsSnapshot>(repository.Load());
     }
 
@@ -73,6 +76,7 @@ public sealed partial class SettingsStore : ISettingsStore, IDisposable
         }
         catch (OperationCanceledException)
         {
+            _logger?.Info("SettingsStore.SaveAfterDelayAsync stopped after OperationCanceledException.");
         }
         finally
         {

@@ -116,6 +116,7 @@ public sealed partial class AppServices : IDisposable
     public NotificationService Notifications { get; }
     public AppCommands Commands { get; }
     public WindowRegistry Windows => _windows;
+    internal AppLogger Logger => _logger;
 
     public void OpenMainWindow()
     {
@@ -128,6 +129,7 @@ public sealed partial class AppServices : IDisposable
                 Title = "Mica Flyouts",
                 Width = 310,
                 Height = 116,
+                Icon = AppBranding.WindowIcon,
                 Style = WindowStyle.None,
                 Level = WindowLevel.AlwaysOnTop,
                 ResizeMode = WindowResizeMode.NoResize,
@@ -306,6 +308,7 @@ public sealed partial class AppServices : IDisposable
                 Height = 700,
                 MinWidth = 750,
                 MinHeight = 300,
+                Icon = AppBranding.WindowIcon,
                 StartPosition = WindowStartPosition.CenterOnCurrent,
                 CornerStyle = WindowCornerStyle.Rounded,
                 Backdrop = BackdropChoice.Of(BackdropKind.Mica),
@@ -344,6 +347,7 @@ public sealed partial class AppServices : IDisposable
                 Title = "Volume",
                 Width = 240,
                 Height = 50,
+                Icon = AppBranding.WindowIcon,
                 Style = WindowStyle.None,
                 Level = WindowLevel.AlwaysOnTop,
                 ResizeMode = WindowResizeMode.NoResize,
@@ -364,6 +368,7 @@ public sealed partial class AppServices : IDisposable
                 Title = "Next Up",
                 Width = 310,
                 Height = 50,
+                Icon = AppBranding.WindowIcon,
                 Style = WindowStyle.None,
                 Level = WindowLevel.AlwaysOnTop,
                 ResizeMode = WindowResizeMode.NoResize,
@@ -383,6 +388,7 @@ public sealed partial class AppServices : IDisposable
                 Title = "Lock Keys",
                 Width = 160,
                 Height = 50,
+                Icon = AppBranding.WindowIcon,
                 Style = WindowStyle.None,
                 Level = WindowLevel.AlwaysOnTop,
                 ResizeMode = WindowResizeMode.NoResize,
@@ -404,6 +410,7 @@ public sealed partial class AppServices : IDisposable
                 Height = 600,
                 MinWidth = 870,
                 MinHeight = 500,
+                Icon = AppBranding.WindowIcon,
                 StartPosition = WindowStartPosition.CenterOnCurrent,
                 CornerStyle = WindowCornerStyle.Rounded,
                 Backdrop = BackdropChoice.Of(BackdropKind.Mica),
@@ -424,6 +431,7 @@ public sealed partial class AppServices : IDisposable
                     Title = "Mica Flyouts Taskbar Widget",
                     Width = 100,
                     Height = 40,
+                    Icon = AppBranding.WindowIcon,
                     Style = WindowStyle.None,
                     ResizeMode = WindowResizeMode.NoResize,
                     ShowInTaskbar = false,
@@ -451,6 +459,7 @@ public sealed partial class AppServices : IDisposable
                     Title = "Mica Flyouts Visualizer",
                     Width = 84,
                     Height = 40,
+                    Icon = AppBranding.WindowIcon,
                     Style = WindowStyle.None,
                     ResizeMode = WindowResizeMode.NoResize,
                     ShowInTaskbar = false,
@@ -485,7 +494,9 @@ public sealed partial class AppServices : IDisposable
     {
         // ReactorApp.Exit tears down the WinUI application synchronously.
         // Release the tray host while the XAML dispatcher is still alive.
-        Interlocked.Exchange(ref _tray, null)?.Dispose();
+        var tray = _tray;
+        _tray = null;
+        tray?.Dispose();
         ReactorApp.Exit();
     }
 

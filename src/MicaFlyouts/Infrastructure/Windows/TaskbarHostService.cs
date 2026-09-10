@@ -197,7 +197,10 @@ public sealed partial class TaskbarHostService : IDisposable
                     UiDispatcher.EnqueueOrRun(RefreshOnUiThread);
             }
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+            _logger.Info("TaskbarHostService.MonitorExplorerAsync stopped after OperationCanceledException.");
+        }
     }
 
     public void Dispose()

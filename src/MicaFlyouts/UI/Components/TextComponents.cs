@@ -1,3 +1,4 @@
+using MicaFlyouts.App;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -54,7 +55,10 @@ public sealed class CoverImage : Component<CoverImageProps>
             cancellationToken.ThrowIfCancellationRequested();
             setBitmap(image);
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+            AppRuntime.Current?.Logger.Info("CoverImage.LoadAsync stopped after OperationCanceledException.");
+        }
         catch { setBitmap(null); }
     }
 }

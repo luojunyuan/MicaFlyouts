@@ -15,7 +15,7 @@ public static class Bootstrap
     public static AppServices Create(SingleInstanceService singleInstance)
     {
         var logger = new AppLogger();
-        var settings = new SettingsStore(new JsonSettingsRepository());
+        var settings = new SettingsStore(new JsonSettingsRepository(), logger);
         var mediaStore = new MediaStore();
         var volumeStore = new VolumeStore();
         var lockKeyStore = new LockKeyStore();

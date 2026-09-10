@@ -113,7 +113,10 @@ public sealed partial class AudioService : IDisposable
             while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
                 Refresh();
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+            _logger.Info("AudioService.PollAsync stopped after OperationCanceledException.");
+        }
     }
 
     private async Task RefreshAsync()
