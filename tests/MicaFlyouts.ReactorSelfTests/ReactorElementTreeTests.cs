@@ -70,6 +70,7 @@ public sealed class ReactorElementTreeTests
         Assert.Null(typeof(HNotifyIconSpec).GetProperty("OnLeftClick"));
         Assert.True(typeof(IDisposable).IsAssignableFrom(typeof(HNotifyIconTray)));
         Assert.False(typeof(IDisposable).IsAssignableFrom(typeof(HNotifyIcon)));
+        Assert.NotNull(typeof(HNotifyIconTray).GetMethod(nameof(HNotifyIconTray.Dispose)));
     }
 
     [Fact]

@@ -25,7 +25,7 @@
     <InvariantGlobalization>false</InvariantGlobalization>
     <LangVersion>preview</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <!--  CS1591 "Missing XML comment"  -->
+    <!--  CS1591 Generate documents "Missing XML comment"  -->
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <!--<WarningsAsErrors>$(WarningsAsErrors);CsWinRT1028;CsWinRT1030</WarningsAsErrors>-->
   </PropertyGroup>

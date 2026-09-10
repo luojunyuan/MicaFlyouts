@@ -466,7 +466,15 @@ public sealed class AppServices : IDisposable
         }
     }
 
-    private void Exit() => ReactorApp.Exit();
+    private void Exit()
+    {
+        // ReactorApp.Exit tears down the WinUI application synchronously.
+        // Release the windowless tray host while the XAML dispatcher is alive.
+        var tray = _tray;
+        _tray = null;
+        tray?.Dispose();
+        ReactorApp.Exit();
+    }
 
     public void Dispose()
     {
@@ -481,7 +489,6 @@ public sealed class AppServices : IDisposable
         Media.Dispose();
         Updater.Dispose();
         Notifications.Dispose();
-        _tray?.Dispose();
         _windows.Dispose();
         Settings.Dispose();
         MediaStore.Dispose();

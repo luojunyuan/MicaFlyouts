@@ -67,6 +67,7 @@ public sealed partial class HNotifyIconTray : IDisposable
 {
     private readonly ReactorHostControl _host;
     private readonly HNotifyIcon _iconSource;
+    private int _disposed;
 
     /// <summary>Fires when the user left-clicks the tray icon.</summary>
     public event EventHandler? LeftClick;
@@ -189,8 +190,13 @@ public sealed partial class HNotifyIconTray : IDisposable
     private void RaiseLeftClick() =>
         LeftClick?.Invoke(this, EventArgs.Empty);
 
-    public void Dispose() =>
+    public void Dispose()
+    {
+        if (Interlocked.Exchange(ref _disposed, 1) != 0)
+            return;
+
         _host.Dispose();
+    }
 }
 
 file sealed class HNotifyIconRoot(
