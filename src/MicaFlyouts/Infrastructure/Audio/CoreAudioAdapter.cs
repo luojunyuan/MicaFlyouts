@@ -74,7 +74,7 @@ internal static class CoreAudioNative
     }
 }
 
-internal sealed class CoreAudioDeviceEnumerator : IDisposable
+internal sealed partial class CoreAudioDeviceEnumerator : IDisposable
 {
     private const int DataFlowRender = 0;
     private const int RoleMultimedia = 1;
@@ -139,7 +139,7 @@ internal sealed class CoreAudioDeviceEnumerator : IDisposable
     }
 }
 
-internal sealed class CoreAudioDevice : IDisposable
+internal sealed partial class CoreAudioDevice : IDisposable
 {
     private const int ClsCtxAll = 23;
     private static readonly Guid EndpointVolumeId = new("5CDF2C82-841E-4546-9722-0CF74078229A");
@@ -345,7 +345,7 @@ internal sealed class CoreAudioDevice : IDisposable
     }
 }
 
-internal sealed class CoreAudioSession : IDisposable
+internal sealed partial class CoreAudioSession : IDisposable
 {
     private readonly ICoreAudioSessionControl? _control;
     private readonly ICoreAudioSessionControl2? _control2;

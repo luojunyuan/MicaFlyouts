@@ -13,7 +13,7 @@ namespace MicaFlyouts.Infrastructure.Media;
 
 using DomainMediaStatus = MicaFlyouts.Domain.Media.MediaPlaybackStatus;
 
-public sealed class MediaSessionService : IDisposable
+public sealed partial class MediaSessionService : IDisposable
 {
     private readonly ISettingsStore _settings;
     private readonly MediaStore _store;

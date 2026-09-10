@@ -2,7 +2,7 @@ using MicaFlyouts.Domain;
 
 namespace MicaFlyouts.Infrastructure.State;
 
-public sealed class StateStore<TSnapshot> : IStateStore<TSnapshot>, IDisposable
+public sealed partial class StateStore<TSnapshot> : IStateStore<TSnapshot>, IDisposable
 {
     private object _snapshot;
     private Action[] _listeners = Array.Empty<Action>();

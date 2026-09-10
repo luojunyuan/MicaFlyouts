@@ -13,7 +13,7 @@ public interface IAudioLoopbackCapture : IDisposable
 /// NAudio is deliberately kept behind this adapter so no NAudio type crosses the
 /// infrastructure boundary used by features and Reactor components.
 /// </summary>
-public sealed class WasapiLoopbackCaptureAdapter : IAudioLoopbackCapture
+public sealed partial class WasapiLoopbackCaptureAdapter : IAudioLoopbackCapture
 {
     private readonly WasapiLoopbackCapture _capture;
     private int _disposed;

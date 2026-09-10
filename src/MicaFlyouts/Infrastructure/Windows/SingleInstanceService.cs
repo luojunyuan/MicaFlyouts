@@ -4,7 +4,7 @@ using Microsoft.UI.Reactor;
 
 namespace MicaFlyouts.Infrastructure.Windows;
 
-public sealed class SingleInstanceService : IDisposable
+public sealed partial class SingleInstanceService : IDisposable
 {
     private const string MutexName = "MicaFlyouts";
     private const string SettingsEventName = "MicaFlyouts_OpenSettings";

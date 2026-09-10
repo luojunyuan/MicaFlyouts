@@ -3,7 +3,7 @@ using MicaFlyouts.Infrastructure.State;
 
 namespace MicaFlyouts.Infrastructure.Settings;
 
-public sealed class SettingsStore : ISettingsStore, IDisposable
+public sealed partial class SettingsStore : ISettingsStore, IDisposable
 {
     private readonly StateStore<SettingsSnapshot> _state;
     private readonly ISettingsRepository _repository;

@@ -25,7 +25,7 @@ using DrawingIcon = System.Drawing.Icon;
 
 namespace MicaFlyouts.App;
 
-public sealed class AppServices : IDisposable
+public sealed partial class AppServices : IDisposable
 {
     private const string TrayIconResourceName = "MicaFlyouts.Assets.MicaFlyouts.ico";
     private readonly SingleInstanceService _singleInstance;

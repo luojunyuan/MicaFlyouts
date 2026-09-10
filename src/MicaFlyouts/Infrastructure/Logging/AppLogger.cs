@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace MicaFlyouts.Infrastructure.Logging;
 
-public sealed class AppLogger : IDisposable
+public sealed partial class AppLogger : IDisposable
 {
     private readonly object _gate = new();
     private readonly string _logFile;

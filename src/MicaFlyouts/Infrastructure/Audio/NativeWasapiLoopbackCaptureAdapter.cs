@@ -6,7 +6,7 @@ namespace MicaFlyouts.Infrastructure.Audio;
 /// <summary>
 /// WASAPI loopback capture implemented through the source-generated Core Audio projection.
 /// </summary>
-internal sealed unsafe class NativeWasapiLoopbackCaptureAdapter : IAudioLoopbackCapture
+internal sealed unsafe partial class NativeWasapiLoopbackCaptureAdapter : IAudioLoopbackCapture
 {
     private const int SharedAudioStream = 0;
     private const uint StreamLoopback = 0x00020000;

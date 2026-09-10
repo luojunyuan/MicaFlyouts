@@ -7,7 +7,7 @@ using Win32Messaging = Windows.Win32.UI.WindowsAndMessaging;
 
 namespace MicaFlyouts.Infrastructure.Windows;
 
-public sealed unsafe class KeyboardHookService : IDisposable
+public sealed unsafe partial class KeyboardHookService : IDisposable
 {
     public const int CapsLock = 0x14;
     public const int NumLock = 0x90;

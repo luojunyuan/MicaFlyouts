@@ -6,7 +6,7 @@ using MicaFlyouts.Infrastructure.State;
 
 namespace MicaFlyouts.Infrastructure.Audio;
 
-public sealed class AudioService : IDisposable
+public sealed partial class AudioService : IDisposable
 {
     private readonly ISettingsStore _settings;
     private readonly VolumeStore _store;

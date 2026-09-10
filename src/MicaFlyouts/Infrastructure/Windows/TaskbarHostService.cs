@@ -11,7 +11,7 @@ using WinRT.Interop;
 
 namespace MicaFlyouts.Infrastructure.Windows;
 
-public sealed class TaskbarHostService : IDisposable
+public sealed partial class TaskbarHostService : IDisposable
 {
     private readonly ISettingsStore _settings;
     private readonly MediaStore _media;

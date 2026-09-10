@@ -10,7 +10,7 @@ using MicaFlyouts.Domain.Volume;
 
 namespace MicaFlyouts.Infrastructure.State;
 
-public abstract class SnapshotStore<TSnapshot> : IStateStore<TSnapshot>, IDisposable
+public abstract partial class SnapshotStore<TSnapshot> : IStateStore<TSnapshot>, IDisposable
 {
     private readonly StateStore<TSnapshot> _state;
 
@@ -34,37 +34,37 @@ public abstract class SnapshotStore<TSnapshot> : IStateStore<TSnapshot>, IDispos
     }
 }
 
-public sealed class MediaStore : SnapshotStore<MediaSnapshot>
+public sealed partial class MediaStore : SnapshotStore<MediaSnapshot>
 {
     public MediaStore() : base(MediaSnapshot.Empty) { }
 }
 
-public sealed class VolumeStore : SnapshotStore<VolumeSnapshot>
+public sealed partial class VolumeStore : SnapshotStore<VolumeSnapshot>
 {
     public VolumeStore() : base(VolumeSnapshot.Empty) { }
 }
 
-public sealed class LockKeyStore : SnapshotStore<LockKeySnapshot>
+public sealed partial class LockKeyStore : SnapshotStore<LockKeySnapshot>
 {
     public LockKeyStore() : base(new LockKeySnapshot(false, false, false, false)) { }
 }
 
-public sealed class TaskbarStore : SnapshotStore<TaskbarSnapshot>
+public sealed partial class TaskbarStore : SnapshotStore<TaskbarSnapshot>
 {
     public TaskbarStore() : base(new TaskbarSnapshot(null, TaskbarOrientation.Horizontal, PixelRect.Empty, false, false, "-", "-", false, false)) { }
 }
 
-public sealed class VisualizerStore : SnapshotStore<VisualizerSnapshot>
+public sealed partial class VisualizerStore : SnapshotStore<VisualizerSnapshot>
 {
     public VisualizerStore() : base(VisualizerSnapshot.Empty) { }
 }
 
-public sealed class OnboardingStore : SnapshotStore<OnboardingSnapshot>
+public sealed partial class OnboardingStore : SnapshotStore<OnboardingSnapshot>
 {
     public OnboardingStore() : base(OnboardingSnapshot.Initial) { }
 }
 
-public sealed class LocalizationStore : SnapshotStore<LocalizationSnapshot>
+public sealed partial class LocalizationStore : SnapshotStore<LocalizationSnapshot>
 {
     public LocalizationStore(string language, int resourceVersion = 1)
         : base(new LocalizationSnapshot(
@@ -76,7 +76,7 @@ public sealed class LocalizationStore : SnapshotStore<LocalizationSnapshot>
     }
 }
 
-public sealed class UpdateStore : SnapshotStore<UpdateSnapshot>
+public sealed partial class UpdateStore : SnapshotStore<UpdateSnapshot>
 {
     public UpdateStore() : base(UpdateSnapshot.Empty) { }
 }

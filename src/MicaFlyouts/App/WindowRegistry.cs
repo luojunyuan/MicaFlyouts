@@ -3,7 +3,7 @@ using Microsoft.UI.Reactor.Core;
 
 namespace MicaFlyouts.App;
 
-public sealed class WindowRegistry : IDisposable
+public sealed partial class WindowRegistry : IDisposable
 {
     private readonly Dictionary<WindowKey, ReactorWindow> _windows = [];
     private int _disposed;

@@ -6,7 +6,7 @@ using MicaFlyouts.Infrastructure.State;
 
 namespace MicaFlyouts.Infrastructure.Updates;
 
-public sealed class UpdateCheckerService : IDisposable
+public sealed partial class UpdateCheckerService : IDisposable
 {
     private const string ReleaseEndpoint = "https://api.github.com/repos/unchihugo/FluentFlyout/releases/latest";
     private readonly UpdateStore _store;
