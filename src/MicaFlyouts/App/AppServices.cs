@@ -10,7 +10,6 @@ using MicaFlyouts.Infrastructure.Settings;
 using MicaFlyouts.Infrastructure.State;
 using MicaFlyouts.Infrastructure.Updates;
 using MicaFlyouts.Infrastructure.Windows;
-using MicaFlyouts.UI.Components;
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
 using MicaFlyouts.UI.Animation;
@@ -22,11 +21,13 @@ using MicaFlyouts.Features.Onboarding;
 using MicaFlyouts.Features.Settings;
 using MicaFlyouts.Features.Taskbar;
 using MicaFlyouts.Features.Volume;
+using DrawingIcon = System.Drawing.Icon;
 
 namespace MicaFlyouts.App;
 
 public sealed class AppServices : IDisposable
 {
+    private const string TrayIconResourceName = "MicaFlyouts.Assets.MicaFlyouts.ico";
     private readonly SingleInstanceService _singleInstance;
     private readonly UiDispatcher _dispatcher;
     private readonly AppLogger _logger;
@@ -34,11 +35,9 @@ public sealed class AppServices : IDisposable
     private readonly KeyboardHookService _keyboard;
     private Action? _mediaUnsubscribe;
     private Action? _settingsUnsubscribe;
-    private ReactorTrayIcon? _tray;
+    private HNotifyIconTray? _tray;
     private ReactorWindow? _mainWindow;
     private string _lastTrack = string.Empty;
-    private readonly TrayNotificationGate _trayClickGate = new();
-    private readonly TrayNotificationGate _trayRightClickGate = new();
     private int _started;
     private int _disposed;
 
@@ -172,19 +171,19 @@ public sealed class AppServices : IDisposable
         {
             try
             {
-                var trayIconPath = Path.Combine(
-                    AppContext.BaseDirectory,
-                    "Assets",
-                    "MicaFlyouts.ico");
-                if (!File.Exists(trayIconPath))
-                    _logger.Warn($"Tray icon file was not found: {trayIconPath}");
-
-                _tray = ReactorApp.OpenTrayIcon(new TrayIconSpec(
-                    WindowIcon.FromPath(trayIconPath),
+                using var trayIconStream = typeof(AppServices).Assembly
+                    .GetManifestResourceStream(TrayIconResourceName)
+                    ?? throw new InvalidOperationException(
+                        $"Embedded tray icon resource was not found: {TrayIconResourceName}");
+                using var trayIcon = new DrawingIcon(trayIconStream);
+                _tray = HNotifyIconApp.OpenTrayIcon(new HNotifyIconSpec(
+                    HNotifyIcon.FromDrawingIcon(trayIcon),
                     "Mica Flyouts",
-                    new WindowKey("tray")));
-                _tray.Click += Tray_Click;
-                _tray.RightClick += Tray_RightClick;
+                    MenuItem("Settings", OpenSettings, icon: "Setting"),
+                    MenuItem("Repository", () => OpenUrl("https://github.com/unchihugo/FluentFlyout"), icon: "Document"),
+                    MenuItem("View logs", () => OpenUrl($"file:///{_logger.LogDirectory.Replace('\\', '/') }"), icon: "Folder"),
+                    MenuItem("Quit", Exit, icon: "Close")));
+                _tray.LeftClick += Tray_Click;
             }
             catch (Exception exception)
             {
@@ -203,29 +202,10 @@ public sealed class AppServices : IDisposable
 
     private void Tray_Click(object? sender, EventArgs args)
     {
-        // Shell can deliver multiple notification aliases for one gesture;
-        // keep the user command idempotent at the application boundary.
-        if (!_trayClickGate.TryAccept())
-            return;
-
         if (Settings.Snapshot.NIconLeftClick == 1)
             ShowMediaFlyout();
         else
             OpenSettings();
-    }
-
-    private void Tray_RightClick(object? sender, EventArgs args)
-    {
-        if (!_trayRightClickGate.TryAccept())
-            return;
-
-        if (_tray is null)
-            return;
-        _tray.ShowFlyout(Component<TrayMenu, TrayMenuProps>(new(
-            OpenSettings,
-            () => OpenUrl("https://github.com/unchihugo/FluentFlyout"),
-            () => OpenUrl($"file:///{_logger.LogDirectory.Replace('\\', '/') }"),
-            Exit)));
     }
 
     private static void OpenUrl(string url)

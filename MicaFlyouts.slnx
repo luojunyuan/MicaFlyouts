@@ -10,7 +10,9 @@
     </Project>
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/MicaFlyouts.Tests/MicaFlyouts.Tests.csproj" />
+    <Project Path="tests/MicaFlyouts.Tests/MicaFlyouts.Tests.csproj">
+      <Platform Solution="Debug|ARM64" Project="ARM64" />
+    </Project>
     <Project Path="tests/MicaFlyouts.ReactorSelfTests/MicaFlyouts.ReactorSelfTests.csproj">
       <Platform Solution="*|ARM64" Project="ARM64" />
       <Platform Solution="*|x64" Project="x64" />

@@ -1,7 +1,7 @@
+using MicaFlyouts.App;
 using MicaFlyouts.Features.LockKeys;
 using MicaFlyouts.Features.Media;
 using MicaFlyouts.Features.Settings;
-using MicaFlyouts.UI.Components;
 using MicaFlyouts.UI.Toolkit;
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
@@ -63,15 +63,24 @@ public sealed class ReactorElementTreeTests
     }
 
     [Fact]
-    public void TrayMenu_UsesAMountableRoot()
+    public void HNotifyIconTray_UsesAppNamespaceAndRaisesLeftClickEvent()
     {
-        var menu = Component<TrayMenu, TrayMenuProps>(new(
-            static () => { },
-            static () => { },
-            static () => { },
-            static () => { }));
+        Assert.Equal("MicaFlyouts.App", typeof(HNotifyIconTray).Namespace);
+        Assert.NotNull(typeof(HNotifyIconTray).GetEvent(nameof(HNotifyIconTray.LeftClick)));
+        Assert.Null(typeof(HNotifyIconSpec).GetProperty("OnLeftClick"));
+        Assert.True(typeof(IDisposable).IsAssignableFrom(typeof(HNotifyIconTray)));
+        Assert.False(typeof(IDisposable).IsAssignableFrom(typeof(HNotifyIcon)));
+    }
 
-        Assert.IsAssignableFrom<ComponentElement>(menu);
-        Assert.IsNotType<MenuFlyoutContentElement>(menu);
+    [Fact]
+    public void TrayIcon_IsLoadedFromAnEmbeddedResource()
+    {
+        const string resourceName = "MicaFlyouts.Assets.MicaFlyouts.ico";
+        var assembly = typeof(AppServices).Assembly;
+
+        Assert.Contains(resourceName, assembly.GetManifestResourceNames());
+        using var stream = assembly.GetManifestResourceStream(resourceName);
+        Assert.NotNull(stream);
+        Assert.True(stream.Length > 0);
     }
 }

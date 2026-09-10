@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0-windows10.0.22621.0</TargetFramework>
@@ -25,11 +25,14 @@
     <InvariantGlobalization>false</InvariantGlobalization>
     <LangVersion>preview</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!--  CS1591 "Missing XML comment"  -->
     <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <!--<WarningsAsErrors>$(WarningsAsErrors);CsWinRT1028;CsWinRT1030</WarningsAsErrors>-->
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.UI.Reactor" />
+    <PackageReference Include="H.NotifyIcon.WinUI" />
     <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
     <PackageReference Include="Microsoft.Windows.CsWin32" />
@@ -39,7 +42,8 @@
   <ItemGroup>
     <AdditionalFiles Include="Infrastructure\Interop\NativeMethods.txt" />
     <AdditionalFiles Include="Strings\**\*.resw" />
-    <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <EmbeddedResource Include="Assets\MicaFlyouts.ico" LogicalName="MicaFlyouts.Assets.MicaFlyouts.ico" />
+    <Content Include="Assets\**\*" Exclude="Assets\MicaFlyouts.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Strings\**\*.resw" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
