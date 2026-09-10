@@ -16,7 +16,6 @@ internal static partial class TaskbarAutomationService
 {
     private const int TreeScopeDescendants = 4;
     private const int AutomationIdPropertyId = 30011;
-    private const int BoundingRectanglePropertyId = 30001;
     private static readonly Guid CUiAutomationClassId = new("ff48dba4-60ef-4201-aa87-54103eef594e");
 
     public static bool TryGetRect(nint taskbar, string automationId, out PixelRect rect)
@@ -37,15 +36,13 @@ internal static partial class TaskbarAutomationService
                 return false;
             if (root.FindFirst(TreeScopeDescendants, condition, out var element) < 0 || element is null)
                 return false;
-            if (element.GetCurrentPropertyValue(BoundingRectanglePropertyId, out var value) < 0
-                || value is not Array bounds
-                || bounds.Length < 4)
+            if (element.GetCurrentBoundingRectangle(out var bounds) < 0)
                 return false;
-            int left = Convert.ToInt32(bounds.GetValue(0), System.Globalization.CultureInfo.InvariantCulture);
-            int top = Convert.ToInt32(bounds.GetValue(1), System.Globalization.CultureInfo.InvariantCulture);
-            int right = Convert.ToInt32(bounds.GetValue(2), System.Globalization.CultureInfo.InvariantCulture);
-            int bottom = Convert.ToInt32(bounds.GetValue(3), System.Globalization.CultureInfo.InvariantCulture);
-            rect = new PixelRect(left, top, right - left, bottom - top);
+            rect = new PixelRect(
+                bounds.Left,
+                bounds.Top,
+                bounds.Right - bounds.Left,
+                bounds.Bottom - bounds.Top);
             return !rect.IsEmpty;
         }
         catch

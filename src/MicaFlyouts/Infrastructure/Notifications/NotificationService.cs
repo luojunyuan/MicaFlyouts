@@ -43,6 +43,7 @@ public sealed partial class NotificationService : IDisposable
                 if (onActivated is not null)
                     onActivated(args.Argument);
             };
+            // 这个问题只因为我们是 WASDKSelfContained 并在将来版本已经被解决了，这个异常可忽视 https://github.com/microsoft/WindowsAppSDK/issues/6071
             manager.Register();
             _registered = true;
         }

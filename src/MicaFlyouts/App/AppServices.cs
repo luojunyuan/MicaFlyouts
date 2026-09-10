@@ -180,8 +180,10 @@ public sealed partial class AppServices : IDisposable
                     HNotifyIcon.FromDrawingIcon(trayIcon),
                     "Mica Flyouts",
                     MenuItem("Settings", OpenSettings, icon: "Setting"),
+                    MenuSeparator(),
                     MenuItem("Repository", () => OpenUrl("https://github.com/unchihugo/FluentFlyout"), icon: "Document"),
                     MenuItem("View logs", () => OpenUrl($"file:///{_logger.LogDirectory.Replace('\\', '/') }"), icon: "Folder"),
+                    MenuSeparator(),
                     MenuItem("Quit", Exit, icon: "Close")));
                 _tray.LeftClick += Tray_Click;
             }
@@ -306,6 +308,7 @@ public sealed partial class AppServices : IDisposable
                 StartPosition = WindowStartPosition.CenterOnCurrent,
                 CornerStyle = WindowCornerStyle.Rounded,
                 Backdrop = BackdropChoice.Of(BackdropKind.Mica),
+                ExtendsContentIntoTitleBar = true,
             },
             static () => new SettingsWindowComponent());
         _logger.Info("Settings window request completed.");
