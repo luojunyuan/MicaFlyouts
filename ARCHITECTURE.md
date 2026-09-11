@@ -18,7 +18,7 @@ Microsoft UI Reactor。原项目位于 `C:\Users\kimika\source\repos\FluentFlyou
 | Reactor | `Microsoft.UI.Reactor 0.1.0-preview.14` |
 | Windows App SDK | 只允许 `Microsoft.WindowsAppSDK.WinUI`；当前中央版本为 `2.3.6`，必须保持单一版本并验证与 Reactor preview.14 的兼容性 |
 | 设置控件 | `CommunityToolkit.WinUI.Controls.SettingsControls 8.3.260402-preview2`；社区控件必须使用 preview 包，不得混用稳定旧包 |
-| 托盘 | 项目引用 `Kumo.H.NotifyIcon.Reactor.csproj`，由 `Features/Tray/TrayIconFeature` 持有独立宿主，并由 `TrayIconComponent` 使用 `HNotifyComponent.UseTrayIcon` |
+| 托盘 | 项目引用 `Kumo.H.NotifyIcon.Reactor.csproj`；`Features/Tray/TrayIconFeature` 持有隐藏宿主窗口，`TrayIconComponent` 通过 `HNotifyComponent.UseTrayIcon` 管理托盘句柄 |
 | 音频 | `NAudio 2.3.0`，只允许出现在 `Infrastructure/Audio` |
 | Win32 | `Microsoft.Windows.CsWin32 0.3.298`，所有 Win32 P/Invoke 由生成代码提供 |
 | 打包 | `WindowsPackageType=None`，`WindowsAppSDKSelfContained=true`，不生成 MSIX，不依赖 Store |
@@ -151,19 +151,25 @@ Domain  <-  Infrastructure  <-  App
 `AppRuntime.Current` 仅用于异步收尾等允许服务不存在的场景。所有 hooks 必须在
 业务空状态的提前返回之前调用，不能通过运行时判空跳过 hooks。
 
-托盘完全属于 `Features/Tray`。`TrayIconFeature` 创建和销毁独立的
-`ReactorHostControl`；它不属于任何应用窗口。`TrayIconComponent` 继承依赖库的
+托盘完全属于 `Features/Tray`。`TrayIconFeature` 持有一个从不显示的宿主窗口
+（`WindowSpec.ActivateOnOpen = false`），`TrayIconComponent` 作为其根组件继承依赖库的
 `HNotifyComponent`，通过 `UseTrayIcon` 建立托盘句柄，并用 `UseExternalStore`
-响应设置和本地化变化。`NIconSymbol` 选择彩色或黑白图标，黑白图标跟随 Windows
-任务栏主题；主题变化重建独立 host，设置中的隐藏选项则卸载组件。菜单通过
-`TrayMenu` 读取现有 `TrayIcon_*Option` 资源，由 `HNotifyMenu` 转换为 H.NotifyIcon
-菜单并保留 RTL、字体和图标。资源出处、图标映射及许可证见
-`Assets/TrayIcons/README.md`。`AppServices` 只持有 `TrayIconFeature` 并转发生命周期，
-退出前由 Feature 解除主题/设置订阅并释放托盘 host。
+响应设置和本地化变化；它不属于任何应用窗口，也不需要 `ReactorHostControl`。
+`NIconSymbol` 选择彩色或黑白图标，黑白图标在打开句柄时读取注册表
+`SystemUsesLightTheme` 跟随任务栏主题；设置中的隐藏选项关闭宿主窗口，取消隐藏后重建。
+菜单通过 `TrayMenu` 读取现有 `TrayIcon_*Option` 资源，由 `HNotifyMenu` 转换为
+H.NotifyIcon 原生菜单（`ContextMenuMode = PopupMenu`，与依赖库 sample 相同）；
+原生菜单绘制在 Shell 的 XAML 弹窗之上，避免托盘 tooltip 盖住菜单底部项吞掉点击
+（`SecondWindow` 模式会出现这个问题），代价是菜单不渲染条目图标、不套用自定义字体和流向。
+资源出处、图标映射及许可证见 `Assets/TrayIcons/README.md`。`AppServices` 只持有
+`TrayIconFeature` 并转发生命周期。
 
 关闭顺序必须与启动相反：停止键盘 hook、任务栏、Visualizer、音频和媒体监听，
-注销更新/通知，释放托盘宿主，关闭 `WindowRegistry` 中所有窗口，最后释放 stores、
-单实例和日志。所有关闭路径必须幂等。
+注销更新/通知，关闭托盘宿主窗口，关闭 `WindowRegistry` 中所有窗口，最后释放 stores、
+单实例和日志。所有关闭路径必须幂等。退出命令由 H.NotifyIcon 的菜单事件触发
+（`PopupMenu` 原生菜单），必须先释放托盘宿主窗口——它会同时关闭仍在栈上的原生
+菜单——再直接调用 `ReactorApp.Exit()`；如果不先释放托盘，设置等窗口打开时
+`Exit()` 不会生效。`Run` 返回后由 `AppRuntime.Start` 的 finally 统一执行 `Dispose`。
 
 ### `WindowRegistry`
 
@@ -369,7 +375,7 @@ Insert、媒体键和音量键。hook callback 是静态
 | `TaskbarVisualizerComponent` | 固定 84×40 surface、bar、baseline 和 accent |
 | `SettingsWindowComponent` | NavigationView、搜索、深链接和页面分发 |
 | `OnboardingComponent` | Media/Volume/Lock Keys 三步引导和设置回写 |
-| `TrayIconFeature` / `TrayIconComponent` | 独立托盘宿主、图标、上下文菜单、本地化和点击命令 |
+| `TrayIconFeature` / `TrayIconComponent` | 隐藏宿主窗口、托盘图标、原生上下文菜单、本地化和点击命令 |
 
 设置页当前集中在 `SettingsWindowComponent` 中，以显式 `SettingsPage` 枚举、静态
 `SettingsSearchIndex` 和页面函数维护。若文件继续增长，可以按页面拆成同一目录的

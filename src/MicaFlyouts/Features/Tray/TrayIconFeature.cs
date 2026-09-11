@@ -1,23 +1,24 @@
-using Microsoft.Win32;
 using MicaFlyouts.App;
 using MicaFlyouts.Infrastructure.Logging;
 using MicaFlyouts.Infrastructure.Settings;
-using Microsoft.UI.Reactor.Core;
-using Microsoft.UI.Reactor.Hosting;
-using Windows.UI.ViewManagement;
+using Microsoft.UI.Reactor;
 
 namespace MicaFlyouts.Features.Tray;
 
 /// <summary>
-/// Owns the tray surface and its non-window lifetime.
+/// Owns the tray unit: a hidden host window whose <see cref="TrayIconComponent"/>
+/// keeps the tray icon alive through <c>UseTrayIcon</c>. The window is never
+/// shown (<c>ActivateOnOpen = false</c>) and is independent from every
+/// application window.
 /// </summary>
 public sealed partial class TrayIconFeature : IDisposable
 {
+    private static readonly WindowKey TrayHostKey = WindowKey.Of("tray-host");
+
     private readonly SettingsStore _settings;
     private readonly AppLogger _logger;
     private Action? _settingsUnsubscribe;
-    private UISettings? _uiSettings;
-    private TrayIconHost? _host;
+    private ReactorWindow? _hostWindow;
     private int _started;
     private int _disposed;
 
@@ -34,65 +35,70 @@ public sealed partial class TrayIconFeature : IDisposable
             return;
 
         _settingsUnsubscribe = _settings.Subscribe(OnSettingsChanged);
-        try
-        {
-            _uiSettings = new UISettings();
-            _uiSettings.ColorValuesChanged += OnTrayColorsChanged;
-        }
-        catch (Exception exception)
-        {
-            _logger.Warn($"Tray theme watcher unavailable: {exception.Message}");
-        }
-
         Synchronize();
     }
 
-    private void OnSettingsChanged() =>
-        UiDispatcher.EnqueueOrRun(Synchronize);
-
-    private void OnTrayColorsChanged(UISettings sender, object args) =>
-        UiDispatcher.TryEnqueue(() =>
-        {
-            CloseHost();
-            Synchronize();
-        });
+    private void OnSettingsChanged() => UiDispatcher.EnqueueOrRun(Synchronize);
 
     private void Synchronize()
     {
         if (Volatile.Read(ref _disposed) != 0 || Volatile.Read(ref _started) == 0)
             return;
         if (_settings.Snapshot.NIconHide)
-        {
-            CloseHost();
+            CloseHostWindow();
+        else
+            OpenHostWindow();
+    }
+
+    private void OpenHostWindow()
+    {
+        if (_hostWindow is not null)
             return;
-        }
 
         try
         {
-            if (_host is null)
-                _host = TrayIconHost.Create(SystemUsesLightTheme);
+            var window = ReactorApp.OpenWindow(
+                new WindowSpec
+                {
+                    Title = "Mica Flyouts Tray Host",
+                    Key = TrayHostKey,
+                    Width = 100,
+                    Height = 40,
+                    ResizeMode = WindowResizeMode.NoResize,
+                    ShowInTaskbar = false,
+                    ShowInSwitcher = false,
+                    NoActivate = true,
+                    ActivateOnOpen = false,
+                },
+                static () => new TrayIconComponent());
+            window.Closed += OnHostWindowClosed;
+            _hostWindow = window;
         }
         catch (Exception exception)
         {
             _logger.Warn($"Tray icon unavailable: {exception.Message}");
-            CloseHost();
+            CloseHostWindow();
         }
     }
 
-    private bool SystemUsesLightTheme()
-    {
-        using var personalize = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
-        if (personalize?.GetValue("SystemUsesLightTheme") is int lightTheme)
-            return lightTheme != 0;
-        var foreground = _uiSettings?.GetColorValue(UIColorType.Foreground);
-        return foreground is { } color && color.R + color.G + color.B < 384;
-    }
+    private void OnHostWindowClosed(object? sender, EventArgs e) => _hostWindow = null;
 
-    private void CloseHost()
+    private void CloseHostWindow()
     {
-        var host = _host;
-        _host = null;
-        host?.Dispose();
+        var window = _hostWindow;
+        _hostWindow = null;
+        if (window is null)
+            return;
+
+        window.Closed -= OnHostWindowClosed;
+        try
+        {
+            window.Close();
+        }
+        catch (Exception exception)
+        {
+            _logger.Warn($"Tray icon release failed: {exception.Message}");
+        }
     }
 
     public void Dispose()
@@ -102,45 +108,6 @@ public sealed partial class TrayIconFeature : IDisposable
 
         _settingsUnsubscribe?.Invoke();
         _settingsUnsubscribe = null;
-        if (_uiSettings is not null)
-        {
-            _uiSettings.ColorValuesChanged -= OnTrayColorsChanged;
-            _uiSettings = null;
-        }
-        CloseHost();
-    }
-}
-
-internal sealed partial class TrayIconHost : IDisposable
-{
-    private readonly ReactorHostControl _host = new();
-    private int _disposed;
-
-    private TrayIconHost()
-    {
-    }
-
-    public static TrayIconHost Create(Func<bool> systemUsesLightTheme)
-    {
-        ArgumentNullException.ThrowIfNull(systemUsesLightTheme);
-
-        var host = new TrayIconHost();
-        try
-        {
-            host._host.Mount(new TrayIconComponent(systemUsesLightTheme));
-            return host;
-        }
-        catch
-        {
-            host.Dispose();
-            throw;
-        }
-    }
-
-    public void Dispose()
-    {
-        if (Interlocked.Exchange(ref _disposed, 1) != 0)
-            return;
-        _host.Dispose();
+        CloseHostWindow();
     }
 }

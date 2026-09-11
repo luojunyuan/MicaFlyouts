@@ -78,7 +78,7 @@ public sealed class ReactorElementTreeTests
             new SettingsPageComponent(),
             new TaskbarWidgetComponent(),
             new TaskbarVisualizerComponent(),
-            new TrayIconComponent(() => false),
+            new TrayIconComponent(),
             new VolumeFlyoutComponent(),
             new VolumeMixerComponent(),
         ];
@@ -91,19 +91,25 @@ public sealed class ReactorElementTreeTests
     }
 
     [Fact]
-    public void TrayIcon_UsesIndependentKumoComponentHost()
+    public void TrayIcon_IsMountedInAHiddenHostWindowByTheFeature()
     {
         var assembly = typeof(AppServices).Assembly;
         var featureType = assembly.GetType("MicaFlyouts.Features.Tray.TrayIconFeature");
         var componentType = assembly.GetType("MicaFlyouts.Features.Tray.TrayIconComponent");
-        var hostType = assembly.GetType("MicaFlyouts.Features.Tray.TrayIconHost");
 
         Assert.NotNull(featureType);
         Assert.NotNull(componentType);
-        Assert.NotNull(hostType);
         Assert.True(typeof(IDisposable).IsAssignableFrom(featureType));
         Assert.True(typeof(HNotifyComponent).IsAssignableFrom(componentType));
-        Assert.True(typeof(IDisposable).IsAssignableFrom(hostType));
+
+        // The tray unit follows the Kumo component sample: a never-shown host
+        // window owned by the feature (no ReactorHostControl mount).
+        var hostField = featureType.GetField(
+            "_hostWindow",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        Assert.NotNull(hostField);
+        Assert.Equal(typeof(ReactorWindow), hostField.FieldType);
+        Assert.Null(assembly.GetType("MicaFlyouts.Features.Tray.TrayIconHost"));
         Assert.Contains(
             typeof(HNotifyComponent).GetMethods(
                 System.Reflection.BindingFlags.Instance

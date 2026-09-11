@@ -439,15 +439,10 @@ public sealed partial class AppServices : IDisposable
         if (Interlocked.Exchange(ref _exitRequested, 1) != 0)
             return;
 
-        // Let the tray menu close before tearing down the XAML dispatcher.
-        if (!UiDispatcher.TryEnqueue(CompleteExit))
-            CompleteExit();
-    }
-
-    private void CompleteExit()
-    {
-        // ReactorApp.Exit tears down the WinUI application synchronously.
-        // Release the independent tray feature while the XAML dispatcher is alive.
+        // Release the tray unit before WinUI tears down: closing its host
+        // window also closes the H.NotifyIcon menu that is still on the stack.
+        // Without this, ReactorApp.Exit() does not take effect while another
+        // window (e.g. settings) is open.
         _tray.Dispose();
         ReactorApp.Exit();
     }

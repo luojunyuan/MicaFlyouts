@@ -33,10 +33,12 @@ The path data in `Features/Tray/TrayMenuIcons.cs` comes from Microsoft's
 `fluentui-system-icons` repository, commit
 `74727164b4a18933e5533f84109d3f36c1355422`, under
 `assets/<Icon Name>/SVG/ic_fluent_<icon_name>_20_regular.svg`.
-`HNotifyMenu` converts the `path:` data to native WinUI `PathIcon` elements for
-the dependency library's `SecondWindow` menu, retaining SVG's nonzero fill rule
-(`F1`) and inheriting the menu foreground color. No WPF or icon-font dependency
-is required. See `FluentSystemIcons.LICENSE` (MIT).
+`HNotifyMenu` converts the `path:` data to native WinUI `PathIcon` elements —
+rendered by the dependency library's `SecondWindow` menu, which retains SVG's
+nonzero fill rule (`F1`) and inherits the menu foreground color. The menu
+currently uses the native `PopupMenu` mode (see below), which renders text-only
+items, so the icon data is kept in the menu DSL but not drawn. No WPF or
+icon-font dependency is required. See `FluentSystemIcons.LICENSE` (MIT).
 
 ## Localization and live updates
 
@@ -45,11 +47,19 @@ is required. See `FluentSystemIcons.LICENSE` (MIT).
 translations; the quit label substitutes `{appName}` with `Mica Flyouts`.
 The tooltip is the product name, not a translated sentence.
 
-`TrayIconComponent` subscribes to `SettingsStore` and `LocalizationStore` through
-Reactor's `UseExternalStore`. A changed locale produces a new `HNotifyMenu` and
-spec, so `UseTrayIcon` updates the existing tray handle and its menu; the menu
-presenter style carries the locale's flow direction and font fallback.
-`TrayIconFeature` owns the independent host, observes `NIconHide`, and rebuilds
-the host on `UISettings.ColorValuesChanged` so symbol icons are resolved again.
-Settings updates apply the `NIconSymbol`/`NIconHide` preferences immediately, and
-all subscriptions and the tray handle are released during shutdown.
+`TrayIconFeature` owns a hidden host window (`ActivateOnOpen = false`) whose root
+component is `TrayIconComponent`. The component subscribes to `SettingsStore`
+and `LocalizationStore` through Reactor's `UseExternalStore` and owns the icon
+via `HNotifyComponent.UseTrayIcon`. A changed locale produces a new
+`HNotifyMenu` and spec, so the existing tray handle picks up its menu.
+`NIconHide` closes the host window (and reopens it on demand), and `NIconSymbol`
+selects the colored or monochrome icon — the monochrome resource reads
+`SystemUsesLightTheme` from the registry when the handle is opened, so symbol
+icons match the taskbar theme at open time. The menu uses
+`HNotifyContextMenuMode.PopupMenu` (the mode the dependency library's component
+sample uses): the native menu is drawn above the Shell's XAML popups, so the
+tray tooltip cannot swallow clicks on the bottom item, and icon / presenter
+styling are not rendered in this mode. All subscriptions and the tray handle
+are released during shutdown; the quit command releases the tray host first
+(which takes the native menu off the stack) and then calls `ReactorApp.Exit()`
+directly.

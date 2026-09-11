@@ -7,27 +7,24 @@ using Microsoft.UI.Reactor.Core;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.Win32;
 using static Microsoft.UI.Reactor.Factories;
 
 namespace MicaFlyouts.Features.Tray;
 
 /// <summary>
-/// Independent tray surface. Its lifetime is owned by <see cref="TrayIconHost"/>
-/// rather than by any application window.
+/// Tray surface mounted as the root of <see cref="TrayIconFeature"/>'s hidden
+/// host window rather than by any application window.
 /// </summary>
 public sealed class TrayIconComponent : HNotifyComponent
 {
     private static readonly object NoTrayIconSentinel = new();
     private static readonly WindowKey TrayIconKey = WindowKey.Of("tray-icon");
 
-    private readonly Func<bool> _systemUsesLightTheme;
     private readonly EventHandler _clickHandler;
 
-    public TrayIconComponent(Func<bool> systemUsesLightTheme)
+    public TrayIconComponent()
     {
-        ArgumentNullException.ThrowIfNull(systemUsesLightTheme);
-
-        _systemUsesLightTheme = systemUsesLightTheme;
         _clickHandler = static (_, _) => OnClick();
     }
 
@@ -42,7 +39,7 @@ public sealed class TrayIconComponent : HNotifyComponent
         bool useSymbol = settings.NIconSymbol;
         string iconResource = TrayIconAssets.SelectResource(
             useSymbol,
-            useSymbol && _systemUsesLightTheme());
+            useSymbol && SystemUsesLightTheme());
         var icon = UseMemo(() => TrayIconAssets.Load(iconResource), iconResource);
         var contextMenu = UseMemo(
             () => CreateContextMenu(services.Localization, localization),
@@ -57,7 +54,7 @@ public sealed class TrayIconComponent : HNotifyComponent
         {
             ContextMenu = contextMenu,
             MenuActivation = HNotifyMenuActivation.RightClick,
-            ContextMenuMode = HNotifyContextMenuMode.SecondWindow,
+            ContextMenuMode = HNotifyContextMenuMode.PopupMenu,
             ContextMenuTheme = HNotifyContextMenuTheme.System,
         };
         var tray = UseTrayIcon(spec);
@@ -99,6 +96,15 @@ public sealed class TrayIconComponent : HNotifyComponent
             new FontFamily(locale.FontFamily)));
         menu.MenuFlyoutPresenterStyle = presenterStyle;
         return menu;
+    }
+
+    // The taskbar follows SystemUsesLightTheme, so symbol icons use the black
+    // glyph on a light taskbar and the white glyph on a dark one.
+    private static bool SystemUsesLightTheme()
+    {
+        using var personalize = Registry.CurrentUser.OpenSubKey(
+            @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+        return personalize?.GetValue("SystemUsesLightTheme") is int lightTheme && lightTheme != 0;
     }
 
     private static void OnClick()
