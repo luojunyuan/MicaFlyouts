@@ -164,12 +164,15 @@ H.NotifyIcon 原生菜单（`ContextMenuMode = PopupMenu`，与依赖库 sample 
 资源出处、图标映射及许可证见 `Assets/TrayIcons/README.md`。`AppServices` 只持有
 `TrayIconFeature` 并转发生命周期。
 
-关闭顺序必须与启动相反：停止键盘 hook、任务栏、Visualizer、音频和媒体监听，
-注销更新/通知，关闭托盘宿主窗口，关闭 `WindowRegistry` 中所有窗口，最后释放 stores、
-单实例和日志。所有关闭路径必须幂等。退出命令由 H.NotifyIcon 的菜单事件触发
-（`PopupMenu` 原生菜单），必须先释放托盘宿主窗口——它会同时关闭仍在栈上的原生
-菜单——再直接调用 `ReactorApp.Exit()`；如果不先释放托盘，设置等窗口打开时
-`Exit()` 不会生效。`Run` 返回后由 `AppRuntime.Start` 的 finally 统一执行 `Dispose`。
+`AppServices` 是进程级组合根：不实现 `IDisposable`，`ReactorApp.Run` 返回即进程退出，
+剩余资源由操作系统回收，退出路径不做 teardown（`AppRuntime.Start` 没有 finally 清理）。
+退出命令由 H.NotifyIcon 的菜单事件触发（`PopupMenu` 原生菜单）：必须先释放托盘宿主
+窗口——它会同时关掉仍在调用栈上的原生菜单，并让 `Application.Exit()` 能走正常的
+关窗路径——再调用 `ReactorApp.Exit()`；如果不先释放托盘，设置等窗口打开时 `Exit()`
+不会生效（消息循环不会退出）。保持 WinUI 默认的 `DispatcherShutdownMode`：
+`Application.Exit()` 会按正常路径关闭剩余窗口并结束消息循环；不要改成
+`OnExplicitShutdown`：那会带着打开的 XAML 窗口直接进入进程收尾，`Microsoft.UI.Input`
+会随机 fail-fast（0xc0000602）。
 
 ### `WindowRegistry`
 
