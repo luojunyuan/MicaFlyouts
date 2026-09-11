@@ -13,12 +13,12 @@ Microsoft UI Reactor。原项目位于 `C:\Users\kimika\source\repos\FluentFlyou
 
 | 项目 | 约束 |
 | --- | --- |
-| 目标框架 | `net10.0-windows10.0.22621.0` |
+| 目标框架 | `net10.0-windows10.0.26100.0` |
 | UI | WinUI 3，`UseWinUI=true` |
-| Reactor | `Microsoft.UI.Reactor 0.1.0-preview.13` |
-| Windows App SDK | 只允许 `Microsoft.WindowsAppSDK.WinUI`；当前中央版本为 `2.3.6`，必须保持单一版本并验证与 Reactor preview.13 的兼容性 |
+| Reactor | `Microsoft.UI.Reactor 0.1.0-preview.14` |
+| Windows App SDK | 只允许 `Microsoft.WindowsAppSDK.WinUI`；当前中央版本为 `2.3.6`，必须保持单一版本并验证与 Reactor preview.14 的兼容性 |
 | 设置控件 | `CommunityToolkit.WinUI.Controls.SettingsControls 8.3.260402-preview2`；社区控件必须使用 preview 包，不得混用稳定旧包 |
-| 托盘 | `H.NotifyIcon.WinUI 2.5.0-dev.2`，由项目内 `HNotifyIconTray` 封装 |
+| 托盘 | 项目引用 `Kumo.H.NotifyIcon.Reactor.csproj`，由独立 `TrayIconComponent` 使用 `HNotifyComponent.UseTrayIcon` |
 | 音频 | `NAudio 2.3.0`，只允许出现在 `Infrastructure/Audio` |
 | Win32 | `Microsoft.Windows.CsWin32 0.3.298`，所有 Win32 P/Invoke 由生成代码提供 |
 | 打包 | `WindowsPackageType=None`，`WindowsAppSDKSelfContained=true`，不生成 MSIX，不依赖 Store |
@@ -63,7 +63,8 @@ MicaFlyouts/
 │  │  ├─ AppCommands.cs
 │  │  ├─ WindowRegistry.cs
 │  │  ├─ UiDispatcher.cs
-│  │  └─ HNotifyIconTray.cs
+│  │  ├─ TrayIconComponent.cs
+│  │  └─ TrayIconAssets.cs
 │  ├─ Domain/
 │  │  ├─ Geometry.cs
 │  │  ├─ StateStore.cs
@@ -134,7 +135,7 @@ Domain  <-  Infrastructure  <-  App
 2. 非首实例只向已有实例发送 `MicaFlyouts_OpenSettings` 事件，然后立即退出。
 3. `Bootstrap.Create` 手动构造所有 stores、平台服务和 controller；不引入 DI 容器。
 4. 注册 Reactor 内置控件，设置 `ReactorApp.ShutdownPolicy=Explicit`。
-5. 通过 `ReactorApp.Run` 打开主媒体窗口，再启动后台服务和托盘。
+5. 通过 `ReactorApp.Run` 打开主媒体窗口，再启动后台服务和独立托盘组件。
 6. 首次运行打开三步引导；后续运行只保持后台监听。
 
 `AppServices` 是应用组合根，持有所有服务的强引用，并暴露显式命令：打开设置、
@@ -146,12 +147,14 @@ Domain  <-  Infrastructure  <-  App
 `AppRuntime.Current` 仅用于异步收尾等允许服务不存在的场景。所有 hooks 必须在
 业务空状态的提前返回之前调用，不能通过运行时判空跳过 hooks。
 
-托盘由 `AppServices.Tray.cs` 协调：`NIconSymbol` 选择彩色或黑白图标，黑白图标跟随
-Windows 任务栏主题；设置变化即时应用显示/隐藏及图标选择。菜单通过 `TrayMenu`
-读取现有 `TrayIcon_*Option` 资源，订阅 `LocalizationStore` 在 UI 线程刷新文案、
-RTL 和字体；切换语言时安全重建托盘菜单宿主，避免 H.NotifyIcon 的 SecondWindow
-菜单副本保留旧条目。资源出处、图标映射及许可证见
-`Assets/TrayIcons/README.md`。退出前解除主题/语言订阅并释放托盘宿主。
+托盘由 `AppServices.Tray.cs` 创建和销毁独立的 `ReactorHostControl`；它不属于任何
+应用窗口。`TrayIconComponent` 继承依赖库的 `HNotifyComponent`，通过
+`UseTrayIcon` 建立托盘句柄，并用 `UseExternalStore` 响应设置和本地化变化。
+`NIconSymbol` 选择彩色或黑白图标，黑白图标跟随 Windows 任务栏主题；主题变化重建
+独立 host，设置中的隐藏选项则卸载组件。菜单通过 `TrayMenu` 读取现有
+`TrayIcon_*Option` 资源，由 `HNotifyMenu` 转换为 H.NotifyIcon 菜单并保留 RTL、字体
+和图标。资源出处、图标映射及许可证见 `Assets/TrayIcons/README.md`。退出前解除
+主题订阅并释放托盘 host。
 
 关闭顺序必须与启动相反：停止键盘 hook、任务栏、Visualizer、音频和媒体监听，
 注销更新/通知，释放托盘宿主，关闭 `WindowRegistry` 中所有窗口，最后释放 stores、
@@ -499,7 +502,7 @@ payload。
 ### Reactor self-test：`MicaFlyouts.ReactorSelfTests`
 
 使用 fake stores 挂载每个窗口组件，验证业务空状态不会抛异常、Element tree、稳定 key、
-SettingsCard/SettingsExpander wrapper、导航菜单和搜索路由、托盘嵌入资源以及
+SettingsCard/SettingsExpander wrapper、导航菜单和搜索路由、独立托盘组件、托盘嵌入资源以及
 事件回调；另验证运行时未初始化时组件明确抛出异常。self-test 不依赖真实播放器、
 音频设备或 Explorer。
 

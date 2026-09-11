@@ -56,6 +56,7 @@ public sealed class TrayPresentationTests : IDisposable
         foreach (var item in items)
         {
             Assert.StartsWith("path:F1 M", item.Icon);
+            Assert.IsType<PathIconData>(item.IconElement);
             Assert.NotNull(item.OnClick);
             item.OnClick();
         }

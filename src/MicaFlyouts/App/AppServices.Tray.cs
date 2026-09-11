@@ -8,12 +8,10 @@ namespace MicaFlyouts.App;
 public sealed partial class AppServices
 {
     private UISettings? _trayUiSettings;
-    private Action? _trayLocalizationUnsubscribe;
-    private string? _trayIconResource;
+    private TrayIconHost? _trayHost;
 
     private void StartTray()
     {
-        _trayLocalizationUnsubscribe = LocalizationStore.Subscribe(() => UiDispatcher.EnqueueOrRun(RefreshTrayMenu));
         try
         {
             _trayUiSettings = new UISettings();
@@ -27,7 +25,11 @@ public sealed partial class AppServices
     }
 
     private void OnTrayColorsChanged(UISettings sender, object args) =>
-        UiDispatcher.TryEnqueue(SyncTray);
+        UiDispatcher.TryEnqueue(() =>
+        {
+            CloseTray();
+            SyncTray();
+        });
 
     private void SyncTray()
     {
@@ -41,47 +43,14 @@ public sealed partial class AppServices
 
         try
         {
-            bool useSymbol = Settings.Snapshot.NIconSymbol;
-            string resource = TrayIconAssets.SelectResource(useSymbol, useSymbol && SystemUsesLightTheme());
-            if (_tray is null)
-            {
-                using var icon = TrayIconAssets.Load(resource);
-                var locale = Localization.Snapshot;
-                _tray = HNotifyIconApp.OpenTrayIcon(new HNotifyIconSpec(
-                    HNotifyIcon.FromDrawingIcon(icon), AppBranding.Name, CreateTrayMenu())
-                {
-                    FlowDirection = locale.IsRightToLeft ? FlowDirection.RightToLeft : FlowDirection.LeftToRight,
-                    FontFamily = locale.FontFamily,
-                });
-                _tray.LeftClick += Tray_Click;
-            }
-            else if (!string.Equals(_trayIconResource, resource, StringComparison.Ordinal))
-            {
-                using var icon = TrayIconAssets.Load(resource);
-                _tray.UpdateIcon(HNotifyIcon.FromDrawingIcon(icon));
-            }
-            _trayIconResource = resource;
+            if (_trayHost is null)
+                _trayHost = TrayIconHost.Create(SystemUsesLightTheme, Tray_Click);
         }
         catch (Exception exception)
         {
             _logger.Warn($"Tray icon unavailable: {exception.Message}");
+            CloseTray();
         }
-    }
-
-    private MenuFlyoutItemBase[] CreateTrayMenu() => TrayMenu.Create(
-        Localization,
-        OpenSettings,
-        () => OpenUrl("https://github.com/unchihugo/FluentFlyout"),
-        () => OpenUrl(_logger.LogDirectory),
-        () => OpenUrl("https://github.com/unchihugo/FluentFlyout/issues/new/choose"),
-        Exit);
-
-    private void RefreshTrayMenu()
-    {
-        if (_tray is null || Volatile.Read(ref _disposed) != 0 || Volatile.Read(ref _exitRequested) != 0)
-            return;
-        CloseTray();
-        SyncTray();
     }
 
     private bool SystemUsesLightTheme()
@@ -95,20 +64,13 @@ public sealed partial class AppServices
 
     private void CloseTray()
     {
-        var tray = _tray;
-        _tray = null;
-        _trayIconResource = null;
-        if (tray is not null)
-        {
-            tray.LeftClick -= Tray_Click;
-            tray.Dispose();
-        }
+        var trayHost = _trayHost;
+        _trayHost = null;
+        trayHost?.Dispose();
     }
 
     private void StopTray()
     {
-        _trayLocalizationUnsubscribe?.Invoke();
-        _trayLocalizationUnsubscribe = null;
         if (_trayUiSettings is not null)
         {
             _trayUiSettings.ColorValuesChanged -= OnTrayColorsChanged;

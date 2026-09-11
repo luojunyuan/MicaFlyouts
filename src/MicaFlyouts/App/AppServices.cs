@@ -33,7 +33,6 @@ public sealed partial class AppServices : IDisposable
     private readonly KeyboardHookService _keyboard;
     private Action? _mediaUnsubscribe;
     private Action? _settingsUnsubscribe;
-    private HNotifyIconTray? _tray;
     private ReactorWindow? _mainWindow;
     private string _lastTrack = string.Empty;
     private int _started;
@@ -179,26 +178,12 @@ public sealed partial class AppServices : IDisposable
         }
     }
 
-    private void Tray_Click(object? sender, EventArgs args)
+    private void Tray_Click()
     {
         if (Settings.Snapshot.NIconLeftClick == 1)
             ShowMediaFlyout();
         else
             OpenSettings();
-    }
-
-    private static void OpenUrl(string url)
-    {
-        try
-        {
-            _ = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url)
-            {
-                UseShellExecute = true,
-            });
-        }
-        catch
-        {
-        }
     }
 
     private void OnSettingsChanged()
@@ -459,8 +444,7 @@ public sealed partial class AppServices : IDisposable
         if (Interlocked.Exchange(ref _exitRequested, 1) != 0)
             return;
 
-        // The tray callback runs inside H.NotifyIcon's mouse/menu event. Let
-        // that event close the SecondWindow menu before tearing down XAML.
+        // Let the tray menu close before tearing down the XAML dispatcher.
         if (!UiDispatcher.TryEnqueue(CompleteExit))
             CompleteExit();
     }
@@ -468,7 +452,7 @@ public sealed partial class AppServices : IDisposable
     private void CompleteExit()
     {
         // ReactorApp.Exit tears down the WinUI application synchronously.
-        // Release the tray host while the XAML dispatcher is still alive.
+        // Release the independent tray host while the XAML dispatcher is alive.
         StopTray();
         ReactorApp.Exit();
     }

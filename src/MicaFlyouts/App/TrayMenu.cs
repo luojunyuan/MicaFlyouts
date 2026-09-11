@@ -17,14 +17,22 @@ public static class TrayMenu
         ArgumentNullException.ThrowIfNull(localization);
         return
         [
-            MenuItem(localization.Get("TrayIcon_SettingsOption", "Settings"), openSettings, icon: TrayMenuIcons.Settings20),
+            TrayItem(localization.Get("TrayIcon_SettingsOption", "Settings"), openSettings, TrayMenuIcons.Settings20),
             MenuSeparator(),
-            MenuItem(localization.Get("TrayIcon_GitHubRepositoryOption", "Repository"), openRepository, icon: TrayMenuIcons.DocumentChevronDouble20),
-            MenuItem(localization.Get("TrayIcon_ViewLogsOption", "View logs"), openLogs, icon: TrayMenuIcons.FolderOpen20),
-            MenuItem(localization.Get("TrayIcon_ReportBugOption", "Report bug"), reportBug, icon: TrayMenuIcons.Bug20),
+            TrayItem(localization.Get("TrayIcon_GitHubRepositoryOption", "Repository"), openRepository, TrayMenuIcons.DocumentChevronDouble20),
+            TrayItem(localization.Get("TrayIcon_ViewLogsOption", "View logs"), openLogs, TrayMenuIcons.FolderOpen20),
+            TrayItem(localization.Get("TrayIcon_ReportBugOption", "Report bug"), reportBug, TrayMenuIcons.Bug20),
             MenuSeparator(),
-            MenuItem(localization.Get("TrayIcon_QuitOption", "Quit {appName}")
-                .Replace("{appName}", AppBranding.Name, StringComparison.Ordinal), exit, icon: TrayMenuIcons.ArrowExit20),
+            TrayItem(localization.Get("TrayIcon_QuitOption", "Quit {appName}")
+                .Replace("{appName}", AppBranding.Name, StringComparison.Ordinal), exit, TrayMenuIcons.ArrowExit20),
         ];
+    }
+
+    private static MenuFlyoutItemData TrayItem(string text, Action onClick, string icon)
+    {
+        var item = MenuItem(text, onClick, icon);
+        return icon.StartsWith("path:", StringComparison.Ordinal)
+            ? item with { IconElement = PathIcon(icon[5..]) }
+            : item;
     }
 }

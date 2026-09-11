@@ -6,6 +6,7 @@ using MicaFlyouts.Features.Settings;
 using MicaFlyouts.Features.Taskbar;
 using MicaFlyouts.Features.Volume;
 using MicaFlyouts.UI.Toolkit;
+using Kumo.H.NotifyIcon.Reactor;
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
 using static MicaFlyouts.UI.Toolkit.SettingsCardElement;
@@ -88,14 +89,21 @@ public sealed class ReactorElementTreeTests
     }
 
     [Fact]
-    public void HNotifyIconTray_UsesAppNamespaceAndRaisesLeftClickEvent()
+    public void TrayIcon_UsesIndependentKumoComponentHost()
     {
-        Assert.Equal("MicaFlyouts.App", typeof(HNotifyIconTray).Namespace);
-        Assert.NotNull(typeof(HNotifyIconTray).GetEvent(nameof(HNotifyIconTray.LeftClick)));
-        Assert.Null(typeof(HNotifyIconSpec).GetProperty("OnLeftClick"));
-        Assert.True(typeof(IDisposable).IsAssignableFrom(typeof(HNotifyIconTray)));
-        Assert.False(typeof(IDisposable).IsAssignableFrom(typeof(HNotifyIcon)));
-        Assert.NotNull(typeof(HNotifyIconTray).GetMethod(nameof(HNotifyIconTray.Dispose)));
+        var assembly = typeof(AppServices).Assembly;
+        var componentType = assembly.GetType("MicaFlyouts.App.TrayIconComponent");
+        var hostType = assembly.GetType("MicaFlyouts.App.TrayIconHost");
+
+        Assert.NotNull(componentType);
+        Assert.NotNull(hostType);
+        Assert.True(typeof(HNotifyComponent).IsAssignableFrom(componentType));
+        Assert.True(typeof(IDisposable).IsAssignableFrom(hostType));
+        Assert.Contains(
+            typeof(HNotifyComponent).GetMethods(
+                System.Reflection.BindingFlags.Instance
+                    | System.Reflection.BindingFlags.NonPublic),
+            method => method.Name == "UseTrayIcon");
     }
 
     [Fact]

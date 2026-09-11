@@ -33,9 +33,10 @@ The path data in `App/TrayMenuIcons.cs` comes from Microsoft's
 `fluentui-system-icons` repository, commit
 `74727164b4a18933e5533f84109d3f36c1355422`, under
 `assets/<Icon Name>/SVG/ic_fluent_<icon_name>_20_regular.svg`.
-`HNotifyIconTray` renders the `path:` data with native WinUI `PathIcon`, retaining
-SVG's nonzero fill rule (`F1`) and inheriting the menu foreground color. No WPF
-or icon-font dependency is required. See `FluentSystemIcons.LICENSE` (MIT).
+`HNotifyMenu` converts the `path:` data to native WinUI `PathIcon` elements for
+the dependency library's `SecondWindow` menu, retaining SVG's nonzero fill rule
+(`F1`) and inheriting the menu foreground color. No WPF or icon-font dependency
+is required. See `FluentSystemIcons.LICENSE` (MIT).
 
 ## Localization and live updates
 
@@ -44,11 +45,11 @@ or icon-font dependency is required. See `FluentSystemIcons.LICENSE` (MIT).
 translations; the quit label substitutes `{appName}` with `Mica Flyouts`.
 The tooltip is the product name, not a translated sentence.
 
-`AppServices` subscribes to `LocalizationStore`. On a language/resources/font
-change it safely disposes and recreates the native tray surface on the UI thread;
-this avoids leaving H.NotifyIcon's `SecondWindow` menu clone with stale item
-references. Menu presenter style carries the locale's flow direction and font
-fallback. This does not happen for a Windows theme-only icon refresh.
-`UISettings.ColorValuesChanged` refreshes symbol icons, and settings updates apply
-the `NIconSymbol`/`NIconHide` preferences immediately. All subscriptions and the
-tray handle are released during shutdown.
+`TrayIconComponent` subscribes to `SettingsStore` and `LocalizationStore` through
+Reactor's `UseExternalStore`. A changed locale produces a new `HNotifyMenu` and
+spec, so `UseTrayIcon` updates the existing tray handle and its menu; the menu
+presenter style carries the locale's flow direction and font fallback.
+`UISettings.ColorValuesChanged` rebuilds the independent host so symbol icons are
+resolved again, and settings updates apply the `NIconSymbol`/`NIconHide`
+preferences immediately. All subscriptions and the tray handle are released
+during shutdown.
