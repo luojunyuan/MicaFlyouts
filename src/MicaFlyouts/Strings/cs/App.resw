@@ -288,7 +288,7 @@ Můžete pomoct s překlady na</value>
     <value>Nahlásit chybu</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Zavřít FluentFlyout</value>
+    <value>Zavřít {appName}</value>
   </data>
   <data name="AppLanguageDescriptionLink" xml:space="preserve">
     <value>Weblate</value>

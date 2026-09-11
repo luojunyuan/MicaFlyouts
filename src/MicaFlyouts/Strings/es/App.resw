@@ -285,7 +285,7 @@ Puedes ayudar a contribuir con las traducciones en</value>
     <value>Reportar fallo</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Salir de FluentFlyout</value>
+    <value>Salir de {appName}</value>
   </data>
   <data name="AnimationEasingStyleTitle" xml:space="preserve">
     <value>Estilo de Suavizado de Animaciones</value>

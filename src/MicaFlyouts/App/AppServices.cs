@@ -21,13 +21,11 @@ using MicaFlyouts.Features.Onboarding;
 using MicaFlyouts.Features.Settings;
 using MicaFlyouts.Features.Taskbar;
 using MicaFlyouts.Features.Volume;
-using DrawingIcon = System.Drawing.Icon;
 
 namespace MicaFlyouts.App;
 
 public sealed partial class AppServices : IDisposable
 {
-    private const string TrayIconResourceName = "MicaFlyouts.Assets.MicaFlyouts.ico";
     private readonly SingleInstanceService _singleInstance;
     private readonly UiDispatcher _dispatcher;
     private readonly AppLogger _logger;
@@ -170,31 +168,7 @@ public sealed partial class AppServices : IDisposable
         Taskbar.Start();
         _keyboard.Start();
 
-        if (!Settings.Snapshot.NIconHide)
-        {
-            try
-            {
-                using var trayIconStream = typeof(AppServices).Assembly
-                    .GetManifestResourceStream(TrayIconResourceName)
-                    ?? throw new InvalidOperationException(
-                        $"Embedded tray icon resource was not found: {TrayIconResourceName}");
-                using var trayIcon = new DrawingIcon(trayIconStream);
-                _tray = HNotifyIconApp.OpenTrayIcon(new HNotifyIconSpec(
-                    HNotifyIcon.FromDrawingIcon(trayIcon),
-                    "Mica Flyouts",
-                    MenuItem("Settings", OpenSettings, icon: "Setting"),
-                    MenuSeparator(),
-                    MenuItem("Repository", () => OpenUrl("https://github.com/unchihugo/FluentFlyout"), icon: "Document"),
-                    MenuItem("View logs", () => OpenUrl($"file:///{_logger.LogDirectory.Replace('\\', '/') }"), icon: "Folder"),
-                    MenuSeparator(),
-                    MenuItem("Quit", Exit, icon: "Close")));
-                _tray.LeftClick += Tray_Click;
-            }
-            catch (Exception exception)
-            {
-                _logger.Warn($"Tray icon unavailable: {exception.Message}");
-            }
-        }
+        StartTray();
 
         SyncTaskbarWindows();
         bool firstRun = string.IsNullOrWhiteSpace(Settings.Snapshot.LastKnownVersion);
@@ -232,6 +206,7 @@ public sealed partial class AppServices : IDisposable
         UiDispatcher.EnqueueOrRun(() =>
         {
             Localization.Apply();
+            SyncTray();
             StartupRegistration.Apply(Settings.Snapshot.Startup);
             SyncTaskbarWindows();
         });
@@ -494,9 +469,7 @@ public sealed partial class AppServices : IDisposable
     {
         // ReactorApp.Exit tears down the WinUI application synchronously.
         // Release the tray host while the XAML dispatcher is still alive.
-        var tray = _tray;
-        _tray = null;
-        tray?.Dispose();
+        StopTray();
         ReactorApp.Exit();
     }
 
@@ -506,6 +479,7 @@ public sealed partial class AppServices : IDisposable
             return;
         _mediaUnsubscribe?.Invoke();
         _settingsUnsubscribe?.Invoke();
+        StopTray();
         _keyboard.Dispose();
         Taskbar.Dispose();
         Visualizer.Dispose();

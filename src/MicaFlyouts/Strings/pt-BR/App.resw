@@ -213,7 +213,7 @@ Você pode ajudar a contribuir com traduções em</value>
     <value>Baixar atualização</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Sair do FluentFlyout</value>
+    <value>Sair do {appName}</value>
   </data>
   <data name="LockWindow_NumLock" xml:space="preserve">
     <value>Num Lock</value>

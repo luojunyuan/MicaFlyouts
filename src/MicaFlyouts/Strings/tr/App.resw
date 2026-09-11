@@ -291,7 +291,7 @@ tekrar, karıştırma ve oynatıcı bilgilerini gizler</value>
     <value>Insert'e Basıldı</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>FluentFlyout'tan çık</value>
+    <value>{appName}'tan çık</value>
   </data>
   <data name="TrayIcon_GitHubRepositoryOption" xml:space="preserve">
     <value>Depo</value>

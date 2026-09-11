@@ -146,6 +146,13 @@ Domain  <-  Infrastructure  <-  App
 `AppRuntime.Current` 仅用于异步收尾等允许服务不存在的场景。所有 hooks 必须在
 业务空状态的提前返回之前调用，不能通过运行时判空跳过 hooks。
 
+托盘由 `AppServices.Tray.cs` 协调：`NIconSymbol` 选择彩色或黑白图标，黑白图标跟随
+Windows 任务栏主题；设置变化即时应用显示/隐藏及图标选择。菜单通过 `TrayMenu`
+读取现有 `TrayIcon_*Option` 资源，订阅 `LocalizationStore` 在 UI 线程刷新文案、
+RTL 和字体；切换语言时安全重建托盘菜单宿主，避免 H.NotifyIcon 的 SecondWindow
+菜单副本保留旧条目。资源出处、图标映射及许可证见
+`Assets/TrayIcons/README.md`。退出前解除主题/语言订阅并释放托盘宿主。
+
 关闭顺序必须与启动相反：停止键盘 hook、任务栏、Visualizer、音频和媒体监听，
 注销更新/通知，释放托盘宿主，关闭 `WindowRegistry` 中所有窗口，最后释放 stores、
 单实例和日志。所有关闭路径必须幂等。

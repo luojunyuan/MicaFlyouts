@@ -297,7 +297,7 @@
     <value>выкл.</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Закрыть FluentFlyout</value>
+    <value>Закрыть {appName}</value>
   </data>
   <data name="TaskbarWidgetCustomizationTitle" xml:space="preserve">
     <value>Виджет</value>

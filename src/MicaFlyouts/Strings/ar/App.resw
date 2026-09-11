@@ -243,7 +243,7 @@
     <value>مفتاح الإدراج مضغوط</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>إيقاف FluentFlyout</value>
+    <value>إيقاف {appName}</value>
   </data>
   <data name="AnimationDurationScaleTitle" xml:space="preserve">
     <value>مدة الرسوم المتحركة</value>

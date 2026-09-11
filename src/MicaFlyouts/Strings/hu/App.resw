@@ -537,7 +537,7 @@ Segíts te is a fordításban a(z)</value>
     <value>Hiba jelentése</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Kilépés a FluentFlyout-ból</value>
+    <value>Kilépés a {appName}-ból</value>
   </data>
   <data name="PixelsUnit" xml:space="preserve">
     <value>px</value>

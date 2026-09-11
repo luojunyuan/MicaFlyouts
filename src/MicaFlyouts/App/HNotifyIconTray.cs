@@ -1,9 +1,12 @@
-using System.Drawing;
+using Icon = System.Drawing.Icon;
 using System.Windows.Input;
 using Microsoft.UI.Reactor.Core;
 using Microsoft.UI.Reactor.Hosting;
 using Microsoft.UI.Reactor.Wrappers;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Markup;
+using Microsoft.UI.Xaml.Media;
 using static MicaFlyouts.App.TaskbarIconElement;
 using MUXC = Microsoft.UI.Xaml.Controls;
 
@@ -34,7 +37,11 @@ public partial record TaskbarIconElement
 }
 
 /// <summary>Configuration for an H.NotifyIcon tray surface.</summary>
-public sealed record HNotifyIconSpec(HNotifyIcon Icon, string Tooltip, params MenuFlyoutItemBase[] MenuItems);
+public sealed record HNotifyIconSpec(HNotifyIcon Icon, string Tooltip, params MenuFlyoutItemBase[] MenuItems)
+{
+    public FlowDirection FlowDirection { get; init; }
+    public string? FontFamily { get; init; }
+}
 
 /// <summary>H.NotifyIcon icon source owned by the tray adapter.</summary>
 public sealed class HNotifyIcon
@@ -69,7 +76,8 @@ public static class HNotifyIconApp
 public sealed partial class HNotifyIconTray : IDisposable
 {
     private readonly ReactorHostControl _host;
-    private readonly HNotifyIcon _iconSource;
+    private HNotifyIcon _iconSource;
+    private MUXC.MenuFlyout _contextMenu;
     private H.NotifyIcon.TaskbarIcon? _taskbarIcon;
     private int _disposed;
 
@@ -79,20 +87,23 @@ public sealed partial class HNotifyIconTray : IDisposable
     private HNotifyIconTray(
         HNotifyIcon iconSource,
         string tooltip,
-        MUXC.MenuFlyout contextMenu)
+        MUXC.MenuFlyout contextMenu,
+        FlowDirection flowDirection)
     {
         _iconSource = iconSource;
+        _contextMenu = contextMenu;
         _host = new ReactorHostControl();
         _host.Mount(_ => TaskbarIcon(
-            icon: iconSource.DrawingIcon,
+            icon: _iconSource.DrawingIcon,
             toolTipText: tooltip,
             menuActivation: H.NotifyIcon.Core.PopupActivationMode.RightClick,
             popupActivation: H.NotifyIcon.Core.PopupActivationMode.None)
             .Set(taskbarIcon =>
             {
                 _taskbarIcon = taskbarIcon;
+                taskbarIcon.FlowDirection = flowDirection;
                 taskbarIcon.ContextMenuMode = H.NotifyIcon.ContextMenuMode.SecondWindow;
-                taskbarIcon.ContextFlyout = contextMenu;
+                taskbarIcon.ContextFlyout = _contextMenu;
                 taskbarIcon.CloseContextMenuOnItemClick = true;
                 taskbarIcon.NoLeftClickDelay = true;
                 taskbarIcon.LeftClickCommand = new HNotifyIconCommand(RaiseLeftClick);
@@ -107,15 +118,44 @@ public sealed partial class HNotifyIconTray : IDisposable
         return new HNotifyIconTray(
             spec.Icon,
             spec.Tooltip,
-            CreateContextMenu(spec.MenuItems));
+            CreateContextMenu(spec.MenuItems, spec.FlowDirection, spec.FontFamily),
+            spec.FlowDirection);
     }
 
-    private static MUXC.MenuFlyout CreateContextMenu(IReadOnlyList<MenuFlyoutItemBase> items)
+    public void UpdateIcon(HNotifyIcon icon)
     {
-        var menu = new MUXC.MenuFlyout();
+        ObjectDisposedException.ThrowIf(_disposed != 0, this);
+        ArgumentNullException.ThrowIfNull(icon);
+        if (ReferenceEquals(_iconSource, icon))
+            return;
+        if (_taskbarIcon is not null)
+            _taskbarIcon.Icon = icon.DrawingIcon;
+        else
+            _iconSource.DrawingIcon.Dispose();
+        _iconSource = icon;
+    }
+
+    private static MUXC.MenuFlyout CreateContextMenu(
+        IReadOnlyList<MenuFlyoutItemBase> items,
+        FlowDirection flowDirection,
+        string? fontFamily)
+    {
+        var menu = new MUXC.MenuFlyout
+        {
+            MenuFlyoutPresenterStyle = CreateMenuPresenterStyle(flowDirection, fontFamily),
+        };
         foreach (var item in items)
             menu.Items.Add(CreateMenuItem(item));
         return menu;
+    }
+
+    private static Style CreateMenuPresenterStyle(FlowDirection flowDirection, string? fontFamily)
+    {
+        var style = new Style { TargetType = typeof(MUXC.MenuFlyoutPresenter) };
+        style.Setters.Add(new Setter(FrameworkElement.FlowDirectionProperty, flowDirection));
+        if (!string.IsNullOrWhiteSpace(fontFamily))
+            style.Setters.Add(new Setter(MUXC.Control.FontFamilyProperty, new FontFamily(fontFamily)));
+        return style;
     }
 
     private static MUXC.MenuFlyoutItemBase CreateMenuItem(MenuFlyoutItemBase item) => item switch
@@ -199,6 +239,8 @@ public sealed partial class HNotifyIconTray : IDisposable
     private static MUXC.IconElement? ResolveIcon(string? icon)
     {
         if (string.IsNullOrWhiteSpace(icon)) return null;
+        if (icon.StartsWith("path:", StringComparison.Ordinal))
+            return new MUXC.PathIcon { Data = (Geometry)XamlBindingHelper.ConvertValue(typeof(Geometry), icon[5..]) };
         return Enum.TryParse<MUXC.Symbol>(icon, ignoreCase: true, out var symbol)
             ? new MUXC.SymbolIcon { Symbol = symbol }
             : new MUXC.FontIcon { Glyph = icon };

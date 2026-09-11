@@ -369,7 +369,7 @@
 תוכלו לעזור בתרומת תרגומים ב-</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>צא מ-FluentFlyout</value>
+    <value>צא מ-{appName}</value>
   </data>
   <data name="TaskbarWidgetPaddingTitle" xml:space="preserve">
     <value>כפתור רווח אוטומטי לווידג'טים של Windows</value>

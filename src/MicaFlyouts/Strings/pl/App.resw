@@ -318,7 +318,7 @@ Możesz pomóc w tworzeniu tłumaczeń na stronie</value>
     <value>Następnie:</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Zakończ FluentFlyout</value>
+    <value>Zakończ {appName}</value>
   </data>
   <data name="CloseButton" xml:space="preserve">
     <value>Zamknij</value>

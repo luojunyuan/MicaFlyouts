@@ -651,7 +651,7 @@ You can help contribute translations on</value>
     <value>Report bug</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Quit FluentFlyout</value>
+    <value>Quit {appName}</value>
   </data>
   <data name="PixelsUnit" xml:space="preserve">
     <value>px</value>

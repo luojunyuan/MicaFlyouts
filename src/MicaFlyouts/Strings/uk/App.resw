@@ -410,7 +410,7 @@
     <value> Кубічний</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Закрити FluentFlyout</value>
+    <value>Закрити {appName}</value>
   </data>
   <data name="PixelsUnit" xml:space="preserve">
     <value>пікс.</value>

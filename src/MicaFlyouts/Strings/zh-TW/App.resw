@@ -239,7 +239,7 @@
     <value>應用程式語言</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>結束 FluentFlyout</value>
+    <value>結束 {appName}</value>
   </data>
   <data name="AppLanguageDescriptionLink" xml:space="preserve">
     <value>Weblate</value>

@@ -330,7 +330,7 @@
     <value>バグを報告</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>FluentFlyoutを終了</value>
+    <value>{appName}を終了</value>
   </data>
   <data name="LockWindow_InsertPressed" xml:space="preserve">
     <value>Insertキーが押されました</value>

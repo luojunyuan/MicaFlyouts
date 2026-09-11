@@ -321,7 +321,7 @@
     <value>रिपोर्ट बग</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>FluentFlyout छोड़ें</value>
+    <value>{appName} छोड़ें</value>
   </data>
   <data name="TaskbarWidgetCustomizationTitle" xml:space="preserve">
     <value>टास्कबार विजेट</value>

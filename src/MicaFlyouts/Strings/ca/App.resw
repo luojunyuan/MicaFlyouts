@@ -543,7 +543,7 @@ Pots ajudar a contribuir amb les traduccions a</value>
     <value>Informeu d'un error</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Sortir de FluentFlyout</value>
+    <value>Sortir de {appName}</value>
   </data>
   <data name="PixelsUnit" xml:space="preserve">
     <value>px</value>

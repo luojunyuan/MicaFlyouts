@@ -215,7 +215,7 @@ verbergt herhalen, shuffle en spelerinfo</value>
     <value>Back-up en herstel je instellingen</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Sluit FluentFlyout af</value>
+    <value>Sluit {appName} af</value>
   </data>
   <data name="PixelsUnit" xml:space="preserve">
     <value>px</value>

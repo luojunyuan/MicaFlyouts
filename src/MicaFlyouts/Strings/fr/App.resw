@@ -348,7 +348,7 @@ Vous pouvez contribuer aux traductions sur</value>
     <value>Signaler un bug</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Quitter FluentFlyout</value>
+    <value>Quitter {appName}</value>
   </data>
   <data name="SelectedMonitorTitle" xml:space="preserve">
     <value>Affichage cible Flyout</value>

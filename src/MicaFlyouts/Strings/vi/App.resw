@@ -365,7 +365,7 @@ Bạn có thể hỗ trợ dịch tại</value>
     <value>Báo lỗi</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Thoát FluentFlyout</value>
+    <value>Thoát {appName}</value>
   </data>
   <data name="PixelsUnit" xml:space="preserve">
     <value>px</value>

@@ -128,7 +128,7 @@ verbirgt autom. Wiederholung, Shuffle und Player-Information</value>
     <value>Fehler melden</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>FluentFlyout beenden</value>
+    <value>{appName} beenden</value>
   </data>
   <data name="LaunchOnStartupTitle" xml:space="preserve">
     <value>Beim Start starten</value>

@@ -348,7 +348,7 @@ Puoi contribuire alla traduzione su</value>
     <value>Segnala problema</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>Chiudi FluentFlyout</value>
+    <value>Chiudi {appName}</value>
   </data>
   <data name="TaskbarWidgetControlsTitle" xml:space="preserve">
     <value>Controlli Multimediali Widget</value>

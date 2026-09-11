@@ -297,7 +297,7 @@
     <value>오류 보고</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>FluentFlyout 종료</value>
+    <value>{appName} 종료</value>
   </data>
   <data name="HomeTitle" xml:space="preserve">
     <value>홈</value>

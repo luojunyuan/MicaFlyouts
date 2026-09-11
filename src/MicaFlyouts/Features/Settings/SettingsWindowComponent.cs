@@ -254,7 +254,10 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
     private ScrollViewerElement System(AppServices services)
         => Page(T(Loc.App.SystemSettingsTitle, "System"), "Startup, appearance, localization, and tray behavior.",
             Card("Start with Windows", "Launch minimized to the notification area.", Toggle(Props.Settings.Startup, value => Update(services, s => s with { Startup = value }))),
-            Card("Hide tray icon", "Run without a persistent tray icon.", Toggle(Props.Settings.NIconHide, value => Update(services, s => s with { NIconHide = value }))),
+            Card(T(Loc.App.HideTrayIconTitle, "Hide tray icon"), T(Loc.App.HideTrayIconDescription, "Run without a persistent tray icon."),
+                Toggle(Props.Settings.NIconHide, value => Update(services, s => s with { NIconHide = value }))),
+            Card(T(Loc.App.Win11TrayIconTitle, "Windows 11-like tray icon"), T(Loc.App.Win11TrayIconDescription, "Use a monochrome icon that follows the Windows taskbar theme."),
+                Toggle(Props.Settings.NIconSymbol, value => Update(services, s => s with { NIconSymbol = value }))),
             Card("Theme", "Use the system, light, or dark theme.", Combo(["System", "Light", "Dark"], Props.Settings.AppTheme, value => Update(services, s => s with { AppTheme = value }))),
             Card("Language", "Choose the UI language; system follows Windows.", Combo([.. LocalizationCatalog.SupportedLanguages],
                 Math.Max(0, Array.IndexOf([.. LocalizationCatalog.SupportedLanguages], Props.Settings.AppLanguage)),

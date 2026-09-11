@@ -297,7 +297,7 @@
     <value>报告错误</value>
   </data>
   <data name="TrayIcon_QuitOption" xml:space="preserve">
-    <value>退出 FluentFlyout</value>
+    <value>退出 {appName}</value>
   </data>
   <data name="TaskbarWidgetCustomizationTitle" xml:space="preserve">
     <value>任务栏小组件</value>

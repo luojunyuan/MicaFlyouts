@@ -44,6 +44,7 @@
     <AdditionalFiles Include="Infrastructure\Interop\NativeMethods.txt" />
     <AdditionalFiles Include="Strings\**\*.resw" />
     <EmbeddedResource Include="Assets\MicaFlyouts.ico" LogicalName="MicaFlyouts.Assets.MicaFlyouts.ico" />
+    <EmbeddedResource Include="Assets\TrayIcons\*.ico" />
     <Content Include="Assets\MicaFlyouts.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Assets\**\*" Exclude="Assets\MicaFlyouts.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Strings\**\*.resw" CopyToOutputDirectory="PreserveNewest" />
