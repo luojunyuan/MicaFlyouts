@@ -35,27 +35,51 @@ internal sealed class SettingsContentComponent : Component
         var searchSuggestions = searchEntries
             .Select(entry => t.Message(entry.TitleKey))
             .ToArray();
+
+        return RenderSettingsFrame(
+            t,
+            RenderTitleBar(query, setQuery, searchSuggestions, t, setPage),
+            RenderNavigation(menu, content, page, setPage, t));
+    }
+
+    private static TitleBarElement RenderTitleBar(
+        string query,
+        Action<string> setQuery,
+        string[] searchSuggestions,
+        IntlAccessor t,
+        Action<SettingsPage> setPage)
+    {
         var search = (AutoSuggestBox(
                 query,
                 setQuery,
                 submitted => SelectSearchResult(submitted, t, setPage)) with
+        {
+            Suggestions = searchSuggestions,
+            OnSuggestionChosen = selected =>
             {
-                Suggestions = searchSuggestions,
-                OnSuggestionChosen = selected =>
-                {
-                    setQuery(selected);
-                    SelectSearchResult(selected, t, setPage);
-                },
-            })
+                setQuery(selected);
+                SelectSearchResult(selected, t, setPage);
+            },
+        })
             .Width(320)
             .PlaceholderText(t.Message(Loc.App.SearchSettings))
             .QueryIcon(SymbolIcon("Find"))
             .AutomationName(t.Message(Loc.App.SearchSettings));
-        var titleBar = (TitleBar(AppBranding.Name) with
+
+        return (TitleBar(AppBranding.Name) with
         {
             Content = search,
             Icon = AppBranding.TitleBarIcon,
         }).Grid(row: 0);
+    }
+
+    private static NavigationViewElement RenderNavigation(
+        NavigationViewItemData[] menu,
+        Element content,
+        SettingsPage page,
+        Action<SettingsPage> setPage,
+        IntlAccessor t)
+    {
         var navigation = NavigationView(menu, content) with
         {
             SelectedTag = SettingsSearchIndex.Tag(page),
@@ -69,16 +93,20 @@ internal sealed class SettingsContentComponent : Component
             IsPaneToggleButtonVisible = true,
             IsTitleBarAutoPaddingEnabled = false,
         };
-        return Border(Grid(
+
+        return navigation.Grid(row: 1);
+    }
+
+    private static BorderElement RenderSettingsFrame(IntlAccessor t, Element titleBar, Element navigation)
+        => Border(Grid(
                 columns: [GridSize.Star()],
                 rows: [GridSize.Auto, GridSize.Star()],
                 titleBar,
-                navigation.Grid(row: 1)))
+                navigation))
             .Background(SolidBackground)
             .WithBorder(SurfaceStroke, 1)
             .CornerRadius(8)
             .Set(navigationControl => navigationControl.FlowDirection = t.Direction);
-    }
 
     private static void SelectSearchResult(
         string query,

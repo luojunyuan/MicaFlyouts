@@ -26,25 +26,24 @@ public sealed class TaskbarWidgetComponent : Component
         var active = media.ActiveSession;
         if (active is null && settings.TaskbarWidgetHideCompletely)
             return Empty();
-        var title = active is null
-            ? "-"
-            : string.IsNullOrWhiteSpace(active.Track.Title)
-                ? t.Message(Loc.App.UnknownTitle)
-                : active.Track.Title;
-        var artist = active is null
-            ? "-"
-            : string.IsNullOrWhiteSpace(active.Track.Artist)
-                ? t.Message(Loc.App.UnknownArtist)
-                : active.Track.Artist;
-        return Component<FlyoutSurface, FlyoutSurfaceProps>(new FlyoutSurfaceProps(
-            HStack(6,
-                Component<CoverImage, CoverImageProps>(new CoverImageProps(active?.Track.Thumbnail, 28)),
+        var title = TrackLabel(active?.Track.Title, active is not null, t.Message(Loc.App.UnknownTitle));
+        var artist = TrackLabel(active?.Track.Artist, active is not null, t.Message(Loc.App.UnknownArtist));
+
+        return RenderTaskbarWidget(active?.Track.Thumbnail, title, artist);
+    }
+
+    private static string TrackLabel(string? value, bool hasTrack, string unknown)
+        => !hasTrack ? "-" : string.IsNullOrWhiteSpace(value) ? unknown : value;
+
+    private static ComponentElement<FlyoutSurfaceProps> RenderTaskbarWidget(byte[]? thumbnail, string title, string artist)
+        => Component<FlyoutSurface, FlyoutSurfaceProps>(new FlyoutSurfaceProps(
+            Child: HStack(6,
+                Component<CoverImage, CoverImageProps>(new CoverImageProps(thumbnail, 28)),
                 VStack(0,
                     MarqueeText(title).FontSize(11),
                     MarqueeText(artist).FontSize(10).Opacity(0.58))),
-            6,
-            4));
-    }
+            Radius: 6,
+            Padding: 4));
 }
 
 public sealed class TaskbarVisualizerWindowComponent : LocalizedWindowComponent
@@ -59,26 +58,41 @@ public sealed class TaskbarVisualizerComponent : Component
         var services = AppRuntime.Services;
         var snapshot = UseExternalStore(services.VisualizerStore.Subscribe, () => services.VisualizerStore.Snapshot);
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
-        var bars = snapshot.Bars;
-        if (bars.Count == 0)
-            bars = new[] { 0.02f };
-        var elements = bars
-            .Select((bar, index) => Border(Empty())
-                .Background(Accent)
-                .Width(3)
-                .Height(Math.Max(2, 34 * bar))
-                .VAlign(VerticalAlignment.Bottom)
-                .WithKey(index.ToString(System.Globalization.CultureInfo.InvariantCulture)))
-            .ToArray();
-        Element body = HStack(2, elements);
-        if (settings.TaskbarVisualizerCenteredBars)
+        IReadOnlyList<float> bars = snapshot.Bars.Count == 0
+            ? [0.02f]
+            : snapshot.Bars;
+
+        return RenderVisualizerSurface(
+            bars,
+            settings.TaskbarVisualizerCenteredBars,
+            settings.TaskbarWidgetBackgroundBlur);
+    }
+
+    private static BorderElement RenderVisualizerSurface(
+        IReadOnlyList<float> bars,
+        bool centerBars,
+        bool blurBackground)
+    {
+        Element body = RenderVisualizerBars(bars);
+        if (centerBars)
             body = Grid([GridSize.Star()], [GridSize.Star()], body);
+
         var surface = Border(body)
             .Width(84)
             .Height(40)
             .Padding(4, 2)
             .WithBorder(SurfaceStroke, 1)
             .CornerRadius(4);
-        return settings.TaskbarWidgetBackgroundBlur ? surface.Background(LayerFill) : surface;
+        return blurBackground ? surface.Background(LayerFill) : surface;
     }
+
+    private static StackElement RenderVisualizerBars(IReadOnlyList<float> bars)
+        => HStack(2,
+            bars.Select((bar, index) => Border(Empty())
+                .Background(Accent)
+                .Width(3)
+                .Height(Math.Max(2, 34 * bar))
+                .VAlign(VerticalAlignment.Bottom)
+                .WithKey(index.ToString(System.Globalization.CultureInfo.InvariantCulture)))
+                .ToArray());
 }

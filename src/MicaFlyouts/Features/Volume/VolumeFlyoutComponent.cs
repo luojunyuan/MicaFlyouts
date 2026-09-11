@@ -1,4 +1,5 @@
 using MicaFlyouts.App;
+using MicaFlyouts.Domain.Settings;
 using MicaFlyouts.Domain.Volume;
 using MicaFlyouts.UI.Components;
 using Microsoft.UI.Xaml;
@@ -25,22 +26,45 @@ public sealed class VolumeFlyoutComponent : Component
 
         var volume = UseExternalStore(services.VolumeStore.Subscribe, () => services.VolumeStore.Snapshot);
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
-        var master = Slider(
+
+        return Component<FlyoutSurface, FlyoutSurfaceProps>(new FlyoutSurfaceProps(
+            Child: RenderVolumeControls(volume, settings, services, t),
+            Radius: 8,
+            Padding: 8));
+    }
+
+    private static StackElement RenderVolumeControls(
+        VolumeSnapshot volume,
+        SettingsSnapshot settings,
+        AppServices services,
+        IntlAccessor t)
+        => HStack(8,
+            Create(
+                volume.IsMasterMuted ? "\uE74F" : "\uE767",
+                t.Message(Loc.App.MediaMute),
+                services.Audio.ToggleMasterMute),
+            RenderMasterVolumeSlider(volume, services),
+            TextBlock($"{Math.Round(volume.MasterVolume * 100)}")
+                .Width(38)
+                .TextAlignment(TextAlignment.Right),
+            settings.VolumeMixerEnabled
+                ? RenderOpenMixerButton(services, t)
+                : Empty());
+
+    private static SliderElement RenderMasterVolumeSlider(VolumeSnapshot volume, AppServices services)
+        => Slider(
             Optional<double>.Of(volume.MasterVolume * 100),
             min: 0,
             max: 100,
             onValueChanged: value => services.Audio.SetMasterVolume((float)(value / 100)))
             .Height(24)
             .Flex(grow: 1, basis: 0);
-        var children = new List<Element>
-        {
-            Create(volume.IsMasterMuted ? "\uE74F" : "\uE767", t.Message(Loc.App.MediaMute), services.Audio.ToggleMasterMute),
-            master,
-            TextBlock($"{Math.Round(volume.MasterVolume * 100)}").Width(38).TextAlignment(TextAlignment.Right),
-        };
-        if (settings.VolumeMixerEnabled)
-        {
-            children.Add(Create("\uE995", t.Message(Loc.App.OpenVolumeMixer), () => services.Windows.OpenOrActivate(
+
+    private static ButtonElement RenderOpenMixerButton(AppServices services, IntlAccessor t)
+        => Create(
+            "\uE995",
+            t.Message(Loc.App.OpenVolumeMixer),
+            () => services.Windows.OpenOrActivate(
                 new WindowKey("volume-mixer"),
                 new WindowSpec
                 {
@@ -54,11 +78,7 @@ public sealed class VolumeFlyoutComponent : Component
                     CornerStyle = WindowCornerStyle.Rounded,
                     Backdrop = BackdropChoice.Of(BackdropKind.Mica),
                 },
-                static () => new VolumeMixerWindowComponent())));
-        }
-        return Component<FlyoutSurface, FlyoutSurfaceProps>(new FlyoutSurfaceProps(
-            HStack(8, children.ToArray()), 8, 8));
-    }
+                static () => new VolumeMixerWindowComponent()));
 }
 
 public sealed class VolumeMixerWindowComponent : LocalizedWindowComponent
@@ -73,18 +93,38 @@ public sealed class VolumeMixerComponent : Component
         var services = AppRuntime.Services;
         var t = UseIntl();
         var volume = UseExternalStore(services.VolumeStore.Subscribe, () => services.VolumeStore.Snapshot);
+
+        return RenderVolumeMixer(volume, services, t);
+    }
+
+    private static BorderElement RenderVolumeMixer(
+        VolumeSnapshot volume,
+        AppServices services,
+        IntlAccessor t)
+    {
         var rows = volume.Applications
             .Select(application => ApplicationRow(t, application, services))
             .ToArray();
+
         return Border(
             VStack(12,
-                HStack(8, TextBlock(t.Message(Loc.App.VolumeMixerSectionTitle)).FontSize(20).SemiBold(), Empty()),
-                rows.Length == 0 ? TextBlock(t.Message(Loc.App.NoApplicationSessions)).Opacity(0.65) : VStack(8, rows)))
+                RenderVolumeMixerHeader(t),
+                RenderApplicationRows(rows, t)))
             .Padding(20)
             .Background(SolidBackground)
             .WithBorder(SurfaceStroke, 1)
             .CornerRadius(8);
     }
+
+    private static StackElement RenderVolumeMixerHeader(IntlAccessor t)
+        => HStack(8,
+            TextBlock(t.Message(Loc.App.VolumeMixerSectionTitle)).FontSize(20).SemiBold(),
+            Empty());
+
+    private static Element RenderApplicationRows(StackElement[] rows, IntlAccessor t)
+        => rows.Length == 0
+            ? TextBlock(t.Message(Loc.App.NoApplicationSessions)).Opacity(0.65)
+            : VStack(8, rows);
 
     private static StackElement ApplicationRow(IntlAccessor t, ApplicationVolumeSnapshot application, AppServices services)
         => HStack(8,

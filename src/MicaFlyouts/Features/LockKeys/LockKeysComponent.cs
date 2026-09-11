@@ -1,9 +1,11 @@
 using MicaFlyouts.App;
 using MicaFlyouts.Domain.LockKeys;
+using MicaFlyouts.Domain.Settings;
 using MicaFlyouts.UI.Components;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
+using Microsoft.UI.Reactor.Localization;
 using static Microsoft.UI.Reactor.Factories;
 using static Microsoft.UI.Reactor.Core.Theme;
 
@@ -22,6 +24,18 @@ public sealed class LockKeysComponent : Component
         var t = UseIntl();
         var snapshot = UseExternalStore(services.LockKeyStore.Subscribe, () => services.LockKeyStore.Snapshot);
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
+
+        return Component<FlyoutSurface, FlyoutSurfaceProps>(new FlyoutSurfaceProps(
+            Child: RenderKeyItems(snapshot, settings, t),
+            Radius: 8,
+            Padding: 8));
+    }
+
+    private static StackElement RenderKeyItems(
+        LockKeySnapshot snapshot,
+        SettingsSnapshot settings,
+        IntlAccessor t)
+    {
         var keys = new[]
         {
             (LockKeyKind.CapsLock, t.Message(Loc.App.LockWindow_CapsLock), snapshot.CapsLock, settings.LockKeysCapsEnabled),
@@ -33,10 +47,7 @@ public sealed class LockKeysComponent : Component
             .Where(static key => key.Item4)
             .Select(key => KeyItem(key.Item1, key.Item2, key.Item3))
             .ToArray();
-        return Component<FlyoutSurface, FlyoutSurfaceProps>(new FlyoutSurfaceProps(
-            HStack(10, items),
-            8,
-            8));
+        return HStack(10, items);
     }
 
     private static StackElement KeyItem(LockKeyKind key, string label, bool isOn)
