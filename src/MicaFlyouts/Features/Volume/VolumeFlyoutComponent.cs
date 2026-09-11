@@ -4,15 +4,16 @@ using MicaFlyouts.UI.Components;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
+using Microsoft.UI.Reactor.Localization;
 using static MicaFlyouts.UI.Components.IconButton;
 using static Microsoft.UI.Reactor.Factories;
 using static Microsoft.UI.Reactor.Core.Theme;
 
 namespace MicaFlyouts.Features.Volume;
 
-public sealed class VolumeFlyoutWindowComponent : Component
+public sealed class VolumeFlyoutWindowComponent : LocalizedWindowComponent
 {
-    public override Element Render() => Component<VolumeFlyoutComponent>();
+    public override Element Render() => UseLocalized(Component<VolumeFlyoutComponent>());
 }
 
 public sealed class VolumeFlyoutComponent : Component
@@ -20,6 +21,7 @@ public sealed class VolumeFlyoutComponent : Component
     public override Element Render()
     {
         var services = AppRuntime.Services;
+        var t = UseIntl();
 
         var volume = UseExternalStore(services.VolumeStore.Subscribe, () => services.VolumeStore.Snapshot);
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
@@ -32,17 +34,17 @@ public sealed class VolumeFlyoutComponent : Component
             .Flex(grow: 1, basis: 0);
         var children = new List<Element>
         {
-            Create(volume.IsMasterMuted ? "\uE74F" : "\uE767", "Mute", services.Audio.ToggleMasterMute),
+            Create(volume.IsMasterMuted ? "\uE74F" : "\uE767", t.Message(Loc.App.MediaMute), services.Audio.ToggleMasterMute),
             master,
             TextBlock($"{Math.Round(volume.MasterVolume * 100)}").Width(38).TextAlignment(TextAlignment.Right),
         };
         if (settings.VolumeMixerEnabled)
         {
-            children.Add(Create("\uE995", "Open volume mixer", () => services.Windows.OpenOrActivate(
+            children.Add(Create("\uE995", t.Message(Loc.App.OpenVolumeMixer), () => services.Windows.OpenOrActivate(
                 new WindowKey("volume-mixer"),
                 new WindowSpec
                 {
-                    Title = "Volume Mixer",
+                    Title = t.Message(Loc.App.VolumeMixerSectionTitle),
                     Width = 420,
                     Height = 420,
                     MinWidth = 320,
@@ -59,9 +61,9 @@ public sealed class VolumeFlyoutComponent : Component
     }
 }
 
-public sealed class VolumeMixerWindowComponent : Component
+public sealed class VolumeMixerWindowComponent : LocalizedWindowComponent
 {
-    public override Element Render() => Component<VolumeMixerComponent>();
+    public override Element Render() => UseLocalized(Component<VolumeMixerComponent>());
 }
 
 public sealed class VolumeMixerComponent : Component
@@ -69,21 +71,22 @@ public sealed class VolumeMixerComponent : Component
     public override Element Render()
     {
         var services = AppRuntime.Services;
+        var t = UseIntl();
         var volume = UseExternalStore(services.VolumeStore.Subscribe, () => services.VolumeStore.Snapshot);
         var rows = volume.Applications
-            .Select(application => ApplicationRow(application, services))
+            .Select(application => ApplicationRow(t, application, services))
             .ToArray();
         return Border(
             VStack(12,
-                HStack(8, TextBlock("Volume mixer").FontSize(20).SemiBold(), Empty()),
-                rows.Length == 0 ? TextBlock("No application sessions detected.").Opacity(0.65) : VStack(8, rows)))
+                HStack(8, TextBlock(t.Message(Loc.App.VolumeMixerSectionTitle)).FontSize(20).SemiBold(), Empty()),
+                rows.Length == 0 ? TextBlock(t.Message(Loc.App.NoApplicationSessions)).Opacity(0.65) : VStack(8, rows)))
             .Padding(20)
             .Background(SolidBackground)
             .WithBorder(SurfaceStroke, 1)
             .CornerRadius(8);
     }
 
-    private static StackElement ApplicationRow(ApplicationVolumeSnapshot application, AppServices services)
+    private static StackElement ApplicationRow(IntlAccessor t, ApplicationVolumeSnapshot application, AppServices services)
         => HStack(8,
             TextBlock(application.DisplayName).Width(150).TextTrimming(TextTrimming.CharacterEllipsis),
             Slider(
@@ -92,6 +95,6 @@ public sealed class VolumeMixerComponent : Component
                 100,
                 value => services.Audio.SetApplicationVolume(application.SessionId, (float)(value / 100)))
                 .Flex(grow: 1, basis: 0),
-            Create(application.IsMuted ? "\uE74F" : "\uE767", "Mute application", () => services.Audio.ToggleApplicationMute(application.SessionId)))
+            Create(application.IsMuted ? "\uE74F" : "\uE767", t.Message(Loc.App.MediaMute), () => services.Audio.ToggleApplicationMute(application.SessionId)))
             .WithKey(application.SessionId);
 }

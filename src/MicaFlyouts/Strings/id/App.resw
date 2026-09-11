@@ -803,4 +803,139 @@ Anda dapat membantu berkontribusi dalam menerjemahkan di</value>
   <data name="TaskbarWidgetScrollingTextSpeedDescription" xml:space="preserve">
     <value>Kecepatan gulir teks (piksel/detik). Nilai bawaan adalah 20.</value>
   </data>
+  <data name="MediaPrevious" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="MediaPause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="MediaPlay" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="MediaNext" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="MediaRepeat" xml:space="preserve">
+    <value>Repeat</value>
+  </data>
+  <data name="MediaShuffle" xml:space="preserve">
+    <value>Shuffle</value>
+  </data>
+  <data name="MediaMute" xml:space="preserve">
+    <value>Mute</value>
+  </data>
+  <data name="OpenVolumeMixer" xml:space="preserve">
+    <value>Open volume mixer</value>
+  </data>
+  <data name="NoApplicationSessions" xml:space="preserve">
+    <value>No application sessions detected.</value>
+  </data>
+  <data name="UnknownTitle" xml:space="preserve">
+    <value>Unknown title</value>
+  </data>
+  <data name="UnknownArtist" xml:space="preserve">
+    <value>Unknown artist</value>
+  </data>
+  <data name="EnableFeature" xml:space="preserve">
+    <value>Enable this feature</value>
+  </data>
+  <data name="OnboardingIllustration" xml:space="preserve">
+    <value>{feature} illustration</value>
+  </data>
+  <data name="OnboardingDescription" xml:space="preserve">
+    <value>A native Windows overlay for media, volume, and keyboard status.</value>
+  </data>
+  <data name="HomeDescription" xml:space="preserve">
+    <value>Choose which surfaces Mica Flyouts keeps ready.</value>
+  </data>
+  <data name="PlayerInformationDescription" xml:space="preserve">
+    <value>Show title, artist, and player details.</value>
+  </data>
+  <data name="VolumeAboveMediaFlyoutDescription" xml:space="preserve">
+    <value>Place volume controls above the media surface.</value>
+  </data>
+  <data name="VolumeFlyoutStayDurationDescription" xml:space="preserve">
+    <value>Milliseconds before volume controls hide.</value>
+  </data>
+  <data name="WidgetPositionDescription" xml:space="preserve">
+    <value>Place the widget at the start, center, or end.</value>
+  </data>
+  <data name="PositionStart" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="PositionCenter" xml:space="preserve">
+    <value>Center</value>
+  </data>
+  <data name="PositionEnd" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="BaselineAutoHideTitle" xml:space="preserve">
+    <value>Baseline auto-hide</value>
+  </data>
+  <data name="SensitivityLow" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="SensitivityMedium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="SensitivityHigh" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="SystemDescription" xml:space="preserve">
+    <value>Startup, appearance, localization, and tray behavior.</value>
+  </data>
+  <data name="AppThemeDescription" xml:space="preserve">
+    <value>Use the system, light, or dark theme.</value>
+  </data>
+  <data name="FontFamilyTitle" xml:space="preserve">
+    <value>Font family</value>
+  </data>
+  <data name="FontFamilyDescription" xml:space="preserve">
+    <value>Font fallback list used by the application.</value>
+  </data>
+  <data name="AboutDescription" xml:space="preserve">
+    <value>Open-source project information and update status.</value>
+  </data>
+  <data name="AboutProjectDescription" xml:space="preserve">
+    <value>A native Microsoft UI Reactor media overlay.</value>
+  </data>
+  <data name="VersionLabel" xml:space="preserve">
+    <value>Version: {version}</value>
+  </data>
+  <data name="DevelopmentVersion" xml:space="preserve">
+    <value>development</value>
+  </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="EnableAppFilteringDescription" xml:space="preserve">
+    <value>Apply the selected app list to media and taskbar updates.</value>
+  </data>
+  <data name="AdvancedDescription" xml:space="preserve">
+    <value>Settings export, import, and compatibility controls.</value>
+  </data>
+  <data name="SettingsDataDescription" xml:space="preserve">
+    <value>Export excludes the installation identifier; import keeps the current identifier.</value>
+  </data>
+  <data name="SaveNow" xml:space="preserve">
+    <value>Save now</value>
+  </data>
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="FeaturesSectionTitle" xml:space="preserve">
+    <value>Features</value>
+  </data>
+  <data name="ApplicationSectionTitle" xml:space="preserve">
+    <value>Application</value>
+  </data>
+  <data name="ToggleSetting" xml:space="preserve">
+    <value>Toggle setting</value>
+  </data>
+  <data name="NumericSetting" xml:space="preserve">
+    <value>Numeric setting</value>
+  </data>
+  <data name="ChooseSetting" xml:space="preserve">
+    <value>Choose setting</value>
+  </data>
 </root>

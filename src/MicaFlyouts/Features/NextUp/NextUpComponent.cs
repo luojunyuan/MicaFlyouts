@@ -7,7 +7,7 @@ using static Microsoft.UI.Reactor.Factories;
 
 namespace MicaFlyouts.Features.NextUp;
 
-public sealed class NextUpWindowComponent : Component
+public sealed class NextUpWindowComponent : LocalizedWindowComponent
 {
     private readonly MediaTrackSnapshot _track;
 
@@ -17,19 +17,28 @@ public sealed class NextUpWindowComponent : Component
     }
 
     public override Element Render()
-        => Component<NextUpComponent, MediaTrackSnapshot>(_track);
+        => UseLocalized(Component<NextUpComponent, MediaTrackSnapshot>(_track));
 }
 
 public sealed class NextUpComponent : Component<MediaTrackSnapshot>
 {
     public override Element Render()
-        => Component<FlyoutSurface, FlyoutSurfaceProps>(new FlyoutSurfaceProps(
+    {
+        var t = UseIntl();
+        var title = string.IsNullOrWhiteSpace(Props.Title)
+            ? t.Message(Loc.App.UnknownTitle)
+            : Props.Title;
+        var artist = string.IsNullOrWhiteSpace(Props.Artist)
+            ? t.Message(Loc.App.UnknownArtist)
+            : Props.Artist;
+        return Component<FlyoutSurface, FlyoutSurfaceProps>(new FlyoutSurfaceProps(
             HStack(10,
                 Component<CoverImage, CoverImageProps>(new CoverImageProps(Props.Thumbnail, 38)),
                 VStack(1,
-                    Caption("Next up").Opacity(0.6),
-                    MarqueeText(Props.DisplayTitle).SemiBold(),
-                    MarqueeText(Props.DisplayArtist).Opacity(0.6))),
+                    Caption(t.Message(Loc.App.NextUpWindow_UpNextText)).Opacity(0.6),
+                    MarqueeText(title).SemiBold(),
+                    MarqueeText(artist).Opacity(0.6))),
             8,
             6));
+    }
 }

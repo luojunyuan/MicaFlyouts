@@ -10,9 +10,9 @@ using static Microsoft.UI.Reactor.Core.Theme;
 
 namespace MicaFlyouts.Features.Taskbar;
 
-public sealed class TaskbarWidgetWindowComponent : Component
+public sealed class TaskbarWidgetWindowComponent : LocalizedWindowComponent
 {
-    public override Element Render() => Component<TaskbarWidgetComponent>();
+    public override Element Render() => UseLocalized(Component<TaskbarWidgetComponent>());
 }
 
 public sealed class TaskbarWidgetComponent : Component
@@ -20,25 +20,36 @@ public sealed class TaskbarWidgetComponent : Component
     public override Element Render()
     {
         var services = AppRuntime.Services;
+        var t = UseIntl();
         var media = UseExternalStore(services.MediaStore.Subscribe, () => services.MediaStore.Snapshot);
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
         var active = media.ActiveSession;
         if (active is null && settings.TaskbarWidgetHideCompletely)
             return Empty();
+        var title = active is null
+            ? "-"
+            : string.IsNullOrWhiteSpace(active.Track.Title)
+                ? t.Message(Loc.App.UnknownTitle)
+                : active.Track.Title;
+        var artist = active is null
+            ? "-"
+            : string.IsNullOrWhiteSpace(active.Track.Artist)
+                ? t.Message(Loc.App.UnknownArtist)
+                : active.Track.Artist;
         return Component<FlyoutSurface, FlyoutSurfaceProps>(new FlyoutSurfaceProps(
             HStack(6,
                 Component<CoverImage, CoverImageProps>(new CoverImageProps(active?.Track.Thumbnail, 28)),
                 VStack(0,
-                    MarqueeText(active?.Track.DisplayTitle ?? "-").FontSize(11),
-                    MarqueeText(active?.Track.DisplayArtist ?? "-").FontSize(10).Opacity(0.58))),
+                    MarqueeText(title).FontSize(11),
+                    MarqueeText(artist).FontSize(10).Opacity(0.58))),
             6,
             4));
     }
 }
 
-public sealed class TaskbarVisualizerWindowComponent : Component
+public sealed class TaskbarVisualizerWindowComponent : LocalizedWindowComponent
 {
-    public override Element Render() => Component<TaskbarVisualizerComponent>();
+    public override Element Render() => UseLocalized(Component<TaskbarVisualizerComponent>());
 }
 
 public sealed class TaskbarVisualizerComponent : Component

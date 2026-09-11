@@ -11,9 +11,9 @@ using static Microsoft.UI.Reactor.Factories;
 
 namespace MicaFlyouts.Features.Media;
 
-public sealed class MediaFlyoutWindowComponent : Component
+public sealed class MediaFlyoutWindowComponent : LocalizedWindowComponent
 {
-    public override Element Render() => Component<MediaFlyoutComponent>();
+    public override Element Render() => UseLocalized(Component<MediaFlyoutComponent>());
 }
 
 public sealed class MediaFlyoutComponent : Component
@@ -21,6 +21,7 @@ public sealed class MediaFlyoutComponent : Component
     public override Element Render()
     {
         var services = AppRuntime.Services;
+        var t = UseIntl();
 
         var media = UseExternalStore(services.MediaStore.Subscribe, () => services.MediaStore.Snapshot);
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
@@ -33,17 +34,19 @@ public sealed class MediaFlyoutComponent : Component
         double max = Math.Max(track.Timeline.End.TotalSeconds, 1);
         double value = Math.Clamp(position.TotalSeconds, 0, max);
         var controls = HStack(4,
-            Create("\uE100", "Previous", () => _ = services.Media.SkipPreviousAsync()),
+            Create("\uE100", t.Message(Loc.App.MediaPrevious), () => _ = services.Media.SkipPreviousAsync()),
             Create(
                 track.PlaybackStatus == MediaPlaybackStatus.Playing ? "\uE769" : "\uE768",
-                track.PlaybackStatus == MediaPlaybackStatus.Playing ? "Pause" : "Play",
+                track.PlaybackStatus == MediaPlaybackStatus.Playing
+                    ? t.Message(Loc.App.MediaPause)
+                    : t.Message(Loc.App.MediaPlay),
                 () => _ = services.Media.TogglePlayPauseAsync()),
-            Create("\uE101", "Next", () => _ = services.Media.SkipNextAsync()),
+            Create("\uE101", t.Message(Loc.App.MediaNext), () => _ = services.Media.SkipNextAsync()),
             settings.RepeatEnabled
-                ? Create("\uE8EE", "Repeat", () => _ = services.Media.SetRepeatAsync(track.RepeatMode == 0 ? 2 : 0))
+                ? Create("\uE8EE", t.Message(Loc.App.MediaRepeat), () => _ = services.Media.SetRepeatAsync(track.RepeatMode == 0 ? 2 : 0))
                 : Empty(),
             settings.ShuffleEnabled
-                ? Create("\uE8B1", "Shuffle", () => _ = services.Media.SetShuffleAsync(!track.IsShuffleActive))
+                ? Create("\uE8B1", t.Message(Loc.App.MediaShuffle), () => _ = services.Media.SetShuffleAsync(!track.IsShuffleActive))
                 : Empty())
             .VAlign(VerticalAlignment.Center);
 
@@ -59,13 +62,19 @@ public sealed class MediaFlyoutComponent : Component
                 .WithKey("seekbar");
         }
 
+        var title = string.IsNullOrWhiteSpace(track.Title)
+            ? t.Message(Loc.App.UnknownTitle)
+            : track.Title;
+        var artist = string.IsNullOrWhiteSpace(track.Artist)
+            ? t.Message(Loc.App.UnknownArtist)
+            : track.Artist;
         var content = Grid(
             [GridSize.Px(78), GridSize.Star()],
             [GridSize.Px(78), GridSize.Auto],
             Component<CoverImage, CoverImageProps>(new CoverImageProps(track.Thumbnail, 78)).Grid(row: 0, column: 0),
             VStack(4,
-                MarqueeText(track.DisplayTitle).FontSize(14).SemiBold(),
-                MarqueeText(track.DisplayArtist).FontSize(14).Opacity(0.55),
+                MarqueeText(title).FontSize(14).SemiBold(),
+                MarqueeText(artist).FontSize(14).Opacity(0.55),
                 controls).Grid(row: 0, column: 1).Padding(left: 12),
             HStack(4,
                 TextBlock(TimelineFormatter.Format(position)).FontSize(11).Opacity(0.55).Width(42),

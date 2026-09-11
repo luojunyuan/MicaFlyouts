@@ -8,9 +8,9 @@ using static Microsoft.UI.Reactor.Core.Theme;
 
 namespace MicaFlyouts.Features.Onboarding;
 
-public sealed class OnboardingWindowComponent : Component
+public sealed class OnboardingWindowComponent : LocalizedWindowComponent
 {
-    public override Element Render() => Component<OnboardingComponent>();
+    public override Element Render() => UseLocalized(Component<OnboardingComponent>());
 }
 
 public sealed class OnboardingComponent : Component
@@ -18,6 +18,7 @@ public sealed class OnboardingComponent : Component
     public override Element Render()
     {
         var services = AppRuntime.Services;
+        var t = UseIntl();
         var onboarding = UseExternalStore(services.OnboardingStore.Subscribe, () => services.OnboardingStore.Snapshot);
         var step = onboarding.CurrentStep;
         var image = step switch
@@ -28,9 +29,9 @@ public sealed class OnboardingComponent : Component
         };
         var title = step switch
         {
-            OnboardingStep.Media => "Media flyout",
-            OnboardingStep.Volume => "Volume controls",
-            _ => "Lock keys",
+            OnboardingStep.Media => t.Message(Loc.App.MediaFlyoutTitle),
+            OnboardingStep.Volume => t.Message(Loc.App.VolumeFlyoutTitle),
+            _ => t.Message(Loc.App.LockKeysCustomizationTitle),
         };
         bool first = OnboardingRules.Previous(step) is null;
         bool last = OnboardingRules.Next(step) is null;
@@ -41,21 +42,21 @@ public sealed class OnboardingComponent : Component
                     ? services.Settings.Snapshot.VolumeControlEnabled
                     : services.Settings.Snapshot.LockKeysEnabled),
             enabled => ApplyStepSetting(services, step, enabled))
-            .AutomationName("Enable this feature");
+            .AutomationName(t.Message(Loc.App.EnableFeature));
         var introduction = HStack(16,
             ((Image(image) with { Stretch = "UniformToFill" }).Width(420).Height(280))
-                .AutomationName($"{title} illustration"),
+                .AutomationName(t.Message(Loc.App.OnboardingIllustration, ("feature", title))),
             VStack(12,
-                Heading("Mica Flyouts"),
+                Heading(AppBranding.Name),
                 SubHeading(title),
-                TextBlock("A native Windows overlay for media, volume, and keyboard status."),
+                TextBlock(t.Message(Loc.App.OnboardingDescription)),
                 settingToggle));
         var navigation = HStack(8,
-            Button("Back", () => Move(services, OnboardingRules.Previous(step)))
-                .AutomationName("Back")
+            Button(t.Message(Loc.App.Back), () => Move(services, OnboardingRules.Previous(step)))
+                .AutomationName(t.Message(Loc.App.Back))
                 .IsEnabled(!first),
-            Button(last ? "Finish" : "Next", () => Move(services, OnboardingRules.Next(step)))
-                .AutomationName(last ? "Finish" : "Next"));
+            Button(last ? t.Message(Loc.App.Finish) : t.Message(Loc.App.Next), () => Move(services, OnboardingRules.Next(step)))
+                .AutomationName(last ? t.Message(Loc.App.Finish) : t.Message(Loc.App.Next)));
         return Border(VStack(16, introduction, navigation))
             .Padding(28)
             .Background(SolidBackground)

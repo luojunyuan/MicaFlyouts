@@ -10,44 +10,48 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using static MicaFlyouts.UI.Toolkit.SettingsCardElement;
 using static MicaFlyouts.UI.Toolkit.SettingsExpanderElement;
-using static Microsoft.UI.Reactor.Factories;
 using static Microsoft.UI.Reactor.Core.Theme;
+using static Microsoft.UI.Reactor.Factories;
 
 namespace MicaFlyouts.Features.Settings;
 
-public sealed class SettingsWindowComponent : Component
+public sealed class SettingsWindowComponent : LocalizedWindowComponent
+{
+    public override Element Render() => UseLocalized(Component<SettingsContentComponent>());
+}
+
+internal sealed class SettingsContentComponent : Component
 {
     public override Element Render()
     {
         var services = AppRuntime.Services;
-
+        var t = UseIntl();
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
-        var localization = UseExternalStore(services.LocalizationStore.Subscribe, () => services.LocalizationStore.Snapshot);
         var (page, setPage) = UseState(SettingsPage.Home);
         var (query, setQuery) = UseState(string.Empty);
-        var menu = SettingsSearchIndex.MenuItems;
+        var menu = SettingsSearchIndex.MenuItems(t);
         var content = Component<SettingsPageComponent, SettingsPageProps>(new(page, settings));
-        var searchEntries = UseMemo(() => SettingsSearchIndex.Query(query), query);
-        var searchSuggestions = UseMemo(
-            () => searchEntries.Select(entry => entry.Title).ToArray(),
-            query);
+        var searchEntries = UseMemo(() => SettingsSearchIndex.Query(query, t), query, t.Locale);
+        var searchSuggestions = searchEntries
+            .Select(entry => t.Message(entry.TitleKey))
+            .ToArray();
         var search = (AutoSuggestBox(
                 query,
                 setQuery,
-                submitted => SelectSearchResult(submitted, setPage)) with
+                submitted => SelectSearchResult(submitted, t, setPage)) with
             {
                 Suggestions = searchSuggestions,
                 OnSuggestionChosen = selected =>
                 {
                     setQuery(selected);
-                    SelectSearchResult(selected, setPage);
+                    SelectSearchResult(selected, t, setPage);
                 },
             })
             .Width(320)
-            .PlaceholderText("Search settings")
+            .PlaceholderText(t.Message(Loc.App.SearchSettings))
             .QueryIcon(SymbolIcon("Find"))
-            .AutomationName("Search settings");
-        var titleBar = (TitleBar("Mica Flyouts") with
+            .AutomationName(t.Message(Loc.App.SearchSettings));
+        var titleBar = (TitleBar(AppBranding.Name) with
         {
             Content = search,
             Icon = AppBranding.TitleBarIcon,
@@ -61,11 +65,11 @@ public sealed class SettingsWindowComponent : Component
                     setPage(selected);
             },
             IsSettingsVisible = false,
-            PaneTitle = "Settings",
+            PaneTitle = t.Message(Loc.App.SettingsTitle),
             IsPaneToggleButtonVisible = true,
             IsTitleBarAutoPaddingEnabled = false,
         };
-        var surface = Border(Grid(
+        return Border(Grid(
                 columns: [GridSize.Star()],
                 rows: [GridSize.Auto, GridSize.Star()],
                 titleBar,
@@ -73,25 +77,17 @@ public sealed class SettingsWindowComponent : Component
             .Background(SolidBackground)
             .WithBorder(SurfaceStroke, 1)
             .CornerRadius(8)
-            .Set(navigationControl => navigationControl.FlowDirection = localization.IsRightToLeft
-                ? FlowDirection.RightToLeft
-                : FlowDirection.LeftToRight);
-        return LocaleProvider(
-            localization.Language,
-            surface,
-            services.Localization.ResourceProvider);
+            .Set(navigationControl => navigationControl.FlowDirection = t.Direction);
     }
 
     private static void SelectSearchResult(
         string query,
+        IntlAccessor t,
         Action<SettingsPage> setPage)
     {
-        var results = SettingsSearchIndex.Query(query);
-        if (results.Count == 0)
-            return;
-
-        var result = results[0];
-        setPage(result.Page);
+        var results = SettingsSearchIndex.Query(query, t);
+        if (results.Count > 0)
+            setPage(results[0].Page);
     }
 }
 
@@ -110,46 +106,53 @@ public enum SettingsPage
     Advanced,
 }
 
-public readonly record struct SettingsSearchEntry(SettingsPage Page, string Title, string[] Terms);
+public readonly record struct SettingsSearchEntry(
+    SettingsPage Page,
+    string Title,
+    MessageKey TitleKey,
+    string[] Terms);
 
 public static class SettingsSearchIndex
 {
     private static readonly SettingsSearchEntry[] Entries =
     [
-        new(SettingsPage.Home, "Home", ["home", "overview"]),
-        new(SettingsPage.Media, "Media", ["media", "player", "playback", "seek"]),
-        new(SettingsPage.Volume, "Volume", ["volume", "mixer", "mute", "audio"]),
-        new(SettingsPage.Taskbar, "Taskbar", ["taskbar", "widget", "shell", "explorer"]),
-        new(SettingsPage.Visualizer, "Visualizer", ["visualizer", "bars", "spectrum"]),
-        new(SettingsPage.NextUp, "Next Up", ["next", "up", "queue"]),
-        new(SettingsPage.LockKeys, "Lock Keys", ["caps", "num", "scroll", "insert", "keyboard"]),
-        new(SettingsPage.System, "System", ["system", "startup", "tray", "language", "theme"]),
-        new(SettingsPage.About, "About", ["about", "version", "license", "update"]),
-        new(SettingsPage.AppFiltering, "App Filtering", ["filter", "allow", "block", "application"]),
-        new(SettingsPage.Advanced, "Advanced", ["advanced", "json", "import", "export", "debug"]),
+        new(SettingsPage.Home, "Home", Loc.App.HomeTitle, ["home", "overview"]),
+        new(SettingsPage.Media, "Media", Loc.App.MediaFlyoutTitle, ["media", "player", "playback", "seek"]),
+        new(SettingsPage.Volume, "Volume", Loc.App.VolumeFlyoutTitle, ["volume", "mixer", "mute", "audio"]),
+        new(SettingsPage.Taskbar, "Taskbar", Loc.App.TaskbarWidgetCustomizationTitle, ["taskbar", "widget", "shell", "explorer"]),
+        new(SettingsPage.Visualizer, "Visualizer", Loc.App.TaskbarVisualizerTitle, ["visualizer", "bars", "spectrum"]),
+        new(SettingsPage.NextUp, "Next Up", Loc.App.NextUpCustomizationTitle, ["next", "up", "queue"]),
+        new(SettingsPage.LockKeys, "Lock Keys", Loc.App.LockKeysCustomizationTitle, ["caps", "num", "scroll", "insert", "keyboard"]),
+        new(SettingsPage.System, "System", Loc.App.SystemSettingsTitle, ["system", "startup", "tray", "language", "theme"]),
+        new(SettingsPage.About, "About", Loc.App.AboutTitle, ["about", "version", "license", "update"]),
+        new(SettingsPage.AppFiltering, "App Filtering", Loc.App.AppFilteringTitle, ["filter", "allow", "block", "application"]),
+        new(SettingsPage.Advanced, "Advanced", Loc.App.AdvancedSettingsTitle, ["advanced", "json", "import", "export", "debug"]),
     ];
 
-    public static NavigationViewItemData[] MenuItems { get; } =
+    public static NavigationViewItemData[] MenuItems(IntlAccessor t) =>
     [
-        NavItem("Home", "Home", Tag(SettingsPage.Home)),
-        NavItemHeader("Features"),
-        NavItem("Media", "MusicInfo", Tag(SettingsPage.Media)),
-        NavItem("Volume", "Volume", Tag(SettingsPage.Volume)),
-        NavItem("Taskbar", "DockBottom", Tag(SettingsPage.Taskbar)),
-        NavItem("Visualizer", "ViewAll", Tag(SettingsPage.Visualizer)),
-        NavItem("Next Up", "Forward", Tag(SettingsPage.NextUp)),
-        NavItem("Lock Keys", "Keyboard", Tag(SettingsPage.LockKeys)),
-        NavItemHeader("Application"),
-        NavItem("System", "Setting", Tag(SettingsPage.System)),
-        NavItem("About", "Help", Tag(SettingsPage.About)),
-        NavItem("App Filtering", "Filter", Tag(SettingsPage.AppFiltering)),
-        NavItem("Advanced", "DeveloperTools", Tag(SettingsPage.Advanced)),
+        NavItem(t.Message(Loc.App.HomeTitle), "Home", Tag(SettingsPage.Home)),
+        NavItemHeader(t.Message(Loc.App.FeaturesSectionTitle)),
+        NavItem(t.Message(Loc.App.MediaFlyoutTitle), "MusicInfo", Tag(SettingsPage.Media)),
+        NavItem(t.Message(Loc.App.VolumeFlyoutTitle), "Volume", Tag(SettingsPage.Volume)),
+        NavItem(t.Message(Loc.App.TaskbarWidgetCustomizationTitle), "DockBottom", Tag(SettingsPage.Taskbar)),
+        NavItem(t.Message(Loc.App.TaskbarVisualizerTitle), "ViewAll", Tag(SettingsPage.Visualizer)),
+        NavItem(t.Message(Loc.App.NextUpCustomizationTitle), "Forward", Tag(SettingsPage.NextUp)),
+        NavItem(t.Message(Loc.App.LockKeysCustomizationTitle), "Keyboard", Tag(SettingsPage.LockKeys)),
+        NavItemHeader(t.Message(Loc.App.ApplicationSectionTitle)),
+        NavItem(t.Message(Loc.App.SystemSettingsTitle), "Setting", Tag(SettingsPage.System)),
+        NavItem(t.Message(Loc.App.AboutTitle), "Help", Tag(SettingsPage.About)),
+        NavItem(t.Message(Loc.App.AppFilteringTitle), "Filter", Tag(SettingsPage.AppFiltering)),
+        NavItem(t.Message(Loc.App.AdvancedSettingsTitle), "DeveloperTools", Tag(SettingsPage.Advanced)),
     ];
 
-    public static IReadOnlyList<SettingsSearchEntry> Query(string query)
+    public static IReadOnlyList<SettingsSearchEntry> Query(string query, IntlAccessor? t = null)
         => string.IsNullOrWhiteSpace(query)
             ? Array.Empty<SettingsSearchEntry>()
-            : [.. Entries.Where(entry => entry.Title.Contains(query, StringComparison.OrdinalIgnoreCase)
+            : [.. Entries.Where(entry =>
+                entry.Title.Contains(query, StringComparison.OrdinalIgnoreCase)
+                || (t is not null
+                    && t.Message(entry.TitleKey).Contains(query, StringComparison.OrdinalIgnoreCase))
                 || entry.Terms.Any(term => term.Contains(query, StringComparison.OrdinalIgnoreCase)))];
 
     public static string Tag(SettingsPage page) => page.ToString();
@@ -161,141 +164,219 @@ public static class SettingsSearchIndex
         page = SettingsPage.Home;
         return false;
     }
-
 }
 
 public sealed record SettingsPageProps(SettingsPage Page, SettingsSnapshot Settings);
 
 public sealed class SettingsPageComponent : Component<SettingsPageProps>
 {
-    private IntlAccessor? _intl;
-
     public override Element Render()
     {
         var services = AppRuntime.Services;
-        _intl = UseIntl();
+        var t = UseIntl();
         return Props.Page switch
         {
-            SettingsPage.Home => Home(services),
-            SettingsPage.Media => Media(services),
-            SettingsPage.Volume => Volume(services),
-            SettingsPage.Taskbar => Taskbar(services),
-            SettingsPage.Visualizer => Visualizer(services),
-            SettingsPage.NextUp => NextUp(services),
-            SettingsPage.LockKeys => LockKeys(services),
-            SettingsPage.System => System(services),
-            SettingsPage.About => About(services),
-            SettingsPage.AppFiltering => AppFiltering(services),
-            _ => Advanced(services),
+            SettingsPage.Home => Home(services, t),
+            SettingsPage.Media => Media(services, t),
+            SettingsPage.Volume => Volume(services, t),
+            SettingsPage.Taskbar => Taskbar(services, t),
+            SettingsPage.Visualizer => Visualizer(services, t),
+            SettingsPage.NextUp => NextUp(services, t),
+            SettingsPage.LockKeys => LockKeys(services, t),
+            SettingsPage.System => System(services, t),
+            SettingsPage.About => About(services, t),
+            SettingsPage.AppFiltering => AppFiltering(services, t),
+            _ => Advanced(services, t),
         };
     }
 
-    private ScrollViewerElement Home(AppServices services)
-        => Page(T(Loc.App.HomeTitle, "Home"), "Choose which surfaces Mica Flyouts keeps ready.",
-            Card("Media flyout", "Show playback controls for the active session.", Toggle(Props.Settings.MediaFlyoutEnabled, value => Update(services, s => s with { MediaFlyoutEnabled = value }))),
-            Card("Volume controls", "Show the volume surface when hardware keys are pressed.", Toggle(Props.Settings.VolumeControlEnabled, value => Update(services, s => s with { VolumeControlEnabled = value }))),
-            Card("Lock keys", "Show keyboard state after Caps, Num, Scroll, or Insert.", Toggle(Props.Settings.LockKeysEnabled, value => Update(services, s => s with { LockKeysEnabled = value }))));
+    private ScrollViewerElement Home(AppServices services, IntlAccessor t)
+        => Page(t.Message(Loc.App.HomeTitle), t.Message(Loc.App.HomeDescription),
+            Card(t.Message(Loc.App.TextBlockText1), t.Message(Loc.App.TextBlockText3),
+                Toggle(t, Props.Settings.MediaFlyoutEnabled, value => Update(services, s => s with { MediaFlyoutEnabled = value }))),
+            Card(t.Message(Loc.App.EnableVolumeFlyoutTitle), t.Message(Loc.App.EnableVolumeFlyoutDescription),
+                Toggle(t, Props.Settings.VolumeControlEnabled, value => Update(services, s => s with { VolumeControlEnabled = value }))),
+            Card(t.Message(Loc.App.EnableLockKeysTitle), t.Message(Loc.App.EnableLockKeysDescription),
+                Toggle(t, Props.Settings.LockKeysEnabled, value => Update(services, s => s with { LockKeysEnabled = value }))));
 
-    private ScrollViewerElement Media(AppServices services)
-        => Page(T(Loc.App.MediaFlyoutTitle, "Media Flyout"), T(Loc.App.MediaFlyoutDescription, "Playback controls, layout, and timeline behavior."),
-            Card("Enable media flyout", "Display the active player surface.", Toggle(Props.Settings.MediaFlyoutEnabled, value => Update(services, s => s with { MediaFlyoutEnabled = value }))),
-            Card("Compact layout", "Use the compact media presentation.", Toggle(Props.Settings.CompactLayout, value => Update(services, s => s with { CompactLayout = value }))),
-            Card("Player information", "Show title, artist, and player details.", Toggle(Props.Settings.PlayerInfoEnabled, value => Update(services, s => s with { PlayerInfoEnabled = value }))),
-            Card("Seek bar", "Allow timeline seeking when the player supports it.", Toggle(Props.Settings.SeekbarEnabled, value => Update(services, s => s with { SeekbarEnabled = value }))),
-            Card("Repeat and shuffle", "Keep repeat and shuffle actions in the flyout.", HStack(8,
-                ToggleSwitch(Props.Settings.RepeatEnabled, value => Update(services, s => s with { RepeatEnabled = value }), "Repeat", "Repeat"),
-                ToggleSwitch(Props.Settings.ShuffleEnabled, value => Update(services, s => s with { ShuffleEnabled = value }), "Shuffle", "Shuffle"))),
-            Card("Always display", "Keep the media surface open while a session is active.", Toggle(Props.Settings.MediaFlyoutAlwaysDisplay, value => Update(services, s => s with { MediaFlyoutAlwaysDisplay = value }))),
-            Card("Display duration", "Milliseconds before the surface hides.", Number(Props.Settings.Duration, value => Update(services, s => s with { Duration = value }))),
-            Card("Position", "Choose one of the six screen positions.", Combo(["Bottom left", "Bottom center", "Bottom right", "Top left", "Top center", "Top right"], Props.Settings.Position, value => Update(services, s => s with { Position = value }))));
+    private ScrollViewerElement Media(AppServices services, IntlAccessor t)
+        => Page(t.Message(Loc.App.MediaFlyoutTitle), t.Message(Loc.App.MediaFlyoutDescription),
+            Card(t.Message(Loc.App.TextBlockText1), t.Message(Loc.App.TextBlockText3),
+                Toggle(t, Props.Settings.MediaFlyoutEnabled, value => Update(services, s => s with { MediaFlyoutEnabled = value }))),
+            Card(t.Message(Loc.App.CompactLayoutTitle), t.Message(Loc.App.CompactLayoutDescription),
+                Toggle(t, Props.Settings.CompactLayout, value => Update(services, s => s with { CompactLayout = value }))),
+            Card(t.Message(Loc.App.ShowMediaPlayerNameTitle), t.Message(Loc.App.PlayerInformationDescription),
+                Toggle(t, Props.Settings.PlayerInfoEnabled, value => Update(services, s => s with { PlayerInfoEnabled = value }))),
+            Card(t.Message(Loc.App.ShowSeekbarTitle), t.Message(Loc.App.ShowSeekbarDescription),
+                Toggle(t, Props.Settings.SeekbarEnabled, value => Update(services, s => s with { SeekbarEnabled = value }))),
+            Card(t.Message(Loc.App.RepeatButtonTitle), t.Message(Loc.App.RepeatButtonDescription), HStack(8,
+                ToggleSwitch(Optional<bool>.Of(Props.Settings.RepeatEnabled),
+                    value => Update(services, s => s with { RepeatEnabled = value }),
+                    t.Message(Loc.App.MediaRepeat),
+                    t.Message(Loc.App.MediaRepeat)),
+                ToggleSwitch(Optional<bool>.Of(Props.Settings.ShuffleEnabled),
+                    value => Update(services, s => s with { ShuffleEnabled = value }),
+                    t.Message(Loc.App.MediaShuffle),
+                    t.Message(Loc.App.MediaShuffle)))),
+            Card(t.Message(Loc.App.MediaFlyoutAlwaysDisplay), t.Message(Loc.App.MediaFlyoutAlwaysDisplayDescription),
+                Toggle(t, Props.Settings.MediaFlyoutAlwaysDisplay, value => Update(services, s => s with { MediaFlyoutAlwaysDisplay = value }))),
+            Card(t.Message(Loc.App.FlyoutStayDurationTitle), t.Message(Loc.App.FlyoutStayDurationDescription),
+                Number(t, Props.Settings.Duration, value => Update(services, s => s with { Duration = value }))),
+            Card(t.Message(Loc.App.FlyoutPositionTitle), t.Message(Loc.App.FlyoutPositionTitle),
+                Combo(t,
+                    [
+                        t.Message(Loc.App.PositionBottomLeft),
+                        t.Message(Loc.App.PositionBottomCenter),
+                        t.Message(Loc.App.PositionBottomRight),
+                        t.Message(Loc.App.PositionTopLeft),
+                        t.Message(Loc.App.PositionTopCenter),
+                        t.Message(Loc.App.PositionTopRight),
+                    ],
+                    Props.Settings.Position,
+                    value => Update(services, s => s with { Position = value }))));
 
-    private ScrollViewerElement Volume(AppServices services)
-        => Page(T(Loc.App.VolumeFlyoutTitle, "Volume Flyout"), T(Loc.App.VolumeFlyoutDescription, "Master volume, mixer behavior, and native OSD handling."),
-            Card("Volume surface", "Show a custom surface for hardware volume keys.", Toggle(Props.Settings.VolumeControlEnabled, value => Update(services, s => s with { VolumeControlEnabled = value }))),
-            Card("Above media flyout", "Place volume controls above the media surface.", Toggle(Props.Settings.VolumeControlAboveMediaFlyout, value => Update(services, s => s with { VolumeControlAboveMediaFlyout = value }))),
-            Card("Volume mixer", "List and control individual application sessions.", Toggle(Props.Settings.VolumeMixerEnabled, value => Update(services, s => s with { VolumeMixerEnabled = value }))),
-            Card("Highlight active applications", "Emphasize sessions currently using the default device.", Toggle(Props.Settings.VolumeMixerHighlightActiveApps, value => Update(services, s => s with { VolumeMixerHighlightActiveApps = value }))),
-            Card("Display duration", "Milliseconds before volume controls hide.", Number(Props.Settings.VolumeControlDuration, value => Update(services, s => s with { VolumeControlDuration = value }))));
+    private ScrollViewerElement Volume(AppServices services, IntlAccessor t)
+        => Page(t.Message(Loc.App.VolumeFlyoutTitle), t.Message(Loc.App.VolumeFlyoutDescription),
+            Card(t.Message(Loc.App.EnableVolumeFlyoutTitle), t.Message(Loc.App.EnableVolumeFlyoutDescription),
+                Toggle(t, Props.Settings.VolumeControlEnabled, value => Update(services, s => s with { VolumeControlEnabled = value }))),
+            Card(t.Message(Loc.App.VolumeAboveMediaFlyoutTitle), t.Message(Loc.App.VolumeAboveMediaFlyoutDescription),
+                Toggle(t, Props.Settings.VolumeControlAboveMediaFlyout, value => Update(services, s => s with { VolumeControlAboveMediaFlyout = value }))),
+            Card(t.Message(Loc.App.EnableVolumeMixerTitle), t.Message(Loc.App.EnableVolumeMixerDescription),
+                Toggle(t, Props.Settings.VolumeMixerEnabled, value => Update(services, s => s with { VolumeMixerEnabled = value }))),
+            Card(t.Message(Loc.App.VolumeMixerHighlightTitle), t.Message(Loc.App.VolumeMixerHighlightDescription),
+                Toggle(t, Props.Settings.VolumeMixerHighlightActiveApps, value => Update(services, s => s with { VolumeMixerHighlightActiveApps = value }))),
+            Card(t.Message(Loc.App.VolumeFlyoutStayDurationTitle), t.Message(Loc.App.VolumeFlyoutStayDurationDescription),
+                Number(t, Props.Settings.VolumeControlDuration, value => Update(services, s => s with { VolumeControlDuration = value }))));
 
-    private ScrollViewerElement Taskbar(AppServices services)
-        => Page(T(Loc.App.TaskbarWidgetCustomizationTitle, "Taskbar Widget"), T(Loc.App.TaskbarWidgetDescription, "Embed the widget in the Windows taskbar and recover after Explorer restarts."),
-            Card("Taskbar widget", "Show title, artist, and cover art in the taskbar.", Toggle(Props.Settings.TaskbarWidgetEnabled, value => Update(services, s => s with { TaskbarWidgetEnabled = value }))),
-            Card("Widget position", "Place the widget at the start, center, or end.", Combo(["Start", "Center", "End"], Props.Settings.TaskbarWidgetPosition, value => Update(services, s => s with { TaskbarWidgetPosition = value }))),
-            Card("Automatic widget padding", "Reserve space around native Windows widgets.", Toggle(Props.Settings.TaskbarWidgetPadding, value => Update(services, s => s with { TaskbarWidgetPadding = value }))),
-            Card("Manual padding", "Fine-tune the widget position in pixels.", Number(Props.Settings.TaskbarWidgetManualPadding, value => Update(services, s => s with { TaskbarWidgetManualPadding = value }))),
-            Card("Fixed width", "Keep the widget width stable as titles change.", Toggle(Props.Settings.TaskbarWidgetFixedWidth, value => Update(services, s => s with { TaskbarWidgetFixedWidth = value }))),
-            Card("Automatic hide", "Hide the widget after playback pauses.", Toggle(Props.Settings.TaskbarWidgetAutoHide, value => Update(services, s => s with { TaskbarWidgetAutoHide = value }))),
-            Card("Pause overlay", "Show a pause marker over the cover art.", Toggle(Props.Settings.TaskbarWidgetShowPauseOverlay, value => Update(services, s => s with { TaskbarWidgetShowPauseOverlay = value }))));
+    private ScrollViewerElement Taskbar(AppServices services, IntlAccessor t)
+        => Page(t.Message(Loc.App.TaskbarWidgetCustomizationTitle), t.Message(Loc.App.TaskbarWidgetDescription),
+            Card(t.Message(Loc.App.TaskbarWidgetEnabledTitle), t.Message(Loc.App.TaskbarWidgetEnabledDescription),
+                Toggle(t, Props.Settings.TaskbarWidgetEnabled, value => Update(services, s => s with { TaskbarWidgetEnabled = value }))),
+            Card(t.Message(Loc.App.TaskbarWidgetPosition), t.Message(Loc.App.WidgetPositionDescription),
+                Combo(t,
+                    [t.Message(Loc.App.PositionStart), t.Message(Loc.App.PositionCenter), t.Message(Loc.App.PositionEnd)],
+                    Props.Settings.TaskbarWidgetPosition,
+                    value => Update(services, s => s with { TaskbarWidgetPosition = value }))),
+            Card(t.Message(Loc.App.TaskbarWidgetPaddingTitle), t.Message(Loc.App.TaskbarWidgetPaddingDescription),
+                Toggle(t, Props.Settings.TaskbarWidgetPadding, value => Update(services, s => s with { TaskbarWidgetPadding = value }))),
+            Card(t.Message(Loc.App.TaskbarWidgetManualPaddingTitle), t.Message(Loc.App.TaskbarWidgetManualPaddingDescription),
+                Number(t, Props.Settings.TaskbarWidgetManualPadding, value => Update(services, s => s with { TaskbarWidgetManualPadding = value }))),
+            Card(t.Message(Loc.App.TaskbarWidgetFixedWidthTitle), t.Message(Loc.App.TaskbarWidgetFixedWidthDescription),
+                Toggle(t, Props.Settings.TaskbarWidgetFixedWidth, value => Update(services, s => s with { TaskbarWidgetFixedWidth = value }))),
+            Card(t.Message(Loc.App.TaskbarWidgetAutoHideTitle), t.Message(Loc.App.TaskbarWidgetAutoHideDescription),
+                Toggle(t, Props.Settings.TaskbarWidgetAutoHide, value => Update(services, s => s with { TaskbarWidgetAutoHide = value }))),
+            Card(t.Message(Loc.App.TaskbarWidgetShowPauseOverlayTitle), t.Message(Loc.App.TaskbarWidgetShowPauseOverlayDescription),
+                Toggle(t, Props.Settings.TaskbarWidgetShowPauseOverlay, value => Update(services, s => s with { TaskbarWidgetShowPauseOverlay = value }))));
 
-    private ScrollViewerElement Visualizer(AppServices services)
-        => Page(T(Loc.App.TaskbarVisualizerTitle, "Taskbar Visualizer"), T(Loc.App.TaskbarVisualizerDescription, "Real-time FFT bars from the default output device."),
-            Card("Enable visualizer", "Listen to loopback audio and draw taskbar bars.", Toggle(Props.Settings.TaskbarVisualizerEnabled, value => Update(services, s => s with { TaskbarVisualizerEnabled = value }))),
-            Card("Bar count", "Number of spectrum bars.", Number(Props.Settings.TaskbarVisualizerBarCount, value => Update(services, s => s with { TaskbarVisualizerBarCount = value }))),
-            Card("Centered bars", "Grow bars symmetrically around the baseline.", Toggle(Props.Settings.TaskbarVisualizerCenteredBars, value => Update(services, s => s with { TaskbarVisualizerCenteredBars = value }))),
-            Card("Baseline", "Display a zero-level baseline when the signal is quiet.", Toggle(Props.Settings.TaskbarVisualizerBaseline, value => Update(services, s => s with { TaskbarVisualizerBaseline = value }))),
-            Card("Baseline auto-hide", "Hide the baseline when no signal is present.", Toggle(Props.Settings.TaskbarVisualizerBaselineAutoHide, value => Update(services, s => s with { TaskbarVisualizerBaselineAutoHide = value }))),
-            Card("Sensitivity", "Calibrate when bars begin moving.", Combo(["Low", "Medium", "High"], Props.Settings.TaskbarVisualizerAudioSensitivity - 1, value => Update(services, s => s with { TaskbarVisualizerAudioSensitivity = value + 1 }))));
+    private ScrollViewerElement Visualizer(AppServices services, IntlAccessor t)
+        => Page(t.Message(Loc.App.TaskbarVisualizerTitle), t.Message(Loc.App.TaskbarVisualizerDescription),
+            Card(t.Message(Loc.App.TaskbarVisualizerEnabledTitle), t.Message(Loc.App.TaskbarVisualizerEnabledDescription),
+                Toggle(t, Props.Settings.TaskbarVisualizerEnabled, value => Update(services, s => s with { TaskbarVisualizerEnabled = value }))),
+            Card(t.Message(Loc.App.TaskbarVisualizerBarCountTitle), t.Message(Loc.App.TaskbarVisualizerBarCountDescription),
+                Number(t, Props.Settings.TaskbarVisualizerBarCount, value => Update(services, s => s with { TaskbarVisualizerBarCount = value }))),
+            Card(t.Message(Loc.App.TaskbarVisualizerCenteredBarsTitle), t.Message(Loc.App.TaskbarVisualizerCenteredBarsDescription),
+                Toggle(t, Props.Settings.TaskbarVisualizerCenteredBars, value => Update(services, s => s with { TaskbarVisualizerCenteredBars = value }))),
+            Card(t.Message(Loc.App.TaskbarVisualizerBaselineTitle), t.Message(Loc.App.TaskbarVisualizerBaselineDescription),
+                Toggle(t, Props.Settings.TaskbarVisualizerBaseline, value => Update(services, s => s with { TaskbarVisualizerBaseline = value }))),
+            Card(t.Message(Loc.App.BaselineAutoHideTitle), t.Message(Loc.App.TaskbarVisualizerBaselineAutoHideDescription),
+                Toggle(t, Props.Settings.TaskbarVisualizerBaselineAutoHide, value => Update(services, s => s with { TaskbarVisualizerBaselineAutoHide = value }))),
+            Card(t.Message(Loc.App.TaskbarVisualizerAudioSensitivityTitle), t.Message(Loc.App.TaskbarVisualizerAudioSensitivityDescription),
+                Combo(t,
+                    [t.Message(Loc.App.SensitivityLow), t.Message(Loc.App.SensitivityMedium), t.Message(Loc.App.SensitivityHigh)],
+                    Props.Settings.TaskbarVisualizerAudioSensitivity - 1,
+                    value => Update(services, s => s with { TaskbarVisualizerAudioSensitivity = value + 1 }))));
 
-    private ScrollViewerElement NextUp(AppServices services)
-        => Page(T(Loc.App.NextUpCustomizationTitle, "Next Up"), T(Loc.App.NextUpDescription, "Show the next media change without duplicate titles."),
-            Card("Enable Next Up", "Display a short transition surface when a track changes.", Toggle(Props.Settings.NextUpEnabled, value => Update(services, s => s with { NextUpEnabled = value }))),
-            Card("Display duration", "Milliseconds before Next Up hides.", Number(Props.Settings.NextUpDuration, value => Update(services, s => s with { NextUpDuration = value }))));
+    private ScrollViewerElement NextUp(AppServices services, IntlAccessor t)
+        => Page(t.Message(Loc.App.NextUpCustomizationTitle), t.Message(Loc.App.NextUpDescription),
+            Card(t.Message(Loc.App.EnableNextUpTitle), t.Message(Loc.App.EnableNextUpDescription),
+                Toggle(t, Props.Settings.NextUpEnabled, value => Update(services, s => s with { NextUpEnabled = value }))),
+            Card(t.Message(Loc.App.NextUpStayDurationTitle), t.Message(Loc.App.NextUpStayDurationDescription),
+                Number(t, Props.Settings.NextUpDuration, value => Update(services, s => s with { NextUpDuration = value }))));
 
-    private ScrollViewerElement LockKeys(AppServices services)
-        => Page(T(Loc.App.LockKeysCustomizationTitle, "Lock Keys"), T(Loc.App.LockKeysDescription, "Keyboard indicators for Caps, Num, Scroll, and Insert."),
-            Card("Enable lock key surface", "Listen for low-level keyboard changes.", Toggle(Props.Settings.LockKeysEnabled, value => Update(services, s => s with { LockKeysEnabled = value }))),
-            Card("Caps Lock", "Show the Caps Lock state.", Toggle(Props.Settings.LockKeysCapsEnabled, value => Update(services, s => s with { LockKeysCapsEnabled = value }))),
-            Card("Num Lock", "Show the Num Lock state.", Toggle(Props.Settings.LockKeysNumEnabled, value => Update(services, s => s with { LockKeysNumEnabled = value }))),
-            Card("Scroll Lock", "Show the Scroll Lock state.", Toggle(Props.Settings.LockKeysScrollEnabled, value => Update(services, s => s with { LockKeysScrollEnabled = value }))),
-            Card("Insert", "Show a surface after Insert is pressed.", Toggle(Props.Settings.LockKeysInsertEnabled, value => Update(services, s => s with { LockKeysInsertEnabled = value }))),
-            Card("Display duration", "Milliseconds before the indicator hides.", Number(Props.Settings.LockKeysDuration, value => Update(services, s => s with { LockKeysDuration = value }))),
-            Card("Animated indicators", "Use the original bounce and shackle motion.", Toggle(Props.Settings.LockKeysAnimated, value => Update(services, s => s with { LockKeysAnimated = value }))));
+    private ScrollViewerElement LockKeys(AppServices services, IntlAccessor t)
+        => Page(t.Message(Loc.App.LockKeysCustomizationTitle), t.Message(Loc.App.LockKeysDescription),
+            Card(t.Message(Loc.App.EnableLockKeysTitle), t.Message(Loc.App.EnableLockKeysDescription),
+                Toggle(t, Props.Settings.LockKeysEnabled, value => Update(services, s => s with { LockKeysEnabled = value }))),
+            Card(t.Message(Loc.App.EnableCapsTitle), t.Message(Loc.App.EnableCapsDescription),
+                Toggle(t, Props.Settings.LockKeysCapsEnabled, value => Update(services, s => s with { LockKeysCapsEnabled = value }))),
+            Card(t.Message(Loc.App.EnableNumTitle), t.Message(Loc.App.EnableNumDescription),
+                Toggle(t, Props.Settings.LockKeysNumEnabled, value => Update(services, s => s with { LockKeysNumEnabled = value }))),
+            Card(t.Message(Loc.App.EnableScrollTitle), t.Message(Loc.App.EnableScrollDescription),
+                Toggle(t, Props.Settings.LockKeysScrollEnabled, value => Update(services, s => s with { LockKeysScrollEnabled = value }))),
+            Card(t.Message(Loc.App.EnableInsertKeyTitle), t.Message(Loc.App.EnableInsertKeyDescription),
+                Toggle(t, Props.Settings.LockKeysInsertEnabled, value => Update(services, s => s with { LockKeysInsertEnabled = value }))),
+            Card(t.Message(Loc.App.LockKeysStayDurationTitle), t.Message(Loc.App.LockKeysStayDurationDescription),
+                Number(t, Props.Settings.LockKeysDuration, value => Update(services, s => s with { LockKeysDuration = value }))),
+            Card(t.Message(Loc.App.LockKeysAnimatedTitle), t.Message(Loc.App.LockKeysAnimatedDescription),
+                Toggle(t, Props.Settings.LockKeysAnimated, value => Update(services, s => s with { LockKeysAnimated = value }))));
 
-    private ScrollViewerElement System(AppServices services)
-        => Page(T(Loc.App.SystemSettingsTitle, "System"), "Startup, appearance, localization, and tray behavior.",
-            Card("Start with Windows", "Launch minimized to the notification area.", Toggle(Props.Settings.Startup, value => Update(services, s => s with { Startup = value }))),
-            Card(T(Loc.App.HideTrayIconTitle, "Hide tray icon"), T(Loc.App.HideTrayIconDescription, "Run without a persistent tray icon."),
-                Toggle(Props.Settings.NIconHide, value => Update(services, s => s with { NIconHide = value }))),
-            Card(T(Loc.App.Win11TrayIconTitle, "Windows 11-like tray icon"), T(Loc.App.Win11TrayIconDescription, "Use a monochrome icon that follows the Windows taskbar theme."),
-                Toggle(Props.Settings.NIconSymbol, value => Update(services, s => s with { NIconSymbol = value }))),
-            Card("Theme", "Use the system, light, or dark theme.", Combo(["System", "Light", "Dark"], Props.Settings.AppTheme, value => Update(services, s => s with { AppTheme = value }))),
-            Card("Language", "Choose the UI language; system follows Windows.", Combo([.. LocalizationCatalog.SupportedLanguages],
-                Math.Max(0, Array.IndexOf([.. LocalizationCatalog.SupportedLanguages], Props.Settings.AppLanguage)),
-                value => Update(services, s => s with { AppLanguage = LocalizationCatalog.SupportedLanguages[value] }))),
-            Card("Font family", "Font fallback list used by the application.",
+    private ScrollViewerElement System(AppServices services, IntlAccessor t)
+        => Page(t.Message(Loc.App.SystemSettingsTitle), t.Message(Loc.App.SystemDescription),
+            Card(t.Message(Loc.App.LaunchOnStartupTitle), t.Message(Loc.App.LaunchOnStartupDescription),
+                Toggle(t, Props.Settings.Startup, value => Update(services, s => s with { Startup = value }))),
+            Card(t.Message(Loc.App.HideTrayIconTitle), t.Message(Loc.App.HideTrayIconDescription),
+                Toggle(t, Props.Settings.NIconHide, value => Update(services, s => s with { NIconHide = value }))),
+            Card(t.Message(Loc.App.Win11TrayIconTitle), t.Message(Loc.App.Win11TrayIconDescription),
+                Toggle(t, Props.Settings.NIconSymbol, value => Update(services, s => s with { NIconSymbol = value }))),
+            Card(t.Message(Loc.App.AppThemeTitle), t.Message(Loc.App.AppThemeDescription),
+                Combo(t,
+                    [t.Message(Loc.App.AppThemeDefault), t.Message(Loc.App.AppThemeLight), t.Message(Loc.App.AppThemeDark)],
+                    Props.Settings.AppTheme,
+                    value => Update(services, s => s with { AppTheme = value }))),
+            Card(t.Message(Loc.App.AppLanguageTitle), t.Message(Loc.App.AppLanguageDescription),
+                Combo(t, [.. LocalizationCatalog.SupportedLanguages],
+                    Math.Max(0, Array.IndexOf([.. LocalizationCatalog.SupportedLanguages], Props.Settings.AppLanguage)),
+                    value => Update(services, s => s with { AppLanguage = LocalizationCatalog.SupportedLanguages[value] }))),
+            Card(t.Message(Loc.App.FontFamilyTitle), t.Message(Loc.App.FontFamilyDescription),
                 TextBox(Props.Settings.FontFamily, value => Update(services, s => s with { FontFamily = value }))
-                    .AutomationName("Font family")));
+                    .AutomationName(t.Message(Loc.App.FontFamilyTitle))));
 
-    private ScrollViewerElement About(AppServices services)
-        => Page(T(Loc.App.AboutTitle, "About"), "Open-source project information and update status.",
-            Card("Mica Flyouts", "A native Microsoft UI Reactor media overlay.", VStack(8,
-                TextBlock("Version: " + (string.IsNullOrWhiteSpace(Props.Settings.LastKnownVersion) ? "development" : Props.Settings.LastKnownVersion)),
-                HyperlinkButton("Project repository", new Uri("https://github.com/unchihugo/FluentFlyout")),
-                Button("Check for updates", () => _ = services.Updater.CheckAsync(Props.Settings.LastKnownVersion)))));
+    private ScrollViewerElement About(AppServices services, IntlAccessor t)
+    {
+        var version = string.IsNullOrWhiteSpace(Props.Settings.LastKnownVersion)
+            ? t.Message(Loc.App.DevelopmentVersion)
+            : Props.Settings.LastKnownVersion;
+        return Page(t.Message(Loc.App.AboutTitle), t.Message(Loc.App.AboutDescription),
+            Card(AppBranding.Name, t.Message(Loc.App.AboutProjectDescription), VStack(8,
+                TextBlock(t.Message(Loc.App.VersionLabel, ("version", version))),
+                HyperlinkButton(t.Message(Loc.App.GitHubRepoLink), new Uri("https://github.com/unchihugo/FluentFlyout")),
+                Button(t.Message(Loc.App.CheckForUpdates), () => _ = services.Updater.CheckAsync(Props.Settings.LastKnownVersion))
+                    .AutomationName(t.Message(Loc.App.CheckForUpdates)))));
+    }
 
-    private ScrollViewerElement AppFiltering(AppServices services)
-        => Page(T(Loc.App.AppFilteringTitle, "App Filtering"), T(Loc.App.AppFilteringRulesDescription, "Allow or block sessions by display name or session ID."),
-            Card("Enable filtering", "Apply the selected app list to media and taskbar updates.", Toggle(Props.Settings.AppFilteringEnabled, value => Update(services, s => s with { AppFilteringEnabled = value }))),
-            Card("Mode", "Blacklist blocks matching entries; whitelist allows only matches.", Combo(["Blacklist", "Whitelist"], Props.Settings.AppFilteringMode, value => Update(services, s => s with { AppFilteringMode = value }))),
-            Card("Allowed applications", "One display name or session ID fragment per line.",
-                TextBox(string.Join(Environment.NewLine, Props.Settings.AllowedApps), value => Update(services, s => s with { AllowedApps = Entries(value) }))
-                    .AutomationName("Allowed applications")),
-            Card("Blocked applications", "One display name or session ID fragment per line.",
-                TextBox(string.Join(Environment.NewLine, Props.Settings.BlockedApps), value => Update(services, s => s with { BlockedApps = Entries(value) }))
-                    .AutomationName("Blocked applications")));
+    private ScrollViewerElement AppFiltering(AppServices services, IntlAccessor t)
+        => Page(t.Message(Loc.App.AppFilteringTitle), t.Message(Loc.App.AppFilteringRulesDescription),
+            Card(t.Message(Loc.App.EnableAppFilteringTitle), t.Message(Loc.App.EnableAppFilteringDescription),
+                Toggle(t, Props.Settings.AppFilteringEnabled, value => Update(services, s => s with { AppFilteringEnabled = value }))),
+            Card(t.Message(Loc.App.AppFilteringModeTitle), t.Message(Loc.App.AppFilteringModeDescription),
+                Combo(t, [t.Message(Loc.App.AppFilteringModeBlacklist), t.Message(Loc.App.AppFilteringModeWhitelist)],
+                    Props.Settings.AppFilteringMode,
+                    value => Update(services, s => s with { AppFilteringMode = value }))),
+            Card(t.Message(Loc.App.AllowedAppsTitle), t.Message(Loc.App.AllowedAppsDescription),
+                TextBox(string.Join(Environment.NewLine, Props.Settings.AllowedApps),
+                    value => Update(services, s => s with { AllowedApps = Entries(value) }))
+                    .AutomationName(t.Message(Loc.App.AllowedAppsTitle))),
+            Card(t.Message(Loc.App.BlockedAppsTitle), t.Message(Loc.App.BlockedAppsDescription),
+                TextBox(string.Join(Environment.NewLine, Props.Settings.BlockedApps),
+                    value => Update(services, s => s with { BlockedApps = Entries(value) }))
+                    .AutomationName(t.Message(Loc.App.BlockedAppsTitle))));
 
-    private ScrollViewerElement Advanced(AppServices services)
-        => Page(T(Loc.App.AdvancedSettingsTitle, "Advanced Settings"), "Settings export, import, and compatibility controls.",
-            Card("Legacy taskbar calculation", "Use the compatibility width calculation for other taskbar modifications.", Toggle(Props.Settings.LegacyTaskbarWidthEnabled, value => Update(services, s => s with { LegacyTaskbarWidthEnabled = value }))),
-            Card("Anonymous diagnostics", "Allow anonymous operational diagnostics.", Toggle(Props.Settings.AnonymousTelemetryAllowed, value => Update(services, s => s with { AnonymousTelemetryAllowed = value }))),
-            Card("Settings data", "Export excludes the installation identifier; import keeps the current identifier.", HStack(8,
-                Button("Export", () =>
+    private ScrollViewerElement Advanced(AppServices services, IntlAccessor t)
+        => Page(t.Message(Loc.App.AdvancedSettingsTitle), t.Message(Loc.App.AdvancedDescription),
+            Card(t.Message(Loc.App.LegacyTaskbarWidthTitle), t.Message(Loc.App.LegacyTaskbarWidthDescription),
+                Toggle(t, Props.Settings.LegacyTaskbarWidthEnabled, value => Update(services, s => s with { LegacyTaskbarWidthEnabled = value }))),
+            Card(t.Message(Loc.App.AnonymousUsageDataTitle), t.Message(Loc.App.AnonymousUsageDataDescription),
+                Toggle(t, Props.Settings.AnonymousTelemetryAllowed, value => Update(services, s => s with { AnonymousTelemetryAllowed = value }))),
+            Card(t.Message(Loc.App.BackupRestoreCardTitle), t.Message(Loc.App.SettingsDataDescription), HStack(8,
+                Button(t.Message(Loc.App.ExportSettings), () =>
                 {
                     var package = new Windows.ApplicationModel.DataTransfer.DataPackage();
                     package.SetText(services.Settings.Export());
                     Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(package);
-                }),
-                Button("Save now", services.Settings.SaveNow))));
+                })
+                    .AutomationName(t.Message(Loc.App.ExportSettings)),
+                Button(t.Message(Loc.App.SaveNow), services.Settings.SaveNow)
+                    .AutomationName(t.Message(Loc.App.SaveNow)))));
 
     private static ScrollViewerElement Page(string title, string description, params Element[] cards)
         => ScrollViewer(VStack(16,
@@ -315,28 +396,21 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
             .WithBorder(CardStroke, 1)
             .CornerRadius(6);
 
-    private static ToggleSwitchElement Toggle(bool value, Action<bool> setter)
-        => ToggleSwitch(Optional<bool>.Of(value), setter).AutomationName("Toggle setting");
+    private static ToggleSwitchElement Toggle(IntlAccessor t, bool value, Action<bool> setter)
+        => ToggleSwitch(Optional<bool>.Of(value), setter)
+            .AutomationName(t.Message(Loc.App.ToggleSetting));
 
-    private static NumberBoxElement Number(int value, Action<int> setter)
+    private static NumberBoxElement Number(IntlAccessor t, int value, Action<int> setter)
         => NumberBox(Optional<double>.Of(value), number => setter((int)Math.Round(number)))
-            .AutomationName("Numeric setting");
+            .AutomationName(t.Message(Loc.App.NumericSetting));
 
-    private static ComboBoxElement Combo(string[] items, int selected, Action<int> setter)
+    private static ComboBoxElement Combo(IntlAccessor t, string[] items, int selected, Action<int> setter)
         => ComboBox(items, Optional<int>.Of(Math.Clamp(selected, 0, Math.Max(0, items.Length - 1))), setter)
-            .AutomationName("Choose setting");
+            .AutomationName(t.Message(Loc.App.ChooseSetting));
 
     private static void Update(AppServices services, Func<SettingsSnapshot, SettingsSnapshot> reducer)
         => services.Settings.Update(reducer);
 
     private static string[] Entries(string value)
         => value.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-    private string T(MessageKey key, string fallback)
-    {
-        var value = _intl?.Message(key);
-        return string.IsNullOrWhiteSpace(value) || value.StartsWith("[??", StringComparison.Ordinal)
-            ? fallback
-            : value;
-    }
 }

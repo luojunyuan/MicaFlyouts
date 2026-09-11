@@ -803,4 +803,139 @@
   <data name="SearchSettings" xml:space="preserve">
     <value>搜索设置</value>
   </data>
+  <data name="MediaPrevious" xml:space="preserve">
+    <value>上一首</value>
+  </data>
+  <data name="MediaPause" xml:space="preserve">
+    <value>暂停</value>
+  </data>
+  <data name="MediaPlay" xml:space="preserve">
+    <value>播放</value>
+  </data>
+  <data name="MediaNext" xml:space="preserve">
+    <value>下一首</value>
+  </data>
+  <data name="MediaRepeat" xml:space="preserve">
+    <value>循环</value>
+  </data>
+  <data name="MediaShuffle" xml:space="preserve">
+    <value>随机播放</value>
+  </data>
+  <data name="MediaMute" xml:space="preserve">
+    <value>静音</value>
+  </data>
+  <data name="OpenVolumeMixer" xml:space="preserve">
+    <value>打开音量合成器</value>
+  </data>
+  <data name="NoApplicationSessions" xml:space="preserve">
+    <value>未检测到应用音频会话。</value>
+  </data>
+  <data name="UnknownTitle" xml:space="preserve">
+    <value>未知标题</value>
+  </data>
+  <data name="UnknownArtist" xml:space="preserve">
+    <value>未知艺术家</value>
+  </data>
+  <data name="EnableFeature" xml:space="preserve">
+    <value>启用此功能</value>
+  </data>
+  <data name="OnboardingIllustration" xml:space="preserve">
+    <value>{feature} 插图</value>
+  </data>
+  <data name="OnboardingDescription" xml:space="preserve">
+    <value>适用于媒体、音量和键盘状态的原生 Windows 浮窗。</value>
+  </data>
+  <data name="HomeDescription" xml:space="preserve">
+    <value>选择 Mica Flyouts 要保持可用的界面。</value>
+  </data>
+  <data name="PlayerInformationDescription" xml:space="preserve">
+    <value>显示标题、艺术家和播放器信息。</value>
+  </data>
+  <data name="VolumeAboveMediaFlyoutDescription" xml:space="preserve">
+    <value>将音量控制放在媒体浮窗上方。</value>
+  </data>
+  <data name="VolumeFlyoutStayDurationDescription" xml:space="preserve">
+    <value>音量控制隐藏前的毫秒数。</value>
+  </data>
+  <data name="WidgetPositionDescription" xml:space="preserve">
+    <value>将小组件放在开始、居中或末尾位置。</value>
+  </data>
+  <data name="PositionStart" xml:space="preserve">
+    <value>开始</value>
+  </data>
+  <data name="PositionCenter" xml:space="preserve">
+    <value>居中</value>
+  </data>
+  <data name="PositionEnd" xml:space="preserve">
+    <value>末尾</value>
+  </data>
+  <data name="BaselineAutoHideTitle" xml:space="preserve">
+    <value>自动隐藏基线</value>
+  </data>
+  <data name="SensitivityLow" xml:space="preserve">
+    <value>低</value>
+  </data>
+  <data name="SensitivityMedium" xml:space="preserve">
+    <value>中</value>
+  </data>
+  <data name="SensitivityHigh" xml:space="preserve">
+    <value>高</value>
+  </data>
+  <data name="SystemDescription" xml:space="preserve">
+    <value>启动、外观、本地化和托盘行为。</value>
+  </data>
+  <data name="AppThemeDescription" xml:space="preserve">
+    <value>使用系统、浅色或深色主题。</value>
+  </data>
+  <data name="FontFamilyTitle" xml:space="preserve">
+    <value>字体</value>
+  </data>
+  <data name="FontFamilyDescription" xml:space="preserve">
+    <value>应用使用的字体回退列表。</value>
+  </data>
+  <data name="AboutDescription" xml:space="preserve">
+    <value>开源项目信息和更新状态。</value>
+  </data>
+  <data name="AboutProjectDescription" xml:space="preserve">
+    <value>基于 Microsoft UI Reactor 的原生媒体浮窗。</value>
+  </data>
+  <data name="VersionLabel" xml:space="preserve">
+    <value>版本：{version}</value>
+  </data>
+  <data name="DevelopmentVersion" xml:space="preserve">
+    <value>开发版</value>
+  </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="EnableAppFilteringDescription" xml:space="preserve">
+    <value>将所选应用列表应用于媒体和任务栏更新。</value>
+  </data>
+  <data name="AdvancedDescription" xml:space="preserve">
+    <value>设置导出、导入和兼容性控制。</value>
+  </data>
+  <data name="SettingsDataDescription" xml:space="preserve">
+    <value>导出不包含安装标识符；导入会保留当前标识符。</value>
+  </data>
+  <data name="SaveNow" xml:space="preserve">
+    <value>立即保存</value>
+  </data>
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="FeaturesSectionTitle" xml:space="preserve">
+    <value>功能</value>
+  </data>
+  <data name="ApplicationSectionTitle" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="ToggleSetting" xml:space="preserve">
+    <value>切换设置</value>
+  </data>
+  <data name="NumericSetting" xml:space="preserve">
+    <value>数值设置</value>
+  </data>
+  <data name="ChooseSetting" xml:space="preserve">
+    <value>选择设置</value>
+  </data>
 </root>
