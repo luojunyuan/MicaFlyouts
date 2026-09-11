@@ -4,6 +4,9 @@ internal static class AppRuntime
 {
     internal static App.AppServices? Current { get; private set; }
 
+    internal static App.AppServices Services =>
+        Current ?? throw new InvalidOperationException("AppRuntime is not running.");
+
     public static void Start()
     {
         var singleInstance = Infrastructure.Windows.SingleInstanceService.Acquire();

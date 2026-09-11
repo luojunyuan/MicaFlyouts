@@ -141,6 +141,11 @@ Domain  <-  Infrastructure  <-  App
 显示/切换媒体浮层、退出、媒体控制、音量控制和锁定键窗口。它订阅媒体与设置
 快照，负责把后台事件转换成 UI 线程操作。
 
+组件渲染统一通过非空的 `AppRuntime.Services` 访问服务；运行时未初始化或已结束时
+抛出 `InvalidOperationException`，不以 `Empty()` 隐藏生命周期错误。可空的
+`AppRuntime.Current` 仅用于异步收尾等允许服务不存在的场景。所有 hooks 必须在
+业务空状态的提前返回之前调用，不能通过运行时判空跳过 hooks。
+
 关闭顺序必须与启动相反：停止键盘 hook、任务栏、Visualizer、音频和媒体监听，
 注销更新/通知，释放托盘宿主，关闭 `WindowRegistry` 中所有窗口，最后释放 stores、
 单实例和日志。所有关闭路径必须幂等。
@@ -486,9 +491,10 @@ payload。
 
 ### Reactor self-test：`MicaFlyouts.ReactorSelfTests`
 
-使用 fake stores 挂载每个窗口组件，验证空状态不会抛异常、Element tree、稳定 key、
+使用 fake stores 挂载每个窗口组件，验证业务空状态不会抛异常、Element tree、稳定 key、
 SettingsCard/SettingsExpander wrapper、导航菜单和搜索路由、托盘嵌入资源以及
-事件回调。self-test 不依赖真实播放器、音频设备或 Explorer。
+事件回调；另验证运行时未初始化时组件明确抛出异常。self-test 不依赖真实播放器、
+音频设备或 Explorer。
 
 ### Windows UI/E2E：`MicaFlyouts.UITests`
 

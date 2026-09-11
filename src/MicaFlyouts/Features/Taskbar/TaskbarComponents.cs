@@ -19,9 +19,7 @@ public sealed class TaskbarWidgetComponent : Component
 {
     public override Element Render()
     {
-        var services = AppRuntime.Current;
-        if (services is null)
-            return Empty();
+        var services = AppRuntime.Services;
         var media = UseExternalStore(services.MediaStore.Subscribe, () => services.MediaStore.Snapshot);
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
         var active = media.ActiveSession;
@@ -47,9 +45,7 @@ public sealed class TaskbarVisualizerComponent : Component
 {
     public override Element Render()
     {
-        var services = AppRuntime.Current;
-        if (services is null)
-            return Empty();
+        var services = AppRuntime.Services;
         var snapshot = UseExternalStore(services.VisualizerStore.Subscribe, () => services.VisualizerStore.Snapshot);
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
         var bars = snapshot.Bars;

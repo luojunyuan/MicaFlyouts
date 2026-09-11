@@ -9,9 +9,7 @@ internal sealed class RootComponent : Component
 {
     public override Element Render()
     {
-        var services = AppRuntime.Current;
-        if (services is null)
-            return Empty();
+        var services = AppRuntime.Services;
         var localization = UseExternalStore(services.LocalizationStore.Subscribe, () => services.LocalizationStore.Snapshot);
         return LocaleProvider(
             localization.Language,

@@ -19,9 +19,7 @@ public sealed class SettingsWindowComponent : Component
 {
     public override Element Render()
     {
-        var services = AppRuntime.Current;
-        if (services is null)
-            return Empty();
+        var services = AppRuntime.Services;
 
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
         var localization = UseExternalStore(services.LocalizationStore.Subscribe, () => services.LocalizationStore.Snapshot);
@@ -151,8 +149,8 @@ public static class SettingsSearchIndex
     public static IReadOnlyList<SettingsSearchEntry> Query(string query)
         => string.IsNullOrWhiteSpace(query)
             ? Array.Empty<SettingsSearchEntry>()
-            : Entries.Where(entry => entry.Title.Contains(query, StringComparison.OrdinalIgnoreCase)
-                || entry.Terms.Any(term => term.Contains(query, StringComparison.OrdinalIgnoreCase))).ToArray();
+            : [.. Entries.Where(entry => entry.Title.Contains(query, StringComparison.OrdinalIgnoreCase)
+                || entry.Terms.Any(term => term.Contains(query, StringComparison.OrdinalIgnoreCase)))];
 
     public static string Tag(SettingsPage page) => page.ToString();
 
@@ -174,9 +172,7 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
 
     public override Element Render()
     {
-        var services = AppRuntime.Current;
-        if (services is null)
-            return Empty();
+        var services = AppRuntime.Services;
         _intl = UseIntl();
         return Props.Page switch
         {
@@ -260,8 +256,8 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
             Card("Start with Windows", "Launch minimized to the notification area.", Toggle(Props.Settings.Startup, value => Update(services, s => s with { Startup = value }))),
             Card("Hide tray icon", "Run without a persistent tray icon.", Toggle(Props.Settings.NIconHide, value => Update(services, s => s with { NIconHide = value }))),
             Card("Theme", "Use the system, light, or dark theme.", Combo(["System", "Light", "Dark"], Props.Settings.AppTheme, value => Update(services, s => s with { AppTheme = value }))),
-            Card("Language", "Choose the UI language; system follows Windows.", Combo(LocalizationCatalog.SupportedLanguages.ToArray(),
-                Math.Max(0, Array.IndexOf(LocalizationCatalog.SupportedLanguages.ToArray(), Props.Settings.AppLanguage)),
+            Card("Language", "Choose the UI language; system follows Windows.", Combo([.. LocalizationCatalog.SupportedLanguages],
+                Math.Max(0, Array.IndexOf([.. LocalizationCatalog.SupportedLanguages], Props.Settings.AppLanguage)),
                 value => Update(services, s => s with { AppLanguage = LocalizationCatalog.SupportedLanguages[value] }))),
             Card("Font family", "Font fallback list used by the application.",
                 TextBox(Props.Settings.FontFamily, value => Update(services, s => s with { FontFamily = value }))

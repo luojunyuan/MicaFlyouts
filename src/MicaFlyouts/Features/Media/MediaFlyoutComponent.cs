@@ -20,9 +20,7 @@ public sealed class MediaFlyoutComponent : Component
 {
     public override Element Render()
     {
-        var services = AppRuntime.Current;
-        if (services is null)
-            return Empty();
+        var services = AppRuntime.Services;
 
         var media = UseExternalStore(services.MediaStore.Subscribe, () => services.MediaStore.Snapshot);
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);

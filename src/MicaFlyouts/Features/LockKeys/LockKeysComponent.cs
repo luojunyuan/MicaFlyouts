@@ -18,9 +18,7 @@ public sealed class LockKeysComponent : Component
 {
     public override Element Render()
     {
-        var services = AppRuntime.Current;
-        if (services is null)
-            return Empty();
+        var services = AppRuntime.Services;
         var snapshot = UseExternalStore(services.LockKeyStore.Subscribe, () => services.LockKeyStore.Snapshot);
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
         var keys = new[]

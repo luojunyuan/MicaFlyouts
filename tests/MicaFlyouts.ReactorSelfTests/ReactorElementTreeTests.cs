@@ -1,7 +1,10 @@
 using MicaFlyouts.App;
 using MicaFlyouts.Features.LockKeys;
 using MicaFlyouts.Features.Media;
+using MicaFlyouts.Features.Onboarding;
 using MicaFlyouts.Features.Settings;
+using MicaFlyouts.Features.Taskbar;
+using MicaFlyouts.Features.Volume;
 using MicaFlyouts.UI.Toolkit;
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
@@ -54,12 +57,34 @@ public sealed class ReactorElementTreeTests
     }
 
     [Fact]
-    public void FeatureComponents_AreReactorComponentsWithSafeEmptyState()
+    public void FeatureComponents_AreReactorComponents()
     {
         Assert.IsAssignableFrom<Component>(new MediaFlyoutComponent());
         Assert.IsAssignableFrom<Component>(new LockKeysComponent());
         Assert.IsAssignableFrom<Component>(new SettingsWindowComponent());
-        Assert.IsType<EmptyElement>(new MediaFlyoutComponent().Render());
+    }
+
+    [Fact]
+    public void FeatureComponents_RenderWithoutRuntime_Throws()
+    {
+        Component[] components =
+        [
+            new LockKeysComponent(),
+            new MediaFlyoutComponent(),
+            new OnboardingComponent(),
+            new SettingsWindowComponent(),
+            new SettingsPageComponent(),
+            new TaskbarWidgetComponent(),
+            new TaskbarVisualizerComponent(),
+            new VolumeFlyoutComponent(),
+            new VolumeMixerComponent(),
+        ];
+
+        foreach (var component in components)
+        {
+            var exception = Assert.Throws<InvalidOperationException>(() => component.Render());
+            Assert.Equal("AppRuntime is not running.", exception.Message);
+        }
     }
 
     [Fact]

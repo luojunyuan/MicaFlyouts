@@ -17,9 +17,7 @@ public sealed class OnboardingComponent : Component
 {
     public override Element Render()
     {
-        var services = AppRuntime.Current;
-        if (services is null)
-            return Empty();
+        var services = AppRuntime.Services;
         var onboarding = UseExternalStore(services.OnboardingStore.Subscribe, () => services.OnboardingStore.Snapshot);
         var step = onboarding.CurrentStep;
         var image = step switch

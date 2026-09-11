@@ -19,9 +19,7 @@ public sealed class VolumeFlyoutComponent : Component
 {
     public override Element Render()
     {
-        var services = AppRuntime.Current;
-        if (services is null)
-            return Empty();
+        var services = AppRuntime.Services;
 
         var volume = UseExternalStore(services.VolumeStore.Subscribe, () => services.VolumeStore.Snapshot);
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
@@ -70,9 +68,7 @@ public sealed class VolumeMixerComponent : Component
 {
     public override Element Render()
     {
-        var services = AppRuntime.Current;
-        if (services is null)
-            return Empty();
+        var services = AppRuntime.Services;
         var volume = UseExternalStore(services.VolumeStore.Subscribe, () => services.VolumeStore.Snapshot);
         var rows = volume.Applications
             .Select(application => ApplicationRow(application, services))
