@@ -1,56 +1,21 @@
 using Kumo.H.NotifyIcon.Reactor;
+using MicaFlyouts.App;
 using MicaFlyouts.Domain.Localization;
 using MicaFlyouts.Infrastructure.Localization;
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
-using Microsoft.UI.Reactor.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using static Microsoft.UI.Reactor.Factories;
 
-namespace MicaFlyouts.App;
-
-internal sealed partial class TrayIconHost : IDisposable
-{
-    private readonly ReactorHostControl _host = new();
-    private int _disposed;
-
-    private TrayIconHost()
-    {
-    }
-
-    public static TrayIconHost Create(Func<bool> systemUsesLightTheme, Action onClick)
-    {
-        ArgumentNullException.ThrowIfNull(systemUsesLightTheme);
-        ArgumentNullException.ThrowIfNull(onClick);
-
-        var host = new TrayIconHost();
-        try
-        {
-            host._host.Mount(new TrayIconComponent(systemUsesLightTheme, onClick));
-            return host;
-        }
-        catch
-        {
-            host.Dispose();
-            throw;
-        }
-    }
-
-    public void Dispose()
-    {
-        if (Interlocked.Exchange(ref _disposed, 1) != 0)
-            return;
-        _host.Dispose();
-    }
-}
+namespace MicaFlyouts.Features.Tray;
 
 /// <summary>
 /// Independent tray surface. Its lifetime is owned by <see cref="TrayIconHost"/>
 /// rather than by any application window.
 /// </summary>
-internal sealed class TrayIconComponent : HNotifyComponent
+public sealed class TrayIconComponent : HNotifyComponent
 {
     private static readonly object NoTrayIconSentinel = new();
     private static readonly WindowKey TrayIconKey = WindowKey.Of("tray-icon");
@@ -58,13 +23,12 @@ internal sealed class TrayIconComponent : HNotifyComponent
     private readonly Func<bool> _systemUsesLightTheme;
     private readonly EventHandler _clickHandler;
 
-    public TrayIconComponent(Func<bool> systemUsesLightTheme, Action onClick)
+    public TrayIconComponent(Func<bool> systemUsesLightTheme)
     {
         ArgumentNullException.ThrowIfNull(systemUsesLightTheme);
-        ArgumentNullException.ThrowIfNull(onClick);
 
         _systemUsesLightTheme = systemUsesLightTheme;
-        _clickHandler = (_, _) => onClick();
+        _clickHandler = static (_, _) => OnClick();
     }
 
     public override Element Render()
@@ -117,7 +81,7 @@ internal sealed class TrayIconComponent : HNotifyComponent
     {
         var menu = HNotifyMenu.Create(TrayMenu.Create(
             localization,
-            AppRuntime.Services.OpenSettings,
+            AppRuntime.Services.Commands.ShowSettings,
             () => OpenUrl("https://github.com/unchihugo/FluentFlyout"),
             () => OpenUrl(AppRuntime.Services.Logger.LogDirectory),
             () => OpenUrl("https://github.com/unchihugo/FluentFlyout/issues/new/choose"),
@@ -135,6 +99,15 @@ internal sealed class TrayIconComponent : HNotifyComponent
             new FontFamily(locale.FontFamily)));
         menu.MenuFlyoutPresenterStyle = presenterStyle;
         return menu;
+    }
+
+    private static void OnClick()
+    {
+        var services = AppRuntime.Services;
+        if (services.Settings.Snapshot.NIconLeftClick == 1)
+            services.Commands.ShowMediaFlyout();
+        else
+            services.Commands.ShowSettings();
     }
 
     private static void OpenUrl(string url)

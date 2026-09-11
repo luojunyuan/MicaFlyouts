@@ -7,6 +7,7 @@ using MicaFlyouts.Infrastructure.Settings;
 using MicaFlyouts.Infrastructure.State;
 using MicaFlyouts.Infrastructure.Updates;
 using MicaFlyouts.Infrastructure.Windows;
+using MicaFlyouts.Features.Tray;
 
 namespace MicaFlyouts.App;
 
@@ -34,6 +35,7 @@ public static class Bootstrap
         var visualizer = new VisualizerService(settings, visualizerStore, dispatcher, logger);
         var taskbar = new TaskbarHostService(settings, mediaStore, taskbarStore, dispatcher, monitors, logger);
         var updater = new UpdateCheckerService(updateStore, logger);
+        var tray = new TrayIconFeature(settings, logger);
 
         return new AppServices(
             singleInstance,
@@ -56,6 +58,7 @@ public static class Bootstrap
             updater,
             monitors,
             fullscreen,
-            new NotificationService(logger));
+            new NotificationService(logger),
+            tray);
     }
 }

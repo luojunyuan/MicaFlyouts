@@ -1,4 +1,4 @@
-namespace MicaFlyouts.App;
+namespace MicaFlyouts.Features.Tray;
 
 internal static class TrayMenuIcons
 {

@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace MicaFlyouts.App;
+namespace MicaFlyouts.Features.Tray;
 
 public static class TrayIconAssets
 {

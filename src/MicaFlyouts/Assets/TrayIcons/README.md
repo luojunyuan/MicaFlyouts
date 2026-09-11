@@ -29,7 +29,7 @@ The original `FluentFlyoutWPF/MainWindow.xaml` uses WPF-UI's regular 20px symbol
 | Report bug | `Bug20` | `TrayMenuIcons.Bug20` |
 | Quit | `ArrowExit20` | `TrayMenuIcons.ArrowExit20` |
 
-The path data in `App/TrayMenuIcons.cs` comes from Microsoft's
+The path data in `Features/Tray/TrayMenuIcons.cs` comes from Microsoft's
 `fluentui-system-icons` repository, commit
 `74727164b4a18933e5533f84109d3f36c1355422`, under
 `assets/<Icon Name>/SVG/ic_fluent_<icon_name>_20_regular.svg`.
@@ -49,7 +49,7 @@ The tooltip is the product name, not a translated sentence.
 Reactor's `UseExternalStore`. A changed locale produces a new `HNotifyMenu` and
 spec, so `UseTrayIcon` updates the existing tray handle and its menu; the menu
 presenter style carries the locale's flow direction and font fallback.
-`UISettings.ColorValuesChanged` rebuilds the independent host so symbol icons are
-resolved again, and settings updates apply the `NIconSymbol`/`NIconHide`
-preferences immediately. All subscriptions and the tray handle are released
-during shutdown.
+`TrayIconFeature` owns the independent host, observes `NIconHide`, and rebuilds
+the host on `UISettings.ColorValuesChanged` so symbol icons are resolved again.
+Settings updates apply the `NIconSymbol`/`NIconHide` preferences immediately, and
+all subscriptions and the tray handle are released during shutdown.

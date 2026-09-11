@@ -4,6 +4,7 @@ using MicaFlyouts.Features.Media;
 using MicaFlyouts.Features.Onboarding;
 using MicaFlyouts.Features.Settings;
 using MicaFlyouts.Features.Taskbar;
+using MicaFlyouts.Features.Tray;
 using MicaFlyouts.Features.Volume;
 using MicaFlyouts.UI.Toolkit;
 using Kumo.H.NotifyIcon.Reactor;
@@ -77,6 +78,7 @@ public sealed class ReactorElementTreeTests
             new SettingsPageComponent(),
             new TaskbarWidgetComponent(),
             new TaskbarVisualizerComponent(),
+            new TrayIconComponent(() => false),
             new VolumeFlyoutComponent(),
             new VolumeMixerComponent(),
         ];
@@ -92,11 +94,14 @@ public sealed class ReactorElementTreeTests
     public void TrayIcon_UsesIndependentKumoComponentHost()
     {
         var assembly = typeof(AppServices).Assembly;
-        var componentType = assembly.GetType("MicaFlyouts.App.TrayIconComponent");
-        var hostType = assembly.GetType("MicaFlyouts.App.TrayIconHost");
+        var featureType = assembly.GetType("MicaFlyouts.Features.Tray.TrayIconFeature");
+        var componentType = assembly.GetType("MicaFlyouts.Features.Tray.TrayIconComponent");
+        var hostType = assembly.GetType("MicaFlyouts.Features.Tray.TrayIconHost");
 
+        Assert.NotNull(featureType);
         Assert.NotNull(componentType);
         Assert.NotNull(hostType);
+        Assert.True(typeof(IDisposable).IsAssignableFrom(featureType));
         Assert.True(typeof(HNotifyComponent).IsAssignableFrom(componentType));
         Assert.True(typeof(IDisposable).IsAssignableFrom(hostType));
         Assert.Contains(

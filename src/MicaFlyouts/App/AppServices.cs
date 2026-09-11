@@ -20,6 +20,7 @@ using MicaFlyouts.Features.NextUp;
 using MicaFlyouts.Features.Onboarding;
 using MicaFlyouts.Features.Settings;
 using MicaFlyouts.Features.Taskbar;
+using MicaFlyouts.Features.Tray;
 using MicaFlyouts.Features.Volume;
 
 namespace MicaFlyouts.App;
@@ -31,6 +32,7 @@ public sealed partial class AppServices : IDisposable
     private readonly AppLogger _logger;
     private readonly WindowRegistry _windows = new();
     private readonly KeyboardHookService _keyboard;
+    private readonly TrayIconFeature _tray;
     private Action? _mediaUnsubscribe;
     private Action? _settingsUnsubscribe;
     private ReactorWindow? _mainWindow;
@@ -60,7 +62,8 @@ public sealed partial class AppServices : IDisposable
         UpdateCheckerService updater,
         MonitorService monitors,
         FullscreenService fullscreen,
-        NotificationService notifications)
+        NotificationService notifications,
+        TrayIconFeature tray)
     {
         _singleInstance = singleInstance;
         _dispatcher = dispatcher;
@@ -83,6 +86,7 @@ public sealed partial class AppServices : IDisposable
         Monitors = monitors;
         Fullscreen = fullscreen;
         Notifications = notifications;
+        _tray = tray;
         _keyboard = new KeyboardHookService(OnKeyboardEvent);
         Commands = new AppCommands
         {
@@ -167,7 +171,7 @@ public sealed partial class AppServices : IDisposable
         Taskbar.Start();
         _keyboard.Start();
 
-        StartTray();
+        _tray.Start();
 
         SyncTaskbarWindows();
         bool firstRun = string.IsNullOrWhiteSpace(Settings.Snapshot.LastKnownVersion);
@@ -178,20 +182,11 @@ public sealed partial class AppServices : IDisposable
         }
     }
 
-    private void Tray_Click()
-    {
-        if (Settings.Snapshot.NIconLeftClick == 1)
-            ShowMediaFlyout();
-        else
-            OpenSettings();
-    }
-
     private void OnSettingsChanged()
     {
         UiDispatcher.EnqueueOrRun(() =>
         {
             Localization.Apply();
-            SyncTray();
             StartupRegistration.Apply(Settings.Snapshot.Startup);
             SyncTaskbarWindows();
         });
@@ -452,8 +447,8 @@ public sealed partial class AppServices : IDisposable
     private void CompleteExit()
     {
         // ReactorApp.Exit tears down the WinUI application synchronously.
-        // Release the independent tray host while the XAML dispatcher is alive.
-        StopTray();
+        // Release the independent tray feature while the XAML dispatcher is alive.
+        _tray.Dispose();
         ReactorApp.Exit();
     }
 
@@ -463,7 +458,7 @@ public sealed partial class AppServices : IDisposable
             return;
         _mediaUnsubscribe?.Invoke();
         _settingsUnsubscribe?.Invoke();
-        StopTray();
+        _tray.Dispose();
         _keyboard.Dispose();
         Taskbar.Dispose();
         Visualizer.Dispose();

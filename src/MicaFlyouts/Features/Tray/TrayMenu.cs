@@ -1,8 +1,9 @@
+using MicaFlyouts.App;
 using MicaFlyouts.Infrastructure.Localization;
 using Microsoft.UI.Reactor.Core;
 using static Microsoft.UI.Reactor.Factories;
 
-namespace MicaFlyouts.App;
+namespace MicaFlyouts.Features.Tray;
 
 public static class TrayMenu
 {
