@@ -41,11 +41,24 @@ public sealed class TrayIconComponent : HNotifyComponent
             useSymbol,
             useSymbol && SystemUsesLightTheme());
         var icon = UseMemo(() => TrayIconAssets.Load(iconResource), iconResource);
-        var contextMenu = UseMemo(
-            () => CreateContextMenu(services.Localization, localization),
-            localization.ResourceVersion,
-            localization.IsRightToLeft,
-            localization.FontFamily);
+        var contextMenuRef = UseRef<Microsoft.UI.Xaml.Controls.MenuFlyout?>(null);
+        var contextMenu = contextMenuRef.Current;
+        if (contextMenu is null)
+        {
+            contextMenu = CreateContextMenu(services.Localization, localization);
+            contextMenuRef.Current = contextMenu;
+        }
+
+        // Keep the MenuFlyout identity stable. H.NotifyIcon creates a native
+        // second-window peer when ContextFlyout changes; replacing it for each
+        // locale update leaves stale WinUI windows behind. Update the existing
+        // items in place so the peer remains valid across language changes.
+        UseEffect(
+            () => UpdateContextMenu(contextMenu, services.Localization, localization),
+            contextMenu,
+            services.Localization,
+            localization);
+
         var spec = new HNotifyTrayIconSpec(
             icon,
             AppBranding.Name,
@@ -84,6 +97,37 @@ public sealed class TrayIconComponent : HNotifyComponent
             () => OpenUrl("https://github.com/unchihugo/FluentFlyout/issues/new/choose"),
             AppRuntime.Services.Commands.Exit));
 
+        menu.MenuFlyoutPresenterStyle = CreatePresenterStyle(locale);
+        return menu;
+    }
+
+    private static void UpdateContextMenu(
+        Microsoft.UI.Xaml.Controls.MenuFlyout menu,
+        LocalizationService localization,
+        LocalizationSnapshot locale)
+    {
+        var localizedItems = TrayMenu.Create(
+                localization,
+                AppRuntime.Services.Commands.ShowSettings,
+                () => OpenUrl("https://github.com/unchihugo/FluentFlyout"),
+                () => OpenUrl(AppRuntime.Services.Logger.LogDirectory),
+                () => OpenUrl("https://github.com/unchihugo/FluentFlyout/issues/new/choose"),
+                AppRuntime.Services.Commands.Exit)
+            .OfType<MenuFlyoutItemData>()
+            .ToArray();
+        var menuItems = menu.Items.OfType<MenuFlyoutItem>().ToArray();
+
+        if (menuItems.Length == localizedItems.Length)
+        {
+            for (var index = 0; index < menuItems.Length; index++)
+                menuItems[index].Text = localizedItems[index].Text;
+        }
+
+        menu.MenuFlyoutPresenterStyle = CreatePresenterStyle(locale);
+    }
+
+    private static Style CreatePresenterStyle(LocalizationSnapshot locale)
+    {
         var presenterStyle = new Style
         {
             TargetType = typeof(MenuFlyoutPresenter),
@@ -94,8 +138,7 @@ public sealed class TrayIconComponent : HNotifyComponent
         presenterStyle.Setters.Add(new Setter(
             Control.FontFamilyProperty,
             new FontFamily(locale.FontFamily)));
-        menu.MenuFlyoutPresenterStyle = presenterStyle;
-        return menu;
+        return presenterStyle;
     }
 
     // The taskbar follows SystemUsesLightTheme, so symbol icons use the black

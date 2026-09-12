@@ -439,10 +439,20 @@ public sealed partial class AppServices : IDisposable
         if (Interlocked.Exchange(ref _exitRequested, 1) != 0)
             return;
 
-        // Close the tray unit before WinUI shuts down: this removes the
-        // H.NotifyIcon menu that is still on the call stack, and closes the
-        // never-shown host window so Application.Exit() can run its normal
-        // window-close path instead of being blocked by it.
+        // H.NotifyIcon's SecondWindow command invokes this callback while the
+        // menu is still dispatching the click. Defer teardown until that COM
+        // callback has returned; closing the tray host or Application.Exit()
+        // on the callback stack can invalidate the current XAML object.
+        if (UiDispatcher.TryEnqueue(CompleteExit))
+            return;
+
+        CompleteExit();
+    }
+
+    private void CompleteExit()
+    {
+        // Close the tray unit before WinUI shuts down so its host window and
+        // menu are gone before Application.Exit() runs.
         _tray.Dispose();
         ReactorApp.Exit();
     }

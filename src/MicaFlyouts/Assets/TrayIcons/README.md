@@ -50,16 +50,16 @@ The tooltip is the product name, not a translated sentence.
 `TrayIconFeature` owns a hidden host window (`ActivateOnOpen = false`) whose root
 component is `TrayIconComponent`. The component subscribes to `SettingsStore`
 and `LocalizationStore` through Reactor's `UseExternalStore` and owns the icon
-via `HNotifyComponent.UseTrayIcon`. A changed locale produces a new
-`HNotifyMenu` and spec, so the existing tray handle picks up its menu.
+via `HNotifyComponent.UseTrayIcon`. The menu object remains stable while a
+changed locale updates its existing items in place; this avoids creating stale
+H.NotifyIcon second-window peers during a language switch.
 `NIconHide` closes the host window (and reopens it on demand), and `NIconSymbol`
 selects the colored or monochrome icon — the monochrome resource reads
 `SystemUsesLightTheme` from the registry when the handle is opened, so symbol
 icons match the taskbar theme at open time. The menu uses
-`HNotifyContextMenuMode.PopupMenu` (the mode the dependency library's component
-sample uses): the native menu is drawn above the Shell's XAML popups, so the
-tray tooltip cannot swallow clicks on the bottom item, and icon / presenter
-styling are not rendered in this mode. All subscriptions and the tray handle
-are released during shutdown; the quit command releases the tray host first
-(which takes the native menu off the stack) and then calls `ReactorApp.Exit()`
-directly.
+`HNotifyContextMenuMode.SecondWindow`, which preserves the XAML menu icons and
+presenter styling. Keeping the menu object stable is important because the
+dependency creates a second-window peer when its flyout reference changes.
+All subscriptions and the tray handle are released during shutdown; the quit
+command defers tray teardown until its menu callback has returned, then calls
+`ReactorApp.Exit()`.
