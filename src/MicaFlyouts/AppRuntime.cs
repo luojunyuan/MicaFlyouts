@@ -27,11 +27,7 @@ internal static class AppRuntime
         Microsoft.UI.Reactor.ReactorApp.ShutdownPolicy = Microsoft.UI.Reactor.ShutdownPolicy.Explicit;
         Microsoft.UI.Reactor.ReactorApp.Run(_ =>
         {
-            // Do NOT enable: with OnExplicitShutdown, Application.Exit() skips
-            // WinUI's normal window-close path and the process randomly
-            // fail-fasts in Microsoft.UI.Input.dll (0xc0000602) when windows
-            // are open (measured: 3 of 5 runs).
-            //Application.Current.DispatcherShutdownMode = DispatcherShutdownMode.OnExplicitShutdown;
+            Microsoft.UI.Xaml.Application.Current.DispatcherShutdownMode = Microsoft.UI.Xaml.DispatcherShutdownMode.OnExplicitShutdown;
             services.OpenMainWindow();
             services.Start();
         });

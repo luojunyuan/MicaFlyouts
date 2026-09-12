@@ -54,7 +54,7 @@ public sealed class TrayIconComponent : HNotifyComponent
         {
             ContextMenu = contextMenu,
             MenuActivation = HNotifyMenuActivation.RightClick,
-            ContextMenuMode = HNotifyContextMenuMode.PopupMenu,
+            ContextMenuMode = HNotifyContextMenuMode.SecondWindow,
             ContextMenuTheme = HNotifyContextMenuTheme.System,
         };
         var tray = UseTrayIcon(spec);
