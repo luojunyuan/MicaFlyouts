@@ -31,7 +31,7 @@ public static class LocalizationCatalog
             new(SystemLanguage, systemDisplayName),
             .. SupportedLanguages.Select(language => new LanguageOption(
                 language,
-                CultureInfo.GetCultureInfo(language).DisplayName)),
+                NativeOrDisplayName(language))),
         ];
     }
 
@@ -140,4 +140,12 @@ public static class LocalizationCatalog
     private static string? CanonicalLanguage(string value)
         => SupportedLanguages.FirstOrDefault(language =>
             string.Equals(language, value, StringComparison.OrdinalIgnoreCase));
+
+    private static string NativeOrDisplayName(string language)
+    {
+        var culture = CultureInfo.GetCultureInfo(language);
+        return string.IsNullOrWhiteSpace(culture.NativeName)
+            ? culture.DisplayName
+            : culture.NativeName;
+    }
 }

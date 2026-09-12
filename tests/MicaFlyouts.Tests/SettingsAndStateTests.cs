@@ -80,16 +80,27 @@ public sealed class SettingsAndStateTests : IDisposable
     }
 
     [Fact]
-    public void LanguageOptions_UseCultureDisplayNamesAndKeepValuesSeparate()
+    public void LanguageOptions_PreferNativeNamesAndKeepValuesSeparate()
     {
         var options = LocalizationCatalog.CreateLanguageOptions("System");
         var english = Assert.Single(options, option => option.Value == "en-US");
+        var englishCulture = CultureInfo.GetCultureInfo("en-US");
 
         Assert.Equal("System", options[0].DisplayName);
-        Assert.Equal(CultureInfo.GetCultureInfo("en-US").DisplayName, english.DisplayName);
+        Assert.False(string.IsNullOrWhiteSpace(englishCulture.NativeName));
+        Assert.Equal(englishCulture.NativeName, english.DisplayName);
         Assert.NotEqual(english.Value, english.DisplayName);
         Assert.Equal(LocalizationCatalog.SystemLanguage, options[0].Value);
         Assert.Contains(options, option => option.Value == "zh-CN");
+
+        foreach (var language in LocalizationCatalog.SupportedLanguages)
+        {
+            var culture = CultureInfo.GetCultureInfo(language);
+            var expected = string.IsNullOrWhiteSpace(culture.NativeName)
+                ? culture.DisplayName
+                : culture.NativeName;
+            Assert.Equal(expected, Assert.Single(options, option => option.Value == language).DisplayName);
+        }
     }
 
     [Fact]
