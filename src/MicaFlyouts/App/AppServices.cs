@@ -443,7 +443,7 @@ public sealed partial class AppServices : IDisposable
         // H.NotifyIcon menu that is still on the call stack, and closes the
         // never-shown host window so Application.Exit() can run its normal
         // window-close path instead of being blocked by it.
-        _tray.Dispose();
+        _tray.Close();
         ReactorApp.Exit();
     }
 
@@ -459,7 +459,7 @@ public sealed partial class AppServices : IDisposable
             return;
         _mediaUnsubscribe?.Invoke();
         _settingsUnsubscribe?.Invoke();
-        _tray.Dispose();
+        _tray.Close();
         _keyboard.Dispose();
         Taskbar.Dispose();
         Visualizer.Dispose();
@@ -467,7 +467,7 @@ public sealed partial class AppServices : IDisposable
         Media.Dispose();
         Updater.Dispose();
         Notifications.Dispose();
-        _windows.Dispose();
+        _windows.Shutdown();
         Settings.Dispose();
         MediaStore.Dispose();
         VolumeStore.Dispose();
@@ -478,6 +478,6 @@ public sealed partial class AppServices : IDisposable
         LocalizationStore.Dispose();
         UpdateStore.Dispose();
         _singleInstance.Dispose();
-        _logger.Dispose();
+        _logger.Shutdown();
     }
 }
