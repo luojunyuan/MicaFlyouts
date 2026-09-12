@@ -17,18 +17,25 @@ namespace MicaFlyouts.Features.Settings;
 
 public sealed class SettingsWindowComponent : LocalizedWindowComponent
 {
-    public override Element Render() => UseLocalized(Component<SettingsContentComponent>());
+    public override Element Render()
+    {
+        var (page, setPage) = UseState(SettingsPage.Home);
+        return UseLocalized(Component<SettingsContentComponent, SettingsContentProps>(new(page, setPage)));
+    }
 }
 
-internal sealed class SettingsContentComponent : Component
+public sealed record SettingsContentProps(SettingsPage Page, Action<SettingsPage> SetPage);
+
+internal sealed class SettingsContentComponent : Component<SettingsContentProps>
 {
     public override Element Render()
     {
         var services = AppRuntime.Services;
         var t = UseIntl();
         var settings = UseExternalStore(services.Settings.Subscribe, () => services.Settings.Snapshot);
-        var (page, setPage) = UseState(SettingsPage.Home);
         var (query, setQuery) = UseState(string.Empty);
+        var page = Props.Page;
+        var setPage = Props.SetPage;
         var menu = SettingsSearchIndex.MenuItems(t);
         var content = Component<SettingsPageComponent, SettingsPageProps>(new(page, settings));
         var searchEntries = UseMemo(() => SettingsSearchIndex.Query(query, t), query, t.Locale);

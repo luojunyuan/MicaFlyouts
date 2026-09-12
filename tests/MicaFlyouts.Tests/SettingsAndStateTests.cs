@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using MicaFlyouts.Domain.Localization;
 using MicaFlyouts.Domain.Settings;
+using MicaFlyouts.Features.Settings;
 using MicaFlyouts.Infrastructure.Settings;
 using MicaFlyouts.Infrastructure.State;
 using Xunit;
@@ -109,6 +110,17 @@ public sealed class SettingsAndStateTests : IDisposable
         Assert.Equal("ru", LocalizationCatalog.Resolve("system", CultureInfo.GetCultureInfo("ru-RU").Name));
         Assert.Equal("zh-CN", LocalizationCatalog.Resolve("SYSTEM", CultureInfo.GetCultureInfo("zh-CN").Name));
         Assert.Equal(LocalizationCatalog.DefaultLanguage, LocalizationCatalog.Resolve("system", "not-a-language"));
+    }
+
+    [Fact]
+    public void SettingsContentProps_CarrySelectedPageAcrossLocalizedRootUpdates()
+    {
+        var setPage = static (SettingsPage _) => { };
+        var firstRender = new SettingsContentProps(SettingsPage.System, setPage);
+        var localizedRerender = new SettingsContentProps(firstRender.Page, firstRender.SetPage);
+
+        Assert.Equal(SettingsPage.System, localizedRerender.Page);
+        Assert.Same(setPage, localizedRerender.SetPage);
     }
 
     [Fact]
