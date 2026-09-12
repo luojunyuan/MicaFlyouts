@@ -67,5 +67,5 @@ public sealed record MediaSnapshot(
     MediaSessionSnapshot? ActiveSession,
     MediaSessionSnapshot? NextTrack)
 {
-    public static MediaSnapshot Empty { get; } = new(Array.Empty<MediaSessionSnapshot>(), null, null, null);
+    public static MediaSnapshot Empty { get; } = new([], null, null, null);
 }

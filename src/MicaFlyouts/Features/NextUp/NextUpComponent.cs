@@ -7,14 +7,9 @@ using static Microsoft.UI.Reactor.Factories;
 
 namespace MicaFlyouts.Features.NextUp;
 
-public sealed class NextUpWindowComponent : LocalizedWindowComponent
+public sealed class NextUpWindowComponent(MediaTrackSnapshot track) : LocalizedWindowComponent
 {
-    private readonly MediaTrackSnapshot _track;
-
-    public NextUpWindowComponent(MediaTrackSnapshot track)
-    {
-        _track = track;
-    }
+    private readonly MediaTrackSnapshot _track = track;
 
     public override Element Render()
         => UseLocalized(Component<NextUpComponent, MediaTrackSnapshot>(_track));

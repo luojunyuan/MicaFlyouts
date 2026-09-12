@@ -10,17 +10,12 @@ public sealed record MediaPlayerInfo(
     string? ExecutablePath,
     int ProcessId);
 
-public sealed class MediaPlayerResolver
+public sealed class MediaPlayerResolver(AppLogger logger)
 {
     private readonly ConcurrentDictionary<string, MediaPlayerInfo> _cache = new(StringComparer.OrdinalIgnoreCase);
-    private readonly AppLogger _logger;
+    private readonly AppLogger _logger = logger;
     private DateTimeOffset _lastRefresh;
     private Process[] _processes = [];
-
-    public MediaPlayerResolver(AppLogger logger)
-    {
-        _logger = logger;
-    }
 
     public MediaPlayerInfo Resolve(string? appUserModelId)
     {
@@ -42,7 +37,7 @@ public sealed class MediaPlayerResolver
         return result;
     }
 
-    public bool TryActivate(string? appUserModelId, string? mediaTitle = null)
+    public bool TryActivate(string? appUserModelId)
     {
         var player = Resolve(appUserModelId);
         try
@@ -88,15 +83,14 @@ public sealed class MediaPlayerResolver
     }
 
     private static string[] BuildVariants(string id)
-        => id.Split('.', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        => [.. id.Split('.', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(static value => value
                 .Replace("com", string.Empty, StringComparison.OrdinalIgnoreCase)
                 .Replace("github", string.Empty, StringComparison.OrdinalIgnoreCase)
                 .Replace("exe", string.Empty, StringComparison.OrdinalIgnoreCase))
             .Append(id)
             .Where(static value => !string.IsNullOrWhiteSpace(value))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
+            .Distinct(StringComparer.OrdinalIgnoreCase)];
 
     private static MediaPlayerInfo? TryDescribe(Process process, IReadOnlyList<string> variants)
     {

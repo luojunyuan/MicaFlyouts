@@ -6,7 +6,7 @@ using Xunit;
 
 namespace MicaFlyouts.Tests;
 
-public sealed class SettingsAndStateTests : IDisposable
+public sealed partial class SettingsAndStateTests : IDisposable
 {
     private readonly string _directory = Path.Combine(Path.GetTempPath(), "MicaFlyoutsTests", Guid.NewGuid().ToString("N"));
 

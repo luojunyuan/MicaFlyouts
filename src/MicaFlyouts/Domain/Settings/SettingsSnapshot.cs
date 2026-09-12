@@ -103,8 +103,8 @@ public sealed record SettingsSnapshot
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public Guid Uuid { get; init; } = Guid.NewGuid();
 
-    public IReadOnlyList<string> AllowedApps { get; init; } = Array.Empty<string>();
-    public IReadOnlyList<string> BlockedApps { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<string> AllowedApps { get; init; } = [];
+    public IReadOnlyList<string> BlockedApps { get; init; } = [];
 
     public static SettingsSnapshot CreateDefault(Guid? uuid = null)
     {

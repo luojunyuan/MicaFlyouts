@@ -6,7 +6,7 @@ namespace MicaFlyouts.Infrastructure.Audio;
 /// <summary>
 /// WASAPI loopback capture implemented through the source-generated Core Audio projection.
 /// </summary>
-internal sealed unsafe partial class NativeWasapiLoopbackCaptureAdapter : IAudioLoopbackCapture
+internal sealed unsafe partial class NativeWasapiLoopbackCaptureAdapter(AppLogger? logger = null) : IAudioLoopbackCapture
 {
     private const int SharedAudioStream = 0;
     private const uint StreamLoopback = 0x00020000;
@@ -15,7 +15,7 @@ internal sealed unsafe partial class NativeWasapiLoopbackCaptureAdapter : IAudio
     private static readonly Guid AudioClientId = new("1CB9AD4C-DBFA-4C32-B178-C2F568A703B2");
     private static readonly Guid CaptureClientId = new("C8ADBD64-E71E-48A0-A4DE-185C3950CDEB");
 
-    private readonly AppLogger? _logger;
+    private readonly AppLogger? _logger = logger;
     private CoreAudioDeviceEnumerator? _enumerator;
     private CoreAudioDevice? _device;
     private ICoreAudioClient? _client;
@@ -27,11 +27,6 @@ internal sealed unsafe partial class NativeWasapiLoopbackCaptureAdapter : IAudio
     private int _bytesPerSample;
     private bool _isFloat;
     private int _disposed;
-
-    public NativeWasapiLoopbackCaptureAdapter(AppLogger? logger = null)
-    {
-        _logger = logger;
-    }
 
     public event Action<ReadOnlyMemory<float>, int>? SamplesAvailable;
 

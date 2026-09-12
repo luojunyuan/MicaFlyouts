@@ -7,7 +7,7 @@ using Win32Messaging = Windows.Win32.UI.WindowsAndMessaging;
 
 namespace MicaFlyouts.Infrastructure.Windows;
 
-public sealed unsafe partial class KeyboardHookService : IDisposable
+public sealed unsafe partial class KeyboardHookService(Action<KeyboardKeyEvent> keyReceived) : IDisposable
 {
     public const int CapsLock = 0x14;
     public const int NumLock = 0x90;
@@ -26,18 +26,13 @@ public sealed unsafe partial class KeyboardHookService : IDisposable
     private const nuint SysKeyDown = 0x0104;
     private const nuint SysKeyUp = 0x0105;
 
-    private static readonly object CallbackGate = new();
+    private static readonly Lock CallbackGate = new();
     private static KeyboardHookService? _current;
-    private readonly Action<KeyboardKeyEvent> _keyReceived;
+    private readonly Action<KeyboardKeyEvent> _keyReceived = keyReceived ?? throw new ArgumentNullException(nameof(keyReceived));
     private Win32.FreeLibrarySafeHandle? _module;
     private Win32.UnhookWindowsHookExSafeHandle? _hook;
     private int _started;
     private int _disposed;
-
-    public KeyboardHookService(Action<KeyboardKeyEvent> keyReceived)
-    {
-        _keyReceived = keyReceived ?? throw new ArgumentNullException(nameof(keyReceived));
-    }
 
     public void Start()
     {

@@ -16,7 +16,7 @@ public sealed record VolumeSnapshot(
     IReadOnlyList<ApplicationVolumeSnapshot> Applications,
     bool IsNativeOsdSuppressed)
 {
-    public static VolumeSnapshot Empty { get; } = new(null, "", 1, false, Array.Empty<ApplicationVolumeSnapshot>(), false);
+    public static VolumeSnapshot Empty { get; } = new(null, "", 1, false, [], false);
 }
 
 public enum VolumeCommand

@@ -88,11 +88,14 @@ public sealed class TaskbarVisualizerComponent : Component
 
     private static StackElement RenderVisualizerBars(IReadOnlyList<float> bars)
         => HStack(2,
-            bars.Select((bar, index) => Border(Empty())
-                .Background(Accent)
-                .Width(3)
-                .Height(Math.Max(2, 34 * bar))
-                .VAlign(VerticalAlignment.Bottom)
-                .WithKey(index.ToString(System.Globalization.CultureInfo.InvariantCulture)))
-                .ToArray());
+            [.. bars
+                .Select((value, band) => new VisualizerBar(band, value))
+                .Select(bar => Border(Empty())
+                    .Background(Accent)
+                    .Width(3)
+                    .Height(Math.Max(2, 34 * bar.Value))
+                    .VAlign(VerticalAlignment.Bottom)
+                    .WithKey(bar.Band.ToString(System.Globalization.CultureInfo.InvariantCulture)))]);
+
+    private readonly record struct VisualizerBar(int Band, float Value);
 }

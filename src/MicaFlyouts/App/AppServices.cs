@@ -156,7 +156,7 @@ public sealed partial class AppServices : IDisposable
         ReactorApp.ShutdownPolicy = ShutdownPolicy.Explicit;
         _ = ReactorApp.TryRegisterControlAssembly(typeof(SettingsCard).Assembly);
         StartupRegistration.Apply(Settings.Snapshot.Startup);
-        _singleInstance.StartSettingsListener(_dispatcher, () =>
+        _singleInstance.StartSettingsListener(() =>
         {
             _logger.Info("Received a settings request from a second instance.");
             OpenSettings();

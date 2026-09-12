@@ -1,4 +1,3 @@
-using MicaFlyouts.App;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Reactor;
 
@@ -41,7 +40,7 @@ public sealed partial class SingleInstanceService : IDisposable
         return new SingleInstanceService(new Mutex(false, MutexName), false);
     }
 
-    public void StartSettingsListener(UiDispatcher dispatcher, Action openSettings)
+    public void StartSettingsListener(Action openSettings)
     {
         if (!IsPrimary || _settingsTimer is not null)
             return;
