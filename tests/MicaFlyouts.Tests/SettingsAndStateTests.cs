@@ -1,4 +1,6 @@
+using System.Globalization;
 using System.Text.Json;
+using MicaFlyouts.Domain.Localization;
 using MicaFlyouts.Domain.Settings;
 using MicaFlyouts.Infrastructure.Settings;
 using MicaFlyouts.Infrastructure.State;
@@ -28,6 +30,7 @@ public sealed class SettingsAndStateTests : IDisposable
         Assert.Equal(10, settings.TaskbarVisualizerBarCount);
         Assert.Equal(175u, settings.AcrylicBlurOpacity);
         Assert.True(settings.AnonymousTelemetryAllowed);
+        Assert.Equal(LocalizationCatalog.SystemLanguage, settings.AppLanguage);
     }
 
     [Fact]
@@ -57,6 +60,47 @@ public sealed class SettingsAndStateTests : IDisposable
     }
 
     [Fact]
+    public void Normalize_LanguageSelectionsAreCanonicalAndInvalidValuesUseEnglish()
+    {
+        Assert.Equal(
+            LocalizationCatalog.SystemLanguage,
+            SettingsValidator.Normalize(new SettingsSnapshot { AppLanguage = " SYSTEM " }).AppLanguage);
+        Assert.Equal(
+            "en-US",
+            SettingsValidator.Normalize(new SettingsSnapshot { AppLanguage = "EN-us" }).AppLanguage);
+        Assert.Equal(
+            "ru",
+            SettingsValidator.Normalize(new SettingsSnapshot { AppLanguage = "ru-RU" }).AppLanguage);
+        Assert.Equal(
+            LocalizationCatalog.DefaultLanguage,
+            SettingsValidator.Normalize(new SettingsSnapshot { AppLanguage = "not-a-language" }).AppLanguage);
+        Assert.Equal(
+            LocalizationCatalog.DefaultLanguage,
+            LocalizationCatalog.Resolve("not-a-language", "ru-RU"));
+    }
+
+    [Fact]
+    public void LanguageOptions_UseCultureDisplayNamesAndKeepValuesSeparate()
+    {
+        var options = LocalizationCatalog.CreateLanguageOptions("System");
+        var english = Assert.Single(options, option => option.Value == "en-US");
+
+        Assert.Equal("System", options[0].DisplayName);
+        Assert.Equal(CultureInfo.GetCultureInfo("en-US").DisplayName, english.DisplayName);
+        Assert.NotEqual(english.Value, english.DisplayName);
+        Assert.Equal(LocalizationCatalog.SystemLanguage, options[0].Value);
+        Assert.Contains(options, option => option.Value == "zh-CN");
+    }
+
+    [Fact]
+    public void Resolve_SystemUsesTheProvidedCurrentUiCultureWithRegionFallback()
+    {
+        Assert.Equal("ru", LocalizationCatalog.Resolve("system", CultureInfo.GetCultureInfo("ru-RU").Name));
+        Assert.Equal("zh-CN", LocalizationCatalog.Resolve("SYSTEM", CultureInfo.GetCultureInfo("zh-CN").Name));
+        Assert.Equal(LocalizationCatalog.DefaultLanguage, LocalizationCatalog.Resolve("system", "not-a-language"));
+    }
+
+    [Fact]
     public void JsonRepository_UsesDefaultsForMissingAndIgnoresUnknownFields()
     {
         var path = Path.Combine(_directory, "settings.json");
@@ -65,6 +109,22 @@ public sealed class SettingsAndStateTests : IDisposable
         Assert.Equal(123, loaded.Duration);
         Assert.Equal(2, loaded.FlyoutAnimationSpeed);
         Assert.True(loaded.PlayerInfoEnabled);
+        Assert.Equal(LocalizationCatalog.SystemLanguage, loaded.AppLanguage);
+    }
+
+    [Fact]
+    public void JsonRepository_NormalizesLegacyLanguageCasingAndPersistsSystemValue()
+    {
+        var path = Path.Combine(_directory, "settings.json");
+        File.WriteAllText(path, "{\"AppLanguage\":\"EN-us\"}");
+
+        var repository = new JsonSettingsRepository(path);
+        Assert.Equal("en-US", repository.Load().AppLanguage);
+
+        repository.Save(SettingsSnapshot.CreateDefault(Guid.NewGuid()) with { AppLanguage = "SYSTEM" });
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        Assert.Equal(LocalizationCatalog.SystemLanguage, document.RootElement.GetProperty("appLanguage").GetString());
+        Assert.Equal(LocalizationCatalog.SystemLanguage, repository.Load().AppLanguage);
     }
 
     [Fact]

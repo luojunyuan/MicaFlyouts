@@ -339,25 +339,30 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
                 Toggle(t, Props.Settings.LockKeysAnimated, value => Update(services, s => s with { LockKeysAnimated = value }))));
 
     private ScrollViewerElement System(AppServices services, IntlAccessor t)
-        => Page(t.Message(Loc.App.SystemSettingsTitle), t.Message(Loc.App.SystemDescription),
-            Card(t.Message(Loc.App.LaunchOnStartupTitle), t.Message(Loc.App.LaunchOnStartupDescription),
-                Toggle(t, Props.Settings.Startup, value => Update(services, s => s with { Startup = value }))),
-            Card(t.Message(Loc.App.HideTrayIconTitle), t.Message(Loc.App.HideTrayIconDescription),
-                Toggle(t, Props.Settings.NIconHide, value => Update(services, s => s with { NIconHide = value }))),
-            Card(t.Message(Loc.App.Win11TrayIconTitle), t.Message(Loc.App.Win11TrayIconDescription),
-                Toggle(t, Props.Settings.NIconSymbol, value => Update(services, s => s with { NIconSymbol = value }))),
-            Card(t.Message(Loc.App.AppThemeTitle), t.Message(Loc.App.AppThemeDescription),
-                Combo(t,
-                    [t.Message(Loc.App.AppThemeDefault), t.Message(Loc.App.AppThemeLight), t.Message(Loc.App.AppThemeDark)],
-                    Props.Settings.AppTheme,
-                    value => Update(services, s => s with { AppTheme = value }))),
-            Card(t.Message(Loc.App.AppLanguageTitle), t.Message(Loc.App.AppLanguageDescription),
-                Combo(t, [.. LocalizationCatalog.SupportedLanguages],
-                    Math.Max(0, Array.IndexOf([.. LocalizationCatalog.SupportedLanguages], Props.Settings.AppLanguage)),
-                    value => Update(services, s => s with { AppLanguage = LocalizationCatalog.SupportedLanguages[value] }))),
-            Card(t.Message(Loc.App.FontFamilyTitle), t.Message(Loc.App.FontFamilyDescription),
-                TextBox(Props.Settings.FontFamily, value => Update(services, s => s with { FontFamily = value }))
-                    .AutomationName(t.Message(Loc.App.FontFamilyTitle))));
+    {
+        var languageOptions = LocalizationCatalog.CreateLanguageOptions(
+            t.Message(Loc.App.SystemSettingsTitle));
+        return Page(t.Message(Loc.App.SystemSettingsTitle), t.Message(Loc.App.SystemDescription),
+                Card(t.Message(Loc.App.LaunchOnStartupTitle), t.Message(Loc.App.LaunchOnStartupDescription),
+                    Toggle(t, Props.Settings.Startup, value => Update(services, s => s with { Startup = value }))),
+                Card(t.Message(Loc.App.HideTrayIconTitle), t.Message(Loc.App.HideTrayIconDescription),
+                    Toggle(t, Props.Settings.NIconHide, value => Update(services, s => s with { NIconHide = value }))),
+                Card(t.Message(Loc.App.Win11TrayIconTitle), t.Message(Loc.App.Win11TrayIconDescription),
+                    Toggle(t, Props.Settings.NIconSymbol, value => Update(services, s => s with { NIconSymbol = value }))),
+                Card(t.Message(Loc.App.AppThemeTitle), t.Message(Loc.App.AppThemeDescription),
+                    Combo(t,
+                        [t.Message(Loc.App.AppThemeDefault), t.Message(Loc.App.AppThemeLight), t.Message(Loc.App.AppThemeDark)],
+                        Props.Settings.AppTheme,
+                        value => Update(services, s => s with { AppTheme = value }))),
+                Card(t.Message(Loc.App.AppLanguageTitle), t.Message(Loc.App.AppLanguageDescription),
+                    Combo(t,
+                        [.. languageOptions.Select(option => option.DisplayName)],
+                        LocalizationCatalog.IndexOfLanguage(languageOptions, Props.Settings.AppLanguage),
+                        value => Update(services, s => s with { AppLanguage = languageOptions[value].Value }))),
+                Card(t.Message(Loc.App.FontFamilyTitle), t.Message(Loc.App.FontFamilyDescription),
+                    TextBox(Props.Settings.FontFamily, value => Update(services, s => s with { FontFamily = value }))
+                        .AutomationName(t.Message(Loc.App.FontFamilyTitle))));
+    }
 
     private ScrollViewerElement About(AppServices services, IntlAccessor t)
     {
