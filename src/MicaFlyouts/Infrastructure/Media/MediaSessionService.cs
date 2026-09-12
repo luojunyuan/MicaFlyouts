@@ -4,6 +4,7 @@ using MicaFlyouts.Infrastructure.Logging;
 using MicaFlyouts.Infrastructure.Settings;
 using MicaFlyouts.Infrastructure.State;
 using MicaFlyouts.Infrastructure.Windows;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Windows.Media;
 using Windows.Media.Control;
@@ -21,7 +22,7 @@ public sealed partial class MediaSessionService : IDisposable
     private readonly FullscreenService _fullscreen;
     private readonly MediaPlayerResolver _resolver;
     private readonly AppLogger _logger;
-    private readonly Dictionary<string, GlobalSystemMediaTransportControlsSession> _subscribedSessions = new(StringComparer.Ordinal);
+    private readonly ConcurrentDictionary<string, GlobalSystemMediaTransportControlsSession> _subscribedSessions = new(StringComparer.Ordinal);
     private GlobalSystemMediaTransportControlsSessionManager? _manager;
     private Action? _settingsUnsubscribe;
     private int _started;
@@ -173,9 +174,8 @@ public sealed partial class MediaSessionService : IDisposable
     private void SubscribeToSession(GlobalSystemMediaTransportControlsSession session)
     {
         var key = SessionKey(session);
-        if (_subscribedSessions.ContainsKey(key))
+        if (!_subscribedSessions.TryAdd(key, session))
             return;
-        _subscribedSessions[key] = session;
         session.MediaPropertiesChanged += SessionChanged;
         session.PlaybackInfoChanged += SessionChanged;
         session.TimelinePropertiesChanged += SessionChanged;

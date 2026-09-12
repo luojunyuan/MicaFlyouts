@@ -57,7 +57,7 @@ public sealed partial class StateStore<TSnapshot> : IStateStore<TSnapshot>, IDis
         ArgumentNullException.ThrowIfNull(nextSnapshot);
         ObjectDisposedException.ThrowIf(_disposed != 0, this);
 
-        Interlocked.Exchange(ref _snapshot, nextSnapshot!);
+        Volatile.Write(ref _snapshot, nextSnapshot!);
         var listeners = Volatile.Read(ref _listeners);
         foreach (var listener in listeners)
         {

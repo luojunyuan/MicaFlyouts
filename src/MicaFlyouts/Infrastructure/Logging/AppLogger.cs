@@ -47,5 +47,5 @@ public sealed partial class AppLogger : IDisposable
         }
     }
 
-    public void Dispose() => Interlocked.Exchange(ref _disposed, 1);
+    public void Dispose() => Volatile.Write(ref _disposed, 1);
 }

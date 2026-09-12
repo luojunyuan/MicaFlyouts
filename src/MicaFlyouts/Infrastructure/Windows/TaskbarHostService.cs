@@ -19,7 +19,6 @@ public sealed partial class TaskbarHostService : IDisposable
     private readonly UiDispatcher _dispatcher;
     private readonly MonitorService _monitors;
     private readonly AppLogger _logger;
-    private readonly object _gate = new();
     private ReactorWindow? _widgetWindow;
     private ReactorWindow? _visualizerWindow;
     private CancellationTokenSource? _cancellation;
@@ -73,7 +72,7 @@ public sealed partial class TaskbarHostService : IDisposable
     {
         _widgetWindow = null;
         _visualizerWindow = null;
-        _attachedTaskbar = 0;
+        Volatile.Write(ref _attachedTaskbar, 0);
     }
 
     public void Refresh()
@@ -95,6 +94,7 @@ public sealed partial class TaskbarHostService : IDisposable
         int selectedIndex = Math.Clamp(settings.TaskbarWidgetSelectedMonitor, 0, monitors.Count - 1);
         var targetMonitor = monitors[selectedIndex];
         nint taskbar = FindTaskbarForMonitor(targetMonitor, monitors);
+        nint attachedTaskbar = Volatile.Read(ref _attachedTaskbar);
         PixelRect taskbarRect = PixelRect.Empty;
         bool available = taskbar != 0 && NativeWindowApi.TryGetWindowRect(taskbar, out taskbarRect);
 
@@ -104,34 +104,35 @@ public sealed partial class TaskbarHostService : IDisposable
             targetMonitor.DeviceId,
             vertical ? TaskbarOrientation.Vertical : TaskbarOrientation.Horizontal,
             taskbarRect,
-            _attachedTaskbar != 0,
+            attachedTaskbar != 0,
             available,
             media?.Track.DisplayTitle ?? "-",
             media?.Track.DisplayArtist ?? "-",
             media?.Track.PlaybackStatus == MediaPlaybackStatus.Playing,
             false);
         _store.Set(snapshot);
-        _attachedTaskbar = taskbar;
+        Volatile.Write(ref _attachedTaskbar, taskbar);
         AttachWindows();
     }
 
     private void AttachWindows()
     {
-        if (_attachedTaskbar == 0)
+        nint attachedTaskbar = Volatile.Read(ref _attachedTaskbar);
+        if (attachedTaskbar == 0)
             return;
 
         var settings = _settings.Snapshot;
         var media = _media.Snapshot.ActiveSession;
         var monitors = MonitorService.GetMonitors();
-        PixelRect? nativeWidgets = TaskbarAutomationService.TryGetRect(_attachedTaskbar, "WidgetsButton", out var widgetRect)
+        PixelRect? nativeWidgets = TaskbarAutomationService.TryGetRect(attachedTaskbar, "WidgetsButton", out var widgetRect)
             ? widgetRect
             : null;
-        PixelRect? systemTray = TaskbarAutomationService.TryGetRect(_attachedTaskbar, "SystemTrayIcon", out var trayRect)
+        PixelRect? systemTray = TaskbarAutomationService.TryGetRect(attachedTaskbar, "SystemTrayIcon", out var trayRect)
             ? trayRect
             : null;
         var layout = TaskbarLayoutCalculator.Calculate(new TaskbarLayoutInput(
             _store.Snapshot.TaskbarRect,
-            MonitorService.ForWindow(_attachedTaskbar).DpiScale,
+            MonitorService.ForWindow(attachedTaskbar).DpiScale,
             100,
             40,
             84,
@@ -147,8 +148,8 @@ public sealed partial class TaskbarHostService : IDisposable
             nativeWidgets,
             systemTray));
 
-        AttachWindow(_widgetWindow, layout.WidgetRect, _attachedTaskbar);
-        AttachWindow(_visualizerWindow, layout.VisualizerRect, _attachedTaskbar);
+        AttachWindow(_widgetWindow, layout.WidgetRect, attachedTaskbar);
+        AttachWindow(_visualizerWindow, layout.VisualizerRect, attachedTaskbar);
     }
 
     private static void AttachWindow(ReactorWindow? window, PixelRect rect, nint taskbar)
@@ -193,7 +194,7 @@ public sealed partial class TaskbarHostService : IDisposable
             while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
             {
                 var taskbar = NativeWindowApi.FindWindow("Shell_TrayWnd");
-                if (taskbar != _attachedTaskbar)
+                if (taskbar != Volatile.Read(ref _attachedTaskbar))
                     UiDispatcher.EnqueueOrRun(RefreshOnUiThread);
             }
         }
