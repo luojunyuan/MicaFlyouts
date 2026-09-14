@@ -11,7 +11,7 @@ namespace MicaFlyouts.Features.Tray;
 /// shown (<c>ActivateOnOpen = false</c>) and is independent from every
 /// application window.
 /// </summary>
-public sealed partial class TrayIconFeature(SettingsStore settings, AppLogger logger) : IDisposable
+public sealed partial class TrayIconFeature(SettingsStore settings, AppLogger logger)
 {
     private static readonly WindowKey TrayHostKey = WindowKey.Of("tray-host");
 
@@ -20,11 +20,11 @@ public sealed partial class TrayIconFeature(SettingsStore settings, AppLogger lo
     private Action? _settingsUnsubscribe;
     private ReactorWindow? _hostWindow;
     private int _started;
-    private int _disposed;
+    private int _closed;
 
     public void Start()
     {
-        if (Volatile.Read(ref _disposed) != 0
+        if (Volatile.Read(ref _closed) != 0
             || Interlocked.Exchange(ref _started, 1) != 0)
             return;
 
@@ -36,7 +36,7 @@ public sealed partial class TrayIconFeature(SettingsStore settings, AppLogger lo
 
     private void Synchronize()
     {
-        if (Volatile.Read(ref _disposed) != 0 || Volatile.Read(ref _started) == 0)
+        if (Volatile.Read(ref _closed) != 0 || Volatile.Read(ref _started) == 0)
             return;
         if (_settings.Snapshot.NIconHide)
             CloseHostWindow();
@@ -95,9 +95,9 @@ public sealed partial class TrayIconFeature(SettingsStore settings, AppLogger lo
         }
     }
 
-    public void Dispose()
+    public void Close()
     {
-        if (Interlocked.Exchange(ref _disposed, 1) != 0)
+        if (Interlocked.Exchange(ref _closed, 1) != 0)
             return;
 
         _settingsUnsubscribe?.Invoke();

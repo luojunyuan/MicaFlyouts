@@ -3,11 +3,11 @@ using System.Globalization;
 
 namespace MicaFlyouts.Infrastructure.Logging;
 
-public sealed partial class AppLogger : IDisposable
+public sealed partial class AppLogger
 {
     private readonly object _gate = new();
     private readonly string _logFile;
-    private int _disposed;
+    private int _shutdown;
 
     public AppLogger(string? directory = null)
     {
@@ -29,7 +29,7 @@ public sealed partial class AppLogger : IDisposable
 
     private void Write(string level, string message, Exception? exception)
     {
-        if (Volatile.Read(ref _disposed) != 0)
+        if (Volatile.Read(ref _shutdown) != 0)
             return;
 
         string line = string.Format(
@@ -42,10 +42,10 @@ public sealed partial class AppLogger : IDisposable
         Debug.WriteLine(line);
         lock (_gate)
         {
-            if (Volatile.Read(ref _disposed) == 0)
+            if (Volatile.Read(ref _shutdown) == 0)
                 File.AppendAllText(_logFile, line + Environment.NewLine);
         }
     }
 
-    public void Dispose() => Interlocked.Exchange(ref _disposed, 1);
+    public void Shutdown() => Interlocked.Exchange(ref _shutdown, 1);
 }
