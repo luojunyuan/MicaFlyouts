@@ -99,7 +99,17 @@ public sealed class ReactorElementTreeTests
 
         Assert.NotNull(featureType);
         Assert.NotNull(componentType);
-        Assert.True(typeof(IDisposable).IsAssignableFrom(featureType));
+        Assert.False(typeof(IDisposable).IsAssignableFrom(featureType));
+        Assert.Null(featureType.GetMethod(
+            "Dispose",
+            System.Reflection.BindingFlags.Instance
+                | System.Reflection.BindingFlags.Public
+                | System.Reflection.BindingFlags.NonPublic));
+        Assert.NotNull(featureType.GetMethod(
+            "Close",
+            System.Reflection.BindingFlags.Instance
+                | System.Reflection.BindingFlags.Public
+                | System.Reflection.BindingFlags.NonPublic));
         Assert.True(typeof(HNotifyComponent).IsAssignableFrom(componentType));
 
         // The tray unit follows the Kumo component sample: a never-shown host

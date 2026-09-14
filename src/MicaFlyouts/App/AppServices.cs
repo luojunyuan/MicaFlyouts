@@ -439,19 +439,13 @@ public sealed partial class AppServices : IDisposable
         if (Interlocked.Exchange(ref _exitRequested, 1) != 0)
             return;
 
-        // Close the tray unit before WinUI shuts down: this removes the
-        // H.NotifyIcon menu that is still on the call stack, and closes the
-        // never-shown host window so Application.Exit() can run its normal
-        // window-close path instead of being blocked by it.
-        _tray.Dispose();
-        ReactorApp.Exit();
+        Environment.Exit(0);
     }
 
     /// <summary>
-    /// Full ordered teardown, kept for explicit dispose paths. The exit flow
-    /// intentionally does not call it: <c>ReactorApp.Run</c> only returns when
-    /// the process is going away, and <see cref="Exit"/> has already released
-    /// the tray unit.
+    /// Full ordered teardown, kept for explicit dispose paths. The normal exit
+    /// flow intentionally skips it because <see cref="Exit"/> terminates the
+    /// process directly.
     /// </summary>
     public void Dispose()
     {
@@ -459,7 +453,7 @@ public sealed partial class AppServices : IDisposable
             return;
         _mediaUnsubscribe?.Invoke();
         _settingsUnsubscribe?.Invoke();
-        _tray.Dispose();
+        _tray.Close();
         _keyboard.Dispose();
         Taskbar.Dispose();
         Visualizer.Dispose();
@@ -467,7 +461,7 @@ public sealed partial class AppServices : IDisposable
         Media.Dispose();
         Updater.Dispose();
         Notifications.Dispose();
-        _windows.Dispose();
+        _windows.Shutdown();
         Settings.Dispose();
         MediaStore.Dispose();
         VolumeStore.Dispose();
@@ -478,6 +472,6 @@ public sealed partial class AppServices : IDisposable
         LocalizationStore.Dispose();
         UpdateStore.Dispose();
         _singleInstance.Dispose();
-        _logger.Dispose();
+        _logger.Shutdown();
     }
 }

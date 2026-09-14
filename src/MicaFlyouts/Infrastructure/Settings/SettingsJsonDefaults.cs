@@ -48,20 +48,24 @@ internal static class SettingsJsonDefaults
             AcrylicBlurOpacity = ValueOrDefault(root, "acrylicBlurOpacity", parsed.AcrylicBlurOpacity, defaults.AcrylicBlurOpacity),
             ShowUpdateNotifications = ValueOrDefault(root, "showUpdateNotifications", parsed.ShowUpdateNotifications, defaults.ShowUpdateNotifications),
             AnonymousTelemetryAllowed = ValueOrDefault(root, "anonymousTelemetryAllowed", parsed.AnonymousTelemetryAllowed, defaults.AnonymousTelemetryAllowed),
-            AllowedApps = root.TryGetProperty("allowedApps", out _) ? parsed.AllowedApps : defaults.AllowedApps,
-            BlockedApps = root.TryGetProperty("blockedApps", out _) ? parsed.BlockedApps : defaults.BlockedApps,
+            AllowedApps = HasProperty(root, "allowedApps") ? parsed.AllowedApps : defaults.AllowedApps,
+            BlockedApps = HasProperty(root, "blockedApps") ? parsed.BlockedApps : defaults.BlockedApps,
         };
     }
 
     private static bool ValueOrDefault(JsonElement root, string name, bool value, bool fallback)
-        => root.TryGetProperty(name, out _) ? value : fallback;
+        => HasProperty(root, name) ? value : fallback;
 
     private static int ValueOrDefault(JsonElement root, string name, int value, int fallback)
-        => root.TryGetProperty(name, out _) ? value : fallback;
+        => HasProperty(root, name) ? value : fallback;
 
     private static uint ValueOrDefault(JsonElement root, string name, uint value, uint fallback)
-        => root.TryGetProperty(name, out _) ? value : fallback;
+        => HasProperty(root, name) ? value : fallback;
 
-    private static string ValueOrDefault(JsonElement root, string name, string value, string fallback)
-        => root.TryGetProperty(name, out _) ? value : fallback;
+    private static string ValueOrDefault(JsonElement root, string name, string? value, string fallback)
+        => HasProperty(root, name) ? value ?? fallback : fallback;
+
+    private static bool HasProperty(JsonElement root, string name)
+        => root.EnumerateObject().Any(property =>
+            string.Equals(property.Name, name, StringComparison.OrdinalIgnoreCase));
 }

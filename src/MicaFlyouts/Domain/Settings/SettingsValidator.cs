@@ -1,3 +1,5 @@
+using MicaFlyouts.Domain.Localization;
+
 namespace MicaFlyouts.Domain.Settings;
 
 public static class SettingsValidator
@@ -33,7 +35,7 @@ public static class SettingsValidator
             AcrylicBlurOpacity = Math.Min(settings.AcrylicBlurOpacity, 255u),
             AllowedApps = NormalizeEntries(settings.AllowedApps),
             BlockedApps = NormalizeEntries(settings.BlockedApps),
-            AppLanguage = string.IsNullOrWhiteSpace(settings.AppLanguage) ? "system" : settings.AppLanguage,
+            AppLanguage = LocalizationCatalog.NormalizeSelection(settings.AppLanguage),
             FontFamily = string.IsNullOrWhiteSpace(settings.FontFamily)
                 ? SettingsSnapshot.CreateDefault().FontFamily
                 : settings.FontFamily,

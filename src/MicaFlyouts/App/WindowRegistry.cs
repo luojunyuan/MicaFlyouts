@@ -3,10 +3,10 @@ using Microsoft.UI.Reactor.Core;
 
 namespace MicaFlyouts.App;
 
-public sealed partial class WindowRegistry : IDisposable
+public sealed partial class WindowRegistry
 {
     private readonly Dictionary<WindowKey, ReactorWindow> _windows = [];
-    private int _disposed;
+    private int _shutdown;
 
     public IReadOnlyCollection<ReactorWindow> Windows => _windows.Values;
 
@@ -15,7 +15,7 @@ public sealed partial class WindowRegistry : IDisposable
         WindowSpec specification,
         Func<Component> rootFactory)
     {
-        ObjectDisposedException.ThrowIf(_disposed != 0, this);
+        ObjectDisposedException.ThrowIf(_shutdown != 0, this);
         ArgumentNullException.ThrowIfNull(rootFactory);
 
         if (_windows.TryGetValue(key, out var existing))
@@ -56,9 +56,9 @@ public sealed partial class WindowRegistry : IDisposable
         _windows.Clear();
     }
 
-    public void Dispose()
+    public void Shutdown()
     {
-        if (Interlocked.Exchange(ref _disposed, 1) != 0)
+        if (Interlocked.Exchange(ref _shutdown, 1) != 0)
             return;
         CloseAll();
     }
