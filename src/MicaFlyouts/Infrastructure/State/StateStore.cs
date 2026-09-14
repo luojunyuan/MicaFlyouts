@@ -2,17 +2,12 @@ using MicaFlyouts.Domain;
 
 namespace MicaFlyouts.Infrastructure.State;
 
-public sealed partial class StateStore<TSnapshot> : IStateStore<TSnapshot>, IDisposable
+public sealed partial class StateStore<TSnapshot>(TSnapshot initialSnapshot) : IStateStore<TSnapshot>, IDisposable
 {
-    private object _snapshot;
-    private Action[] _listeners = Array.Empty<Action>();
-    private readonly object _gate = new();
+    private object _snapshot = initialSnapshot!;
+    private Action[] _listeners = [];
+    private readonly Lock _gate = new();
     private int _disposed;
-
-    public StateStore(TSnapshot initialSnapshot)
-    {
-        _snapshot = initialSnapshot!;
-    }
 
     public TSnapshot Snapshot => (TSnapshot)Volatile.Read(ref _snapshot);
 
@@ -85,7 +80,7 @@ public sealed partial class StateStore<TSnapshot> : IStateStore<TSnapshot>, IDis
         if (Interlocked.Exchange(ref _disposed, 1) == 0)
         {
             lock (_gate)
-                Volatile.Write(ref _listeners, Array.Empty<Action>());
+                Volatile.Write(ref _listeners, []);
         }
     }
 }

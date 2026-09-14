@@ -56,12 +56,11 @@ public static class SettingsValidator
     private static string[] NormalizeEntries(IReadOnlyList<string>? values)
     {
         if (values is null || values.Count == 0)
-            return Array.Empty<string>();
+            return [];
 
-        return values
+        return [.. values
             .Where(static value => !string.IsNullOrWhiteSpace(value))
             .Select(static value => value.Trim())
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
+            .Distinct(StringComparer.OrdinalIgnoreCase)];
     }
 }

@@ -4,20 +4,13 @@ using MicaFlyouts.Infrastructure.State;
 
 namespace MicaFlyouts.Infrastructure.Settings;
 
-public sealed partial class SettingsStore : ISettingsStore, IDisposable
+public sealed partial class SettingsStore(ISettingsRepository repository, AppLogger? logger = null) : ISettingsStore, IDisposable
 {
-    private readonly StateStore<SettingsSnapshot> _state;
-    private readonly ISettingsRepository _repository;
-    private readonly AppLogger? _logger;
+    private readonly StateStore<SettingsSnapshot> _state = new(repository.Load());
+    private readonly ISettingsRepository _repository = repository;
+    private readonly AppLogger? _logger = logger;
     private CancellationTokenSource? _saveCancellation;
     private int _disposed;
-
-    public SettingsStore(ISettingsRepository repository, AppLogger? logger = null)
-    {
-        _repository = repository;
-        _logger = logger;
-        _state = new StateStore<SettingsSnapshot>(repository.Load());
-    }
 
     public SettingsSnapshot Snapshot => _state.Snapshot;
 

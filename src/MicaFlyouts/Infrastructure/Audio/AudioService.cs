@@ -6,26 +6,18 @@ using MicaFlyouts.Infrastructure.State;
 
 namespace MicaFlyouts.Infrastructure.Audio;
 
-public sealed partial class AudioService : IDisposable
+public sealed partial class AudioService(ISettingsStore settings, VolumeStore store, UiDispatcher dispatcher, AppLogger logger) : IDisposable
 {
-    private readonly ISettingsStore _settings;
-    private readonly VolumeStore _store;
-    private readonly UiDispatcher _dispatcher;
-    private readonly AppLogger _logger;
-    private readonly object _gate = new();
+    private readonly ISettingsStore _settings = settings;
+    private readonly VolumeStore _store = store;
+    private readonly UiDispatcher _dispatcher = dispatcher;
+    private readonly AppLogger _logger = logger;
+    private readonly Lock _gate = new();
     private CancellationTokenSource? _pollCancellation;
     private CoreAudioDeviceEnumerator? _enumerator;
     private CoreAudioDevice? _endpoint;
     private DateTime _nextEnumeratorRetryUtc;
     private int _disposed;
-
-    public AudioService(ISettingsStore settings, VolumeStore store, UiDispatcher dispatcher, AppLogger logger)
-    {
-        _settings = settings;
-        _store = store;
-        _dispatcher = dispatcher;
-        _logger = logger;
-    }
 
     public VolumeSnapshot Snapshot => _store.Snapshot;
 

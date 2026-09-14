@@ -6,7 +6,7 @@ public sealed record VisualizerSnapshot(
     bool HasContent,
     DateTimeOffset Timestamp)
 {
-    public static VisualizerSnapshot Empty { get; } = new(Array.Empty<float>(), false, false, default);
+    public static VisualizerSnapshot Empty { get; } = new([], false, false, default);
 }
 
 public static class FftProcessor

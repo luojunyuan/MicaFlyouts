@@ -5,7 +5,7 @@ namespace MicaFlyouts.Infrastructure.Logging;
 
 public sealed partial class AppLogger
 {
-    private readonly object _gate = new();
+    private readonly Lock _gate = new();
     private readonly string _logFile;
     private int _shutdown;
 

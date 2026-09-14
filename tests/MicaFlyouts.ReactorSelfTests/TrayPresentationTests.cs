@@ -9,7 +9,7 @@ using Xunit;
 
 namespace MicaFlyouts.ReactorSelfTests;
 
-public sealed class TrayPresentationTests : IDisposable
+public sealed partial class TrayPresentationTests : IDisposable
 {
     private readonly string _directory = Path.Combine(Path.GetTempPath(), "MicaFlyoutsTrayTests", Guid.NewGuid().ToString("N"));
     private readonly SettingsStore _settings;

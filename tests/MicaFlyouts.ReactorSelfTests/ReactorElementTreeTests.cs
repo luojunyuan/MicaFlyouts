@@ -40,7 +40,7 @@ public sealed class ReactorElementTreeTests
     {
         var first = SettingsCard(header: "One", content: ToggleSwitch(true));
         var second = SettingsCard(header: "Two", content: ToggleSwitch(false));
-        var expander = SettingsExpander(header: "Group", items: new object[] { first, second });
+        var expander = SettingsExpander(header: "Group", items: [first, second]);
         Assert.Equal(2, expander.Items.Count);
         Assert.Same(first, expander.Items[0]);
         Assert.Same(second, expander.Items[1]);
@@ -61,9 +61,9 @@ public sealed class ReactorElementTreeTests
     [Fact]
     public void FeatureComponents_AreReactorComponents()
     {
-        Assert.IsAssignableFrom<Component>(new MediaFlyoutComponent());
-        Assert.IsAssignableFrom<Component>(new LockKeysComponent());
-        Assert.IsAssignableFrom<Component>(new SettingsWindowComponent());
+        Assert.IsType<Component>(new MediaFlyoutComponent(), exactMatch: false);
+        Assert.IsType<Component>(new LockKeysComponent(), exactMatch: false);
+        Assert.IsType<Component>(new SettingsWindowComponent(), exactMatch: false);
     }
 
     [Fact]

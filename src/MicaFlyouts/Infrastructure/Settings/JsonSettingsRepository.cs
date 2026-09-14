@@ -18,7 +18,7 @@ public sealed class JsonSettingsRepository : ISettingsRepository
     private readonly string _settingsPath;
     private readonly string _backupPath;
     private readonly string _temporaryPath;
-    private readonly object _fileGate = new();
+    private readonly Lock _fileGate = new();
 
     public JsonSettingsRepository(string? settingsPath = null)
     {

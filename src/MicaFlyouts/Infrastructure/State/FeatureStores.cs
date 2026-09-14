@@ -10,14 +10,9 @@ using MicaFlyouts.Domain.Volume;
 
 namespace MicaFlyouts.Infrastructure.State;
 
-public abstract partial class SnapshotStore<TSnapshot> : IStateStore<TSnapshot>, IDisposable
+public abstract partial class SnapshotStore<TSnapshot>(TSnapshot initialSnapshot) : IStateStore<TSnapshot>, IDisposable
 {
-    private readonly StateStore<TSnapshot> _state;
-
-    protected SnapshotStore(TSnapshot initialSnapshot)
-    {
-        _state = new StateStore<TSnapshot>(initialSnapshot);
-    }
+    private readonly StateStore<TSnapshot> _state = new(initialSnapshot);
 
     public TSnapshot Snapshot => _state.Snapshot;
 
@@ -64,16 +59,12 @@ public sealed partial class OnboardingStore : SnapshotStore<OnboardingSnapshot>
     public OnboardingStore() : base(OnboardingSnapshot.Initial) { }
 }
 
-public sealed partial class LocalizationStore : SnapshotStore<LocalizationSnapshot>
-{
-    public LocalizationStore(string language, int resourceVersion = 1)
-        : base(new LocalizationSnapshot(
+public sealed partial class LocalizationStore(string language, int resourceVersion = 1) : SnapshotStore<LocalizationSnapshot>(new LocalizationSnapshot(
             language,
             LocalizationCatalog.IsRightToLeft(language),
             LocalizationCatalog.FontFamilyFor(language),
             resourceVersion))
-    {
-    }
+{
 }
 
 public sealed partial class UpdateStore : SnapshotStore<UpdateSnapshot>

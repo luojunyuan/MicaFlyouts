@@ -11,14 +11,20 @@ using WinRT.Interop;
 
 namespace MicaFlyouts.Infrastructure.Windows;
 
-public sealed partial class TaskbarHostService : IDisposable
+public sealed partial class TaskbarHostService(
+    ISettingsStore settings,
+    MediaStore media,
+    TaskbarStore store,
+    UiDispatcher dispatcher,
+    MonitorService monitors,
+    AppLogger logger) : IDisposable
 {
-    private readonly ISettingsStore _settings;
-    private readonly MediaStore _media;
-    private readonly TaskbarStore _store;
-    private readonly UiDispatcher _dispatcher;
-    private readonly MonitorService _monitors;
-    private readonly AppLogger _logger;
+    private readonly ISettingsStore _settings = settings;
+    private readonly MediaStore _media = media;
+    private readonly TaskbarStore _store = store;
+    private readonly UiDispatcher _dispatcher = dispatcher;
+    private readonly MonitorService _monitors = monitors;
+    private readonly AppLogger _logger = logger;
     private readonly object _gate = new();
     private ReactorWindow? _widgetWindow;
     private ReactorWindow? _visualizerWindow;
@@ -27,22 +33,6 @@ public sealed partial class TaskbarHostService : IDisposable
     private Action? _settingsUnsubscribe;
     private nint _attachedTaskbar;
     private int _disposed;
-
-    public TaskbarHostService(
-        ISettingsStore settings,
-        MediaStore media,
-        TaskbarStore store,
-        UiDispatcher dispatcher,
-        MonitorService monitors,
-        AppLogger logger)
-    {
-        _settings = settings;
-        _media = media;
-        _store = store;
-        _dispatcher = dispatcher;
-        _monitors = monitors;
-        _logger = logger;
-    }
 
     public TaskbarSnapshot Snapshot => _store.Snapshot;
 
@@ -94,7 +84,7 @@ public sealed partial class TaskbarHostService : IDisposable
 
         int selectedIndex = Math.Clamp(settings.TaskbarWidgetSelectedMonitor, 0, monitors.Count - 1);
         var targetMonitor = monitors[selectedIndex];
-        nint taskbar = FindTaskbarForMonitor(targetMonitor, monitors);
+        nint taskbar = FindTaskbarForMonitor(targetMonitor);
         PixelRect taskbarRect = PixelRect.Empty;
         bool available = taskbar != 0 && NativeWindowApi.TryGetWindowRect(taskbar, out taskbarRect);
 
@@ -121,7 +111,7 @@ public sealed partial class TaskbarHostService : IDisposable
             return;
 
         var settings = _settings.Snapshot;
-        var media = _media.Snapshot.ActiveSession;
+        _ = _media.Snapshot.ActiveSession;
         var monitors = MonitorService.GetMonitors();
         PixelRect? nativeWidgets = TaskbarAutomationService.TryGetRect(_attachedTaskbar, "WidgetsButton", out var widgetRect)
             ? widgetRect
@@ -167,7 +157,7 @@ public sealed partial class TaskbarHostService : IDisposable
         window.Show();
     }
 
-    private static nint FindTaskbarForMonitor(MicaFlyouts.Domain.Windows.MonitorSnapshot target, IReadOnlyList<MicaFlyouts.Domain.Windows.MonitorSnapshot> monitors)
+    private static nint FindTaskbarForMonitor(MicaFlyouts.Domain.Windows.MonitorSnapshot target)
     {
         if (target.IsPrimary)
             return NativeWindowApi.FindWindow("Shell_TrayWnd");

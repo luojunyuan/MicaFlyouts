@@ -75,7 +75,8 @@ internal static partial class TaskbarAutomationService
         [PreserveSig] int CreateCacheRequest(out nint cacheRequest);
         [PreserveSig] int CreateTrueCondition(out nint condition);
         [PreserveSig] int CreateFalseCondition(out nint condition);
-        [PreserveSig] int CreatePropertyCondition(
+        [PreserveSig]
+        int CreatePropertyCondition(
             int propertyId,
             [MarshalAs(UnmanagedType.Struct)] object value,
             out IUiAutomationCondition condition);
@@ -92,17 +93,21 @@ internal static partial class TaskbarAutomationService
         [PreserveSig] int FindFirstBuildCache(int scope, nint condition, nint cacheRequest, out IUiAutomationElement element);
         [PreserveSig] int FindAllBuildCache(int scope, nint condition, nint cacheRequest, out nint elements);
         [PreserveSig] int BuildUpdatedCache(nint cacheRequest, out IUiAutomationElement updated);
-        [PreserveSig] int GetCurrentPropertyValue(
+        [PreserveSig]
+        int GetCurrentPropertyValue(
             int propertyId,
             [MarshalAs(UnmanagedType.Struct)] out object value);
-        [PreserveSig] int GetCurrentPropertyValueEx(
+        [PreserveSig]
+        int GetCurrentPropertyValueEx(
             int propertyId,
             [MarshalAs(UnmanagedType.Bool)] bool ignoreDefaultValue,
             [MarshalAs(UnmanagedType.Struct)] out object value);
-        [PreserveSig] int GetCachedPropertyValue(
+        [PreserveSig]
+        int GetCachedPropertyValue(
             int propertyId,
             [MarshalAs(UnmanagedType.Struct)] out object value);
-        [PreserveSig] int GetCachedPropertyValueEx(
+        [PreserveSig]
+        int GetCachedPropertyValueEx(
             int propertyId,
             [MarshalAs(UnmanagedType.Bool)] bool ignoreDefaultValue,
             [MarshalAs(UnmanagedType.Struct)] out object value);

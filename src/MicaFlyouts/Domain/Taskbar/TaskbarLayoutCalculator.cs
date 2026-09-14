@@ -101,7 +101,7 @@ public static class TaskbarLayoutCalculator
         else
         {
             if (input.VisualizerEnabled && input.VisualizerPosition == TaskbarPosition.End)
-                result -= (int)Math.Round(input.VisualizerWidth * input.DpiScale) - 4;
+                _ = (int)Math.Round(input.VisualizerWidth * input.DpiScale) - 4;
 
             var native = input.NativeWidgetsRect;
             bool nativeOnEnd = native.HasValue && (orientation == TaskbarOrientation.Vertical

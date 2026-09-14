@@ -191,7 +191,7 @@ public static unsafe class NativeWindowApi
             Win32Messaging.LAYERED_WINDOW_ATTRIBUTES_FLAGS.LWA_ALPHA);
     }
 
-    public static bool SetRoundedRegion(nint hwnd, int width, int height, int radius)
+    public static bool SetRoundedRegion(nint hwnd, int width, int height)
     {
         if (hwnd == 0 || width <= 0 || height <= 0)
             return false;
@@ -210,7 +210,7 @@ public static unsafe class NativeWindowApi
 
     public static IReadOnlyList<MonitorSnapshot> GetMonitors()
     {
-        var monitors = new List<MonitorSnapshot>();
+        List<MonitorSnapshot> monitors = [];
         var handle = GCHandle.Alloc(monitors);
         try
         {
@@ -228,10 +228,10 @@ public static unsafe class NativeWindowApi
         for (int i = 0; i < monitors.Count; i++)
             monitors[i] = monitors[i] with { Index = i };
 
-        return monitors
-            .OrderByDescending(static monitor => monitor.IsPrimary)
-            .ThenBy(static monitor => monitor.Bounds.Left)
-            .ToArray();
+        return [..
+            monitors
+                .OrderByDescending(static monitor => monitor.IsPrimary)
+                .ThenBy(static monitor => monitor.Bounds.Left)];
     }
 
     public static MonitorSnapshot GetMonitorForWindow(nint hwnd)

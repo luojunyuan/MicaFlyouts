@@ -5,16 +5,11 @@ using Microsoft.Windows.AppNotifications.Builder;
 
 namespace MicaFlyouts.Infrastructure.Notifications;
 
-public sealed partial class NotificationService : IDisposable
+public sealed partial class NotificationService(AppLogger logger) : IDisposable
 {
-    private readonly AppLogger _logger;
+    private readonly AppLogger _logger = logger;
     private bool _registered;
     private int _disposed;
-
-    public NotificationService(AppLogger logger)
-    {
-        _logger = logger;
-    }
 
     public static bool CanNotify
     {

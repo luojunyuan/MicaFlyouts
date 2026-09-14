@@ -7,13 +7,18 @@ using MicaFlyouts.Infrastructure.State;
 
 namespace MicaFlyouts.Infrastructure.Audio;
 
-public sealed partial class VisualizerService : IDisposable
+public sealed partial class VisualizerService(
+    ISettingsStore settings,
+    VisualizerStore store,
+    UiDispatcher dispatcher,
+    AppLogger logger,
+    Func<IAudioLoopbackCapture>? captureFactory = null) : IDisposable
 {
-    private readonly ISettingsStore _settings;
-    private readonly VisualizerStore _store;
-    private readonly UiDispatcher _dispatcher;
-    private readonly AppLogger _logger;
-    private readonly Func<IAudioLoopbackCapture> _captureFactory;
+    private readonly ISettingsStore _settings = settings;
+    private readonly VisualizerStore _store = store;
+    private readonly UiDispatcher _dispatcher = dispatcher;
+    private readonly AppLogger _logger = logger;
+    private readonly Func<IAudioLoopbackCapture> _captureFactory = captureFactory ?? (static () => new NativeWasapiLoopbackCaptureAdapter());
     private readonly Channel<VisualizerSnapshot> _frames = Channel.CreateBounded<VisualizerSnapshot>(
         new BoundedChannelOptions(2) { FullMode = BoundedChannelFullMode.DropOldest, SingleReader = true, SingleWriter = false });
     private readonly FrameRateLimiter _limiter = new();
@@ -22,20 +27,6 @@ public sealed partial class VisualizerService : IDisposable
     private float[] _previousBars = [];
     private Action? _settingsUnsubscribe;
     private int _disposed;
-
-    public VisualizerService(
-        ISettingsStore settings,
-        VisualizerStore store,
-        UiDispatcher dispatcher,
-        AppLogger logger,
-        Func<IAudioLoopbackCapture>? captureFactory = null)
-    {
-        _settings = settings;
-        _store = store;
-        _dispatcher = dispatcher;
-        _logger = logger;
-        _captureFactory = captureFactory ?? (static () => new NativeWasapiLoopbackCaptureAdapter());
-    }
 
     public VisualizerSnapshot Snapshot => _store.Snapshot;
 

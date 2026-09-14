@@ -13,35 +13,25 @@ namespace MicaFlyouts.Infrastructure.Media;
 
 using DomainMediaStatus = MicaFlyouts.Domain.Media.MediaPlaybackStatus;
 
-public sealed partial class MediaSessionService : IDisposable
+public sealed partial class MediaSessionService(
+    ISettingsStore settings,
+    MediaStore store,
+    UiDispatcher dispatcher,
+    FullscreenService fullscreen,
+    MediaPlayerResolver resolver,
+    AppLogger logger) : IDisposable
 {
-    private readonly ISettingsStore _settings;
-    private readonly MediaStore _store;
-    private readonly UiDispatcher _dispatcher;
-    private readonly FullscreenService _fullscreen;
-    private readonly MediaPlayerResolver _resolver;
-    private readonly AppLogger _logger;
-    private readonly Dictionary<string, GlobalSystemMediaTransportControlsSession> _subscribedSessions = new(StringComparer.Ordinal);
+    private readonly ISettingsStore _settings = settings;
+    private readonly MediaStore _store = store;
+    private readonly UiDispatcher _dispatcher = dispatcher;
+    private readonly FullscreenService _fullscreen = fullscreen;
+    private readonly MediaPlayerResolver _resolver = resolver;
+    private readonly AppLogger _logger = logger;
+    private readonly Dictionary<string, GlobalSystemMediaTransportControlsSession> _subscribedSessions = [with(StringComparer.Ordinal)];
     private GlobalSystemMediaTransportControlsSessionManager? _manager;
     private Action? _settingsUnsubscribe;
     private int _started;
     private int _disposed;
-
-    public MediaSessionService(
-        ISettingsStore settings,
-        MediaStore store,
-        UiDispatcher dispatcher,
-        FullscreenService fullscreen,
-        MediaPlayerResolver resolver,
-        AppLogger logger)
-    {
-        _settings = settings;
-        _store = store;
-        _dispatcher = dispatcher;
-        _fullscreen = fullscreen;
-        _resolver = resolver;
-        _logger = logger;
-    }
 
     public MediaSnapshot Snapshot => _store.Snapshot;
 
@@ -102,7 +92,7 @@ public sealed partial class MediaSessionService : IDisposable
     public bool ActivateFocusedPlayer()
     {
         var session = Snapshot.ActiveSession;
-        return session is not null && _resolver.TryActivate(session.AppUserModelId, session.Track.Title);
+        return session is not null && _resolver.TryActivate(session.AppUserModelId);
     }
 
     public void Refresh()
