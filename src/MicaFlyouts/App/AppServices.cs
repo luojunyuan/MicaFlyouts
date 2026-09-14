@@ -439,19 +439,13 @@ public sealed partial class AppServices : IDisposable
         if (Interlocked.Exchange(ref _exitRequested, 1) != 0)
             return;
 
-        // Close the tray unit before WinUI shuts down: this removes the
-        // H.NotifyIcon menu that is still on the call stack, and closes the
-        // never-shown host window so Application.Exit() can run its normal
-        // window-close path instead of being blocked by it.
-        _tray.Close();
-        ReactorApp.Exit();
+        Environment.Exit(0);
     }
 
     /// <summary>
-    /// Full ordered teardown, kept for explicit dispose paths. The exit flow
-    /// intentionally does not call it: <c>ReactorApp.Run</c> only returns when
-    /// the process is going away, and <see cref="Exit"/> has already released
-    /// the tray unit.
+    /// Full ordered teardown, kept for explicit dispose paths. The normal exit
+    /// flow intentionally skips it because <see cref="Exit"/> terminates the
+    /// process directly.
     /// </summary>
     public void Dispose()
     {

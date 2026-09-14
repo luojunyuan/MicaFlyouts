@@ -11,22 +11,16 @@ namespace MicaFlyouts.Features.Tray;
 /// shown (<c>ActivateOnOpen = false</c>) and is independent from every
 /// application window.
 /// </summary>
-public sealed partial class TrayIconFeature
+public sealed partial class TrayIconFeature(SettingsStore settings, AppLogger logger)
 {
     private static readonly WindowKey TrayHostKey = WindowKey.Of("tray-host");
 
-    private readonly SettingsStore _settings;
-    private readonly AppLogger _logger;
+    private readonly SettingsStore _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+    private readonly AppLogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private Action? _settingsUnsubscribe;
     private ReactorWindow? _hostWindow;
     private int _started;
     private int _closed;
-
-    public TrayIconFeature(SettingsStore settings, AppLogger logger)
-    {
-        _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
 
     public void Start()
     {

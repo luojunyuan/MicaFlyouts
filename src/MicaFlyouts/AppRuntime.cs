@@ -27,7 +27,6 @@ internal static class AppRuntime
         Microsoft.UI.Reactor.ReactorApp.ShutdownPolicy = Microsoft.UI.Reactor.ShutdownPolicy.Explicit;
         Microsoft.UI.Reactor.ReactorApp.Run(_ =>
         {
-            Microsoft.UI.Xaml.Application.Current.DispatcherShutdownMode = Microsoft.UI.Xaml.DispatcherShutdownMode.OnExplicitShutdown;
             services.OpenMainWindow();
             services.Start();
         });
