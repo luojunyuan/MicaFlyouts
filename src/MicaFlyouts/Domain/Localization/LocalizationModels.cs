@@ -64,6 +64,20 @@ public static class LocalizationCatalog
         return index >= 0 ? index : options.Count == 0 ? -1 : 0;
     }
 
+    public static bool TryGetLanguageValue(IReadOnlyList<LanguageOption> options, int index, out string value)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+
+        if ((uint)index >= (uint)options.Count)
+        {
+            value = string.Empty;
+            return false;
+        }
+
+        value = options[index].Value;
+        return true;
+    }
+
     public static string Resolve(string? requested, string? systemLanguage)
     {
         if (string.IsNullOrWhiteSpace(requested)

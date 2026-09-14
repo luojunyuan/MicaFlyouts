@@ -365,7 +365,11 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
                     Combo(t,
                         [.. languageOptions.Select(option => option.DisplayName)],
                         LocalizationCatalog.IndexOfLanguage(languageOptions, Props.Settings.AppLanguage),
-                        value => Update(services, s => s with { AppLanguage = languageOptions[value].Value }))),
+                        value =>
+                        {
+                            if (LocalizationCatalog.TryGetLanguageValue(languageOptions, value, out var language))
+                                Update(services, s => s with { AppLanguage = language });
+                        })),
                 Card(t.Message(Loc.App.FontFamilyTitle), t.Message(Loc.App.FontFamilyDescription),
                     TextBox(Props.Settings.FontFamily, value => Update(services, s => s with { FontFamily = value }))
                         .AutomationName(t.Message(Loc.App.FontFamilyTitle))));

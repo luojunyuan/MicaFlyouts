@@ -105,6 +105,19 @@ public sealed class SettingsAndStateTests : IDisposable
     }
 
     [Fact]
+    public void LanguageOptions_IgnoreTransientSelectionIndices()
+    {
+        var options = LocalizationCatalog.CreateLanguageOptions("System");
+
+        Assert.False(LocalizationCatalog.TryGetLanguageValue(options, -1, out _));
+        Assert.False(LocalizationCatalog.TryGetLanguageValue(options, options.Count, out _));
+
+        int index = LocalizationCatalog.IndexOfLanguage(options, "zh-CN");
+        Assert.True(LocalizationCatalog.TryGetLanguageValue(options, index, out var language));
+        Assert.Equal("zh-CN", language);
+    }
+
+    [Fact]
     public void Resolve_SystemUsesTheProvidedCurrentUiCultureWithRegionFallback()
     {
         Assert.Equal("ru", LocalizationCatalog.Resolve("system", CultureInfo.GetCultureInfo("ru-RU").Name));
