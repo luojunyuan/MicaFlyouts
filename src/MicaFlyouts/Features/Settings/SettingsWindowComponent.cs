@@ -110,7 +110,6 @@ internal sealed class SettingsContentComponent : Component<SettingsContentProps>
                 rows: [GridSize.Auto, GridSize.Star()],
                 titleBar,
                 navigation))
-            .Background(SolidBackground)
             .WithBorder(SurfaceStroke, 1)
             .CornerRadius(8)
             .Set(navigationControl => navigationControl.FlowDirection = t.Direction);
