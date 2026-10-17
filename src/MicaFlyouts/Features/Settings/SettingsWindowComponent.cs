@@ -114,12 +114,18 @@ internal sealed class SettingsContentComponent : Component<SettingsContentProps>
             IsTitleBarAutoPaddingEnabled = false,
             FooterMenuItems =
             [
-                NavItem(t.Message(Loc.App.AboutTitle), "Help", SettingsSearchIndex.Tag(SettingsPage.About)),
+                PageItem(t.Message(Loc.App.AboutTitle), SettingsPage.About, FluentSystemIcon.Info24),
             ],
         };
 
         return navigation.Grid(row: 1);
     }
+
+    private static NavigationViewItemData PageItem(string content, SettingsPage page, FluentSystemIcon icon)
+        => NavItem(content, null, SettingsSearchIndex.Tag(page)) with
+        {
+            IconElement = FluentSystemIcons.CreatePathIconData(icon),
+        };
 
     private static BorderElement RenderSettingsFrame(IntlAccessor t, Element titleBar, Element navigation)
         => Border(Grid(
@@ -184,17 +190,35 @@ public static class SettingsSearchIndex
     [
         NavItem(t.Message(Loc.App.HomeTitle), "Home", Tag(SettingsPage.Home)),
         NavItemHeader(t.Message(Loc.App.FeaturesSectionTitle)),
-        NavItem(t.Message(Loc.App.MediaFlyoutTitle), "MusicInfo", Tag(SettingsPage.Media)),
-        NavItem(t.Message(Loc.App.VolumeFlyoutTitle), "Volume", Tag(SettingsPage.Volume)),
-        NavItem(t.Message(Loc.App.TaskbarWidgetCustomizationTitle), "DockBottom", Tag(SettingsPage.Taskbar)),
-        NavItem(t.Message(Loc.App.TaskbarVisualizerTitle), "ViewAll", Tag(SettingsPage.Visualizer)),
-        NavItem(t.Message(Loc.App.NextUpCustomizationTitle), "Forward", Tag(SettingsPage.NextUp)),
-        NavItem(t.Message(Loc.App.LockKeysCustomizationTitle), "Keyboard", Tag(SettingsPage.LockKeys)),
+        PageItem(t.Message(Loc.App.MediaFlyoutTitle), SettingsPage.Media, FluentSystemIcon.VideoPlayPause24),
+        PageItem(t.Message(Loc.App.VolumeFlyoutTitle), SettingsPage.Volume, FluentSystemIcon.Speaker224),
+        PageItem(
+            t.Message(Loc.App.TaskbarWidgetCustomizationTitle),
+            SettingsPage.Taskbar,
+            FluentSystemIcon.TextboxAlignBottom24),
+        PageItem(
+            t.Message(Loc.App.TaskbarVisualizerTitle),
+            SettingsPage.Visualizer,
+            FluentSystemIcon.SoundWaveCircle24),
+        PageItem(
+            t.Message(Loc.App.NextUpCustomizationTitle),
+            SettingsPage.NextUp,
+            FluentSystemIcon.MusicNote2Play20),
+        PageItem(
+            t.Message(Loc.App.LockKeysCustomizationTitle),
+            SettingsPage.LockKeys,
+            FluentSystemIcon.LockMultiple24),
         NavItemHeader(t.Message(Loc.App.ApplicationSectionTitle)),
-        NavItem(t.Message(Loc.App.SystemSettingsTitle), "Setting", Tag(SettingsPage.System)),
-        NavItem(t.Message(Loc.App.AppFilteringTitle), "Filter", Tag(SettingsPage.AppFiltering)),
-        NavItem(t.Message(Loc.App.AdvancedSettingsTitle), "DeveloperTools", Tag(SettingsPage.Advanced)),
+        PageItem(t.Message(Loc.App.SystemSettingsTitle), SettingsPage.System, FluentSystemIcon.Settings24),
+        PageItem(t.Message(Loc.App.AppFilteringTitle), SettingsPage.AppFiltering, FluentSystemIcon.Filter24),
+        PageItem(t.Message(Loc.App.AdvancedSettingsTitle), SettingsPage.Advanced, FluentSystemIcon.Wrench24),
     ];
+
+    private static NavigationViewItemData PageItem(string content, SettingsPage page, FluentSystemIcon icon)
+        => NavItem(content, null, Tag(page)) with
+        {
+            IconElement = FluentSystemIcons.CreatePathIconData(icon),
+        };
 
     public static IReadOnlyList<SettingsSearchEntry> Query(string query, IntlAccessor? t = null)
         => string.IsNullOrWhiteSpace(query)

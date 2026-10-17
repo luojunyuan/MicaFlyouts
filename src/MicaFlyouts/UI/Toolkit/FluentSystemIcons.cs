@@ -98,9 +98,17 @@ public static class FluentSystemIcons
 
     public static Element Create(FluentSystemIcon icon, double size = 16)
     {
+        return Icon(PathIcon(GetPathData(icon))).Width(size).Height(size);
+    }
+
+    public static PathIconData CreatePathIconData(FluentSystemIcon icon)
+        => PathIcon(GetPathData(icon));
+
+    private static string GetPathData(FluentSystemIcon icon)
+    {
         var viewBoxSize = icon.ToString().EndsWith("20", StringComparison.Ordinal) ? 20 : 24;
         // Opposite winding makes the viewport guide cancel visually while retaining its bounds.
         var viewBoxGuide = $" M0 0H{viewBoxSize}V{viewBoxSize}H0Z M0 0V{viewBoxSize}H{viewBoxSize}V0Z";
-        return Icon(PathIcon(PathData[icon] + viewBoxGuide)).Width(size).Height(size);
+        return PathData[icon] + viewBoxGuide;
     }
 }
