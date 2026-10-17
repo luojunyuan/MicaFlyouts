@@ -1,10 +1,15 @@
 # Mica Flyouts 架构说明
 
-本文是 `Mica Flyouts` 的实现约束和维护指南。项目是原
-`FluentFlyout` WPF 应用的纯移植：用户界面、视觉样式、布局、快捷键、窗口行为、
-动画时序和功能语义必须保持一致，变化仅限于底层技术栈改为 WinUI 3 +
-Microsoft UI Reactor。原项目位于 `C:\Users\kimika\source\repos\FluentFlyout`；
-遇到本文没有明确列出的视觉或交互细节时，以原项目的 XAML 和窗口代码为准。
+本文是 `Mica Flyouts` 的实现约束和维护指南。本项目是对
+[`FluentFlyout` WPF 应用 `v2.15.0`](https://github.com/unchihugo/FluentFlyout/tree/v2.15.0)
+的完整移植，原版源码作为 Git submodule 固定在 `references/FluentFlyout`。
+用户界面、视觉样式、布局、快捷键、窗口行为、动画时序和功能语义以该版本为准；
+除下文明确排除的 Store、授权和 Premium 购买能力外，移植变化仅限于底层技术栈改为
+WinUI 3 + Microsoft UI Reactor。遇到本文没有明确列出的视觉或交互细节时，以该 submodule
+中 `v2.15.0` 的 XAML 和窗口代码为准。
+
+初始化或检出 submodule：`git submodule update --init --recursive`。不要将 submodule
+更新到其他版本，除非同步检查并更新本项目的移植实现和本架构说明。
 
 内购功能不属于新项目：不迁移 Store、授权、产品 ID、价格、购买流程、Premium
 文案或付费限制。原来被 Premium 限制的非付费能力在新项目中直接可用。
@@ -18,7 +23,7 @@ Microsoft UI Reactor。原项目位于 `C:\Users\kimika\source\repos\FluentFlyou
 | Reactor | `Microsoft.UI.Reactor 0.1.0-preview.14` |
 | Windows App SDK | 只允许 `Microsoft.WindowsAppSDK.WinUI`；当前中央版本为 `2.3.6`，必须保持单一版本并验证与 Reactor preview.14 的兼容性 |
 | 设置控件 | `CommunityToolkit.WinUI.Controls.SettingsControls 8.3.260402-preview2`；社区控件必须使用 preview 包，不得混用稳定旧包 |
-| 托盘 | 项目引用 `Kumo.H.NotifyIcon.Reactor.csproj`；`Features/Tray/TrayIconFeature` 持有隐藏宿主窗口，`TrayIconComponent` 通过 `HNotifyComponent.UseTrayIcon` 管理托盘句柄 |
+| 托盘 | `Kumo.H.NotifyIcon.Reactor 0.1.0-preview.1`；`Features/Tray/TrayIconFeature` 持有隐藏宿主窗口，`TrayIconComponent` 通过 `HNotifyComponent.UseTrayIcon` 管理托盘句柄 |
 | 音频 | `NAudio 2.3.0`，只允许出现在 `Infrastructure/Audio` |
 | Win32 | `Microsoft.Windows.CsWin32 0.3.298`，所有 Win32 P/Invoke 由生成代码提供 |
 | 打包 | `WindowsPackageType=None`，`WindowsAppSDKSelfContained=true`，不生成 MSIX，不依赖 Store |

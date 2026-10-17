@@ -10,6 +10,7 @@
     <PackageVersion Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.3.260402-preview2" />
     <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.298" />
     <PackageVersion Include="NAudio" Version="2.3.0" />
+    <PackageVersion Include="Kumo.H.NotifyIcon.Reactor" Version="0.1.0-preview.1" />
 
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />

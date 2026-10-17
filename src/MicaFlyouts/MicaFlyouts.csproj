@@ -37,10 +37,7 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
     <PackageReference Include="Microsoft.Windows.CsWin32" />
     <PackageReference Include="NAudio" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Kumo.H.NotifyIcon.Reactor\src\Kumo.H.NotifyIcon.Reactor\Kumo.H.NotifyIcon.Reactor.csproj" />
+    <PackageReference Include="Kumo.H.NotifyIcon.Reactor" />
   </ItemGroup>
 
   <ItemGroup>
