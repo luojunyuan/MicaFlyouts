@@ -20,6 +20,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <CsWin32RunAsBuildTask>true</CsWin32RunAsBuildTask>
     <DisableRuntimeMarshalling>true</DisableRuntimeMarshalling>
+    <CentralPackageVersionOverrideEnabled>true</CentralPackageVersionOverrideEnabled>
     <PublishAot>true</PublishAot>
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
@@ -28,15 +29,16 @@
     <CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
     <InvariantGlobalization>false</InvariantGlobalization>
     <LangVersion>preview</LangVersion>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- <GenerateDocumentationFile>false</GenerateDocumentationFile> -->
     <!--  CS1591 Generate documents "Missing XML comment"  -->
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <!-- <NoWarn>$(NoWarn);CS1591</NoWarn> -->
     <WarningsAsErrors>$(WarningsAsErrors);CsWinRT1028;CsWinRT1030</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Labs.Notifications" />
     <PackageReference Include="Microsoft.UI.Reactor" />
+    <PackageReference Include="Microsoft.Web.WebView2" VersionOverride="*" ExcludeAssets="All" />
     <PackageReference Include="Microsoft.WindowsAppSDK.Runtime" />
     <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" />
     <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" />
@@ -60,4 +62,22 @@
     <Content Include="Assets\**\*" Exclude="Assets\MicaFlyouts.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Strings\**\*.resw" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  <!--
+    These publish sidecars duplicate resources already embedded in $(AssemblyName).pri:
+    - Directory.Build.targets copies $(TargetDir)Reactor\**\*.xbf using RecursiveDir,
+      so Reactor\Hosting\ReactorApplication.xbf also lands at Hosting\ReactorApplication.xbf.
+    - Microsoft.UI.Reactor.targets copies Reactor.pri and Reactor\Hosting\* to PublishDir.
+      Reactor.pri is a MakePRI input, and MicaFlyouts.pri contains ReactorApplication.xbf
+      as EmbeddedData. The app PRI is retained; these loose copies are not needed at runtime.
+    When GenerateDocumentationFile is enabled, $(AssemblyName).xml is documentation only.
+  -->
+  <Target Name="RemoveReactorAotPublishArtifacts"
+          AfterTargets="Publish"
+          DependsOnTargets="_CopyWinUIResourcesForAot"
+          Condition="'$(PublishAot)' == 'true'">
+    <Delete Files="$(PublishDir)$(AssemblyName).xml" />
+    <Delete Files="$(PublishDir)Reactor.pri" />
+    <RemoveDir Directories="$(PublishDir)Reactor" />
+    <RemoveDir Directories="$(PublishDir)Hosting" />
+  </Target>
 </Project>

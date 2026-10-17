@@ -38,9 +38,6 @@ internal static class AppRuntime
         var services = App.Bootstrap.Create(singleInstance, logger);
         Current = services;
 
-        // Tray menus are created after startup, so register their built-in
-        // flyout handlers before the first surface is mounted.
-        Microsoft.UI.Reactor.ReactorApp.RegisterAllBuiltIns();
         Microsoft.UI.Reactor.ReactorApp.ShutdownPolicy = Microsoft.UI.Reactor.ShutdownPolicy.Explicit;
         bool settingsControlsRegistered = Microsoft.UI.Reactor.ReactorApp.TryRegisterControlAssembly(
             typeof(CommunityToolkit.WinUI.Controls.SettingsCard).Assembly);
