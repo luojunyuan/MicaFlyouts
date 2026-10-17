@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <RootNamespace>MicaFlyouts.WasdkToastScenario</RootNamespace>
+    <AssemblyName>MicaFlyouts.WasdkToastScenario</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Labs.Notifications" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\src\MicaFlyouts\Infrastructure\Logging\AppLogger.cs" Link="Infrastructure\Logging\AppLogger.cs" />
+    <Compile Include="..\..\..\src\MicaFlyouts\Infrastructure\Notifications\RuntimeToastNotifier.cs" Link="Infrastructure\Notifications\RuntimeToastNotifier.cs" />
+  </ItemGroup>
+</Project>

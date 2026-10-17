@@ -1,8 +1,9 @@
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using CommunityToolkit.Notifications;
+using System.Security;
 using Microsoft.Win32;
+using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 using MicaFlyouts.Infrastructure.Logging;
 
@@ -114,8 +115,6 @@ internal sealed partial class RuntimeToastNotifier : IDisposable
         {
             ToastNotifier notifier = CreateToastNotifier();
             bool progressToastActive = false;
-            bool progressToastSupportsUpdates = false;
-            string? activeProgressMessage = null;
             uint sequence = 0;
 
             foreach (RuntimeToast toast in _queue.GetConsumingEnumerable())
@@ -123,41 +122,23 @@ internal sealed partial class RuntimeToastNotifier : IDisposable
                 try
                 {
                     sequence = sequence == uint.MaxValue ? 1 : sequence + 1;
-                    ToastContent content = CreateToastContent(toast);
-
-                    if (toast.HasProgress && toast.Progress is double progress)
+                    if (toast.HasProgress)
                     {
-                        NotificationData data = CreateProgressData(content, toast, progress, sequence);
-                        if (progressToastActive && progressToastSupportsUpdates)
+                        NotificationData data = CreateProgressData(toast, sequence);
+                        if (progressToastActive)
                         {
                             NotificationUpdateResult result = notifier.Update(data, ToastTag, ToastGroup);
                             if (result == NotificationUpdateResult.Succeeded)
-                            {
-                                activeProgressMessage = toast.Message;
                                 continue;
-                            }
                         }
 
-                        ToastNotification notification = CreateNotification(content, data);
-                        notifier.Show(notification);
+                        notifier.Show(CreateNotification(toast, data));
                         progressToastActive = true;
-                        progressToastSupportsUpdates = true;
-                        activeProgressMessage = toast.Message;
                         continue;
                     }
 
-                    if (toast.HasProgress
-                        && progressToastActive
-                        && !progressToastSupportsUpdates
-                        && string.Equals(activeProgressMessage, toast.Message, StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-
-                    notifier.Show(CreateNotification(content));
-                    progressToastActive = toast.HasProgress;
-                    progressToastSupportsUpdates = false;
-                    activeProgressMessage = toast.HasProgress ? toast.Message : null;
+                    notifier.Show(CreateNotification(toast));
+                    progressToastActive = false;
                 }
                 catch (Exception exception)
                 {
@@ -184,65 +165,31 @@ internal sealed partial class RuntimeToastNotifier : IDisposable
         return ToastNotificationManager.CreateToastNotifier(AppUserModelId);
     }
 
-    private static ToastContent CreateToastContent(RuntimeToast toast)
-    {
-        var builder = new ToastContentBuilder()
-            .AddText("Mica Flyouts")
-            .AddText(toast.Message);
-
-        if (toast.HasProgress)
-        {
-            if (toast.Progress is double)
-            {
-                builder.AddProgressBar(
-                    title: string.Empty,
-                    value: null,
-                    isIndeterminate: false,
-                    valueStringOverride: null,
-                    status: null);
-            }
-            else
-            {
-                builder.AddProgressBar(
-                    title: string.Empty,
-                    value: null,
-                    isIndeterminate: true,
-                    valueStringOverride: string.Empty,
-                    status: toast.ProgressStatus);
-            }
-        }
-
-        return builder.GetToastContent();
-    }
-
     private static NotificationData CreateProgressData(
-        ToastContent content,
         RuntimeToast toast,
-        double progress,
         uint sequence)
     {
-        NotificationData data = ToastContentBuilder.CreateProgressBarData(
-            content,
-            index: 0,
-            title: string.Empty,
-            value: progress,
-            valueStringOverride: toast.ProgressText,
-            status: toast.ProgressStatus,
-            sequence: sequence);
-
-        AdaptiveProgressBar progressBar = content.Visual.BindingGeneric.Children
-            .OfType<AdaptiveProgressBar>()
-            .First();
-        if (progressBar.Value is not BindableProgressBarValue progressValue)
-            throw new InvalidOperationException("The runtime toast progress bar is not data-bound.");
-
-        data.Values[progressValue.BindingName] = progress.ToString("0.0000", CultureInfo.InvariantCulture);
+        var data = new NotificationData { SequenceNumber = sequence };
+        data.Values["1"] = toast.Message;
+        data.Values["progressValue"] = toast.Progress is double progress
+            ? progress.ToString("0.0000", CultureInfo.InvariantCulture)
+            : "indeterminate";
+        data.Values["progressValueString"] = toast.ProgressText;
+        data.Values["progressStatus"] = toast.ProgressStatus;
         return data;
     }
 
-    private static ToastNotification CreateNotification(ToastContent content, NotificationData? data = null)
+    private static ToastNotification CreateNotification(RuntimeToast toast, NotificationData? data = null)
     {
-        var notification = new ToastNotification(content.GetXml())
+        string progressElement = toast.HasProgress
+            ? "<progress value=\"{progressValue}\" status=\"{progressStatus}\" valueStringOverride=\"{progressValueString}\" />"
+            : string.Empty;
+        string message = SecurityElement.Escape(toast.Message) ?? string.Empty;
+        string xml = $"<toast><visual><binding template=\"ToastGeneric\"><text>Mica Flyouts</text><text id=\"1\">{message}</text>{progressElement}</binding></visual></toast>";
+        var document = new XmlDocument();
+        document.LoadXml(xml);
+
+        var notification = new ToastNotification(document)
         {
             Tag = ToastTag,
             Group = ToastGroup,
