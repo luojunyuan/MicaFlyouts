@@ -13,6 +13,7 @@ using MicaFlyouts.Infrastructure.Windows;
 using MicaFlyouts.Infrastructure.Interop;
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Dispatching;
 using MicaFlyouts.Domain.Flyouts;
 using MicaFlyouts.Domain.Settings;
@@ -533,12 +534,17 @@ public sealed partial class AppServices : IDisposable
                 MinWidth = 870,
                 MinHeight = 500,
                 Icon = AppBranding.WindowIcon,
+                IsMovableByBackground = true,
                 StartPosition = WindowStartPosition.CenterOnCurrent,
-                ExtendsContentIntoTitleBar = true,
                 CornerStyle = WindowCornerStyle.Rounded,
                 Backdrop = BackdropChoice.Of(BackdropKind.Mica),
             },
-            static () => new OnboardingWindowComponent());
+            static () => new OnboardingWindowComponent(),
+            static host =>
+            {
+                if (host.OwningWindow?.AppWindow.Presenter is OverlappedPresenter presenter)
+                    presenter.SetBorderAndTitleBar(true, false);
+            });
 
     private void SyncTaskbarWindows()
     {

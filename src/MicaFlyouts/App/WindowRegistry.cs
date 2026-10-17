@@ -1,5 +1,6 @@
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
+using Microsoft.UI.Reactor.Hosting;
 
 namespace MicaFlyouts.App;
 
@@ -13,7 +14,8 @@ public sealed partial class WindowRegistry
     public ReactorWindow OpenOrActivate(
         WindowKey key,
         WindowSpec specification,
-        Func<Component> rootFactory)
+        Func<Component> rootFactory,
+        Action<ReactorHost>? configure = null)
     {
         ObjectDisposedException.ThrowIf(_shutdown != 0, this);
         ArgumentNullException.ThrowIfNull(rootFactory);
@@ -25,7 +27,7 @@ public sealed partial class WindowRegistry
             return existing;
         }
 
-        var window = ReactorApp.OpenWindow(specification with { Key = key }, rootFactory);
+        var window = ReactorApp.OpenWindow(specification with { Key = key }, rootFactory, configure);
         _windows[key] = window;
         window.Closed += (_, _) => _windows.Remove(key);
         return window;
