@@ -123,7 +123,7 @@ internal sealed class SettingsContentComponent : Component<SettingsContentProps>
             var transparentBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
             control.Resources["NavigationViewContentBackground"] = transparentBrush;
             control.Resources["NavigationViewContentGridBorderBrush"] = transparentBrush;
-        });
+        }).VerticalAlignment(VerticalAlignment.Stretch);
 
         return navigation.Grid(row: 1);
     }
@@ -666,12 +666,15 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
                 VStack(4, content))
                 .MinWidth(0)
                 .HorizontalAlignment(HorizontalAlignment.Stretch))
+            .VerticalAlignment(VerticalAlignment.Stretch)
             .Set(scrollViewer =>
             {
+                scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                scrollViewer.VerticalScrollMode = ScrollMode.Auto;
                 scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
                 scrollViewer.HorizontalScrollMode = ScrollMode.Disabled;
             })
-            .Padding(24);
+            .Padding(new Thickness(24, 24, 24, 0));
 
     private static StackElement Section(string title, params Element[] content)
         => VStack(4,

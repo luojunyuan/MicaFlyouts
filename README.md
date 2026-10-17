@@ -6,7 +6,7 @@ This project reworks the Settings window with WinUI's built-in Fluent Design con
 
 ## Resource Usage
 
-| Metric | Original FluentFlyout | MicaFlyouts | Reduction |
+| Metric | Original | MicaFlyouts | Reduction |
 | --- | ---: | ---: | ---: |
 | Memory usage | 86.2 MB | 53.2 MB | 38.3% |
 | Disk usage | 216 MB | 34 MB | 84.3% |
@@ -15,4 +15,4 @@ Native ARM64 binaries are also available on the [Releases page](https://github.c
 
 If you think this project could be better, you're welcome to share ideas or feature requests in the [Issues](https://github.com/luojunyuan/MicaFlyouts/issues) section.
 
-<img width="1235" height="976" alt="image" src="https://github.com/user-attachments/assets/293e118a-717f-4a75-903c-c042f12f3e8a" />
+<img width="1235" height="976" alt="image" src="https://github.com/user-attachments/assets/008d38b7-728e-44fa-b21b-b90b39933973" />

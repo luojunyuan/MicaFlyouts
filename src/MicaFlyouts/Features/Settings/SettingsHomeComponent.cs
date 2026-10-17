@@ -38,12 +38,15 @@ internal sealed class SettingsHomeComponent : Component<SettingsHomeProps>
                     TextBlock(t.Message(Loc.App.HomeDashboardTitle)).FontSize(14).SemiBold(),
                     RenderDashboard(Props.Settings, Props.SetPage, t)),
                 RenderFooter(services, t)))
+            .VerticalAlignment(VerticalAlignment.Stretch)
             .Set(scrollViewer =>
             {
+                scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                scrollViewer.VerticalScrollMode = ScrollMode.Auto;
                 scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
                 scrollViewer.HorizontalScrollMode = ScrollMode.Disabled;
             })
-            .Padding(24);
+            .Padding(new Thickness(24, 24, 24, 0));
     }
 
     private static ButtonElement RenderUpdatesButton(IntlAccessor t)
