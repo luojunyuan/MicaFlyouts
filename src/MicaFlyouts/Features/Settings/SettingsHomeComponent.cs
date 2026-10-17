@@ -124,24 +124,24 @@ internal sealed class SettingsHomeComponent : Component<SettingsHomeProps>
         => Grid(
             columns: [GridSize.Star(), GridSize.Star()],
             rows: [GridSize.Auto, GridSize.Auto, GridSize.Auto, GridSize.Auto],
-            DashboardCard("MusicInfo", t.Message(Loc.App.MediaFlyoutTitle), settings.MediaFlyoutEnabled,
+            DashboardCard(FluentSystemIcon.VideoPlayPause24, t.Message(Loc.App.MediaFlyoutTitle), settings.MediaFlyoutEnabled,
                 SettingsPage.Media, setPage, t).Margin(4).Grid(row: 0, column: 0),
-            DashboardCard("DockBottom", t.Message(Loc.App.TaskbarWidgetCustomizationTitle), settings.TaskbarWidgetEnabled,
+            DashboardCard(FluentSystemIcon.TextboxAlignBottom24, t.Message(Loc.App.TaskbarWidgetCustomizationTitle), settings.TaskbarWidgetEnabled,
                 SettingsPage.Taskbar, setPage, t).Margin(4).Grid(row: 0, column: 1),
-            DashboardCard("Volume", t.Message(Loc.App.VolumeFlyoutTitle), settings.VolumeControlEnabled,
+            DashboardCard(FluentSystemIcon.Speaker224, t.Message(Loc.App.VolumeFlyoutTitle), settings.VolumeControlEnabled,
                 SettingsPage.Volume, setPage, t).Margin(4).Grid(row: 1, column: 0),
-            DashboardCard("ViewAll", t.Message(Loc.App.TaskbarVisualizerTitle), settings.TaskbarVisualizerEnabled,
+            DashboardCard(FluentSystemIcon.SoundWaveCircle24, t.Message(Loc.App.TaskbarVisualizerTitle), settings.TaskbarVisualizerEnabled,
                 SettingsPage.Visualizer, setPage, t).Margin(4).Grid(row: 1, column: 1),
-            DashboardCard("Forward", t.Message(Loc.App.NextUpCustomizationTitle), settings.NextUpEnabled,
+            DashboardCard(FluentSystemIcon.MusicNote2Play20, t.Message(Loc.App.NextUpCustomizationTitle), settings.NextUpEnabled,
                 SettingsPage.NextUp, setPage, t).Margin(4).Grid(row: 2, column: 0),
-            DashboardCard("Keyboard", t.Message(Loc.App.LockKeysCustomizationTitle), settings.LockKeysEnabled,
+            DashboardCard(FluentSystemIcon.LockMultiple24, t.Message(Loc.App.LockKeysCustomizationTitle), settings.LockKeysEnabled,
                 SettingsPage.LockKeys, setPage, t).Margin(4).Grid(row: 2, column: 1),
-            DashboardCard("Setting", t.Message(Loc.App.SystemSettingsTitle), t.Message(Loc.App.SystemConfigure),
+            DashboardCard(FluentSystemIcon.Settings24, t.Message(Loc.App.SystemSettingsTitle), t.Message(Loc.App.SystemConfigure),
                 SettingsPage.System, setPage).Margin(4).Grid(row: 3, column: 0))
             .Margin(-4);
 
     private static SettingsCardElement DashboardCard(
-        string icon,
+        FluentSystemIcon icon,
         string title,
         bool enabled,
         SettingsPage page,
@@ -153,7 +153,7 @@ internal sealed class SettingsHomeComponent : Component<SettingsHomeProps>
             setPage);
 
     private static SettingsCardElement DashboardCard(
-        string icon,
+        FluentSystemIcon icon,
         string title,
         string status,
         SettingsPage page,
@@ -162,7 +162,7 @@ internal sealed class SettingsHomeComponent : Component<SettingsHomeProps>
         {
             Header = title,
             Description = status,
-            HeaderIcon = Icon(SymbolIcon(icon)),
+            HeaderIcon = FluentSystemIcons.Create(icon, 24),
             IsClickEnabled = true,
             OnClick = () => setPage(page),
         })
