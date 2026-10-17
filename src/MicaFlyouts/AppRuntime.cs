@@ -1,3 +1,5 @@
+using Microsoft.Windows.ApplicationModel.DynamicDependency;
+
 namespace MicaFlyouts;
 
 internal static class AppRuntime
@@ -32,6 +34,12 @@ internal static class AppRuntime
                 System.Diagnostics.Debug.WriteLine($"Could not log Windows App SDK runtime setup failure: {loggingException}");
             }
         }
+
+        Bootstrap.Initialize(
+            Microsoft.WindowsAppSDK.Release.MajorMinor,
+            Microsoft.WindowsAppSDK.Release.VersionTag,
+            new PackageVersion(Microsoft.WindowsAppSDK.Runtime.Version.UInt64),
+            Bootstrap.InitializeOptions.OnNoMatch_ShowUI);
 
         // AppServices is process-scoped: ReactorApp.Run only returns once the
         // app is shutting down, so there is nothing to release afterwards.
