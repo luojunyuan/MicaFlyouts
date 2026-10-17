@@ -72,7 +72,7 @@ internal sealed class SettingsContentComponent : Component<SettingsContentProps>
                 SelectSearchResult(selected, t, setPage);
             },
         })
-            .Width(320)
+            .Width(300)
             .PlaceholderText(t.Message(Loc.App.SearchSettings))
             .QueryIcon(SymbolIcon("Find"))
             .AutomationName(t.Message(Loc.App.SearchSettings));
