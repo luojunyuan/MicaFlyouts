@@ -20,13 +20,13 @@ WinUI 3 + Microsoft UI Reactor。遇到本文没有明确列出的视觉或交�
 | --- | --- |
 | 目标框架 | `net10.0-windows10.0.26100.0` |
 | UI | WinUI 3，`UseWinUI=true` |
-| Reactor | `Microsoft.UI.Reactor 0.1.0-preview.14` |
-| Windows App SDK | 只允许 `Microsoft.WindowsAppSDK.WinUI`；当前中央版本为 `2.3.6`，必须保持单一版本并验证与 Reactor preview.14 的兼容性 |
+| Reactor | `Microsoft.UI.Reactor 0.1.0-preview.16` |
+| Windows App SDK | `Microsoft.WindowsAppSDK.Runtime 2.5.1` 搭配 `Microsoft.WindowsAppSDK.WinUI 2.3.9`；`Foundation 2.3.12` 与 `InteractiveExperiences 2.1.9` 必须符合 Runtime 的组件版本检查，并保持单一版本 |
 | 设置控件 | `CommunityToolkit.WinUI.Controls.SettingsControls 8.3.260402-preview2`；社区控件必须使用 preview 包，不得混用稳定旧包 |
 | 托盘 | `Kumo.H.NotifyIcon.Reactor 0.1.0-preview.1`；`Features/Tray/TrayIconFeature` 持有隐藏宿主窗口，`TrayIconComponent` 通过 `HNotifyComponent.UseTrayIcon` 管理托盘句柄 |
 | 音频 | `NAudio 2.3.0`，只允许出现在 `Infrastructure/Audio` |
 | Win32 | `Microsoft.Windows.CsWin32 0.3.298`，所有 Win32 P/Invoke 由生成代码提供 |
-| 打包 | `WindowsPackageType=None`，`WindowsAppSDKSelfContained=true`，不生成 MSIX，不依赖 Store |
+| 打包 | `WindowsPackageType=None`，`WindowsAppSDKSelfContained=false`，不生成 MSIX，不依赖 Store |
 | 架构 | x64、ARM64；运行时标识为 `win-x64`、`win-arm64` |
 
 项目必须保持以下属性，不得为了消除警告而关闭它们：
