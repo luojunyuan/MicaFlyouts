@@ -1,9 +1,8 @@
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Security;
+using CommunityToolkit.Notifications;
 using Microsoft.Win32;
-using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 using MicaFlyouts.Infrastructure.Logging;
 
@@ -12,7 +11,8 @@ namespace MicaFlyouts.Infrastructure.Notifications;
 internal sealed partial class RuntimeToastNotifier : IDisposable
 {
     private const string AppUserModelId = "MicaFlyouts.MicaFlyouts";
-    private const string ToastTag = "windows-app-sdk";
+    private const string ProgressToastTag = "wasdk-runtime";
+    private const string ResultToastTag = "wasdk-result";
     private const string ToastGroup = "runtime";
     private const uint CoInitializeMultithreaded = 0;
 
@@ -45,6 +45,7 @@ internal sealed partial class RuntimeToastNotifier : IDisposable
             isChinese
                 ? "\u6b63\u5728\u4e0b\u8f7d Windows App SDK \u8fd0\u884c\u65f6"
                 : "Downloading the Windows App SDK runtime",
+            ProgressToastTag,
             true,
             progress,
             progressText,
@@ -58,6 +59,7 @@ internal sealed partial class RuntimeToastNotifier : IDisposable
             isChinese
                 ? "\u6b63\u5728\u5b89\u88c5 Windows App SDK \u8fd0\u884c\u65f6"
                 : "Installing the Windows App SDK runtime",
+            ProgressToastTag,
             true,
             null,
             string.Empty,
@@ -71,6 +73,7 @@ internal sealed partial class RuntimeToastNotifier : IDisposable
             isChinese
                 ? "Windows App SDK \u8fd0\u884c\u65f6\u5b89\u88c5\u5b8c\u6210"
                 : "Windows App SDK runtime installation completed",
+            ResultToastTag,
             false,
             null,
             string.Empty,
@@ -82,6 +85,7 @@ internal sealed partial class RuntimeToastNotifier : IDisposable
         bool isChinese = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "zh";
         Send(new RuntimeToast(
             $"{(isChinese ? "Windows App SDK \u8fd0\u884c\u65f6\u5b89\u88c5\u5931\u8d25" : "Windows App SDK runtime setup failed")}: {message}",
+            ResultToastTag,
             false,
             null,
             string.Empty,
@@ -122,22 +126,25 @@ internal sealed partial class RuntimeToastNotifier : IDisposable
                 try
                 {
                     sequence = sequence == uint.MaxValue ? 1 : sequence + 1;
+                    ToastContent content = CreateToastContent(toast);
+
                     if (toast.HasProgress)
                     {
-                        NotificationData data = CreateProgressData(toast, sequence);
+                        NotificationData data = CreateProgressData(content, toast, sequence);
                         if (progressToastActive)
                         {
-                            NotificationUpdateResult result = notifier.Update(data, ToastTag, ToastGroup);
+                            NotificationUpdateResult result = notifier.Update(data, toast.Tag, ToastGroup);
                             if (result == NotificationUpdateResult.Succeeded)
                                 continue;
                         }
 
-                        notifier.Show(CreateNotification(toast, data));
+                        ToastNotification notification = CreateNotification(content, toast.Tag, data);
+                        notifier.Show(notification);
                         progressToastActive = true;
                         continue;
                     }
 
-                    notifier.Show(CreateNotification(toast));
+                    notifier.Show(CreateNotification(content, toast.Tag));
                     progressToastActive = false;
                 }
                 catch (Exception exception)
@@ -165,33 +172,68 @@ internal sealed partial class RuntimeToastNotifier : IDisposable
         return ToastNotificationManager.CreateToastNotifier(AppUserModelId);
     }
 
+    private static ToastContent CreateToastContent(RuntimeToast toast)
+    {
+        var builder = new ToastContentBuilder()
+            .AddText("Mica Flyouts")
+            .AddText(toast.Message);
+
+        if (toast.HasProgress)
+        {
+            builder.AddProgressBar(
+                title: string.Empty,
+                value: null,
+                isIndeterminate: false,
+                valueStringOverride: null,
+                status: null);
+        }
+
+        ToastContent content = builder.GetToastContent();
+        if (toast.HasProgress)
+        {
+            AdaptiveText message = content.Visual.BindingGeneric.Children
+                .OfType<AdaptiveText>()
+                .ElementAt(1);
+            message.Text = new BindableString("runtimeMessage");
+        }
+
+        return content;
+    }
+
     private static NotificationData CreateProgressData(
+        ToastContent content,
         RuntimeToast toast,
         uint sequence)
     {
-        var data = new NotificationData { SequenceNumber = sequence };
-        data.Values["1"] = toast.Message;
-        data.Values["progressValue"] = toast.Progress is double progress
+        NotificationData data = ToastContentBuilder.CreateProgressBarData(
+            content,
+            index: 0,
+            value: toast.Progress,
+            valueStringOverride: toast.ProgressText,
+            status: toast.ProgressStatus,
+            sequence: sequence);
+
+        AdaptiveProgressBar progressBar = content.Visual.BindingGeneric.Children
+            .OfType<AdaptiveProgressBar>()
+            .First();
+        if (progressBar.Value is not BindableProgressBarValue progressValue)
+            throw new InvalidOperationException("The runtime toast progress bar is not data-bound.");
+
+        data.Values["runtimeMessage"] = toast.Message;
+        data.Values[progressValue.BindingName] = toast.Progress is double progress
             ? progress.ToString("0.0000", CultureInfo.InvariantCulture)
             : "indeterminate";
-        data.Values["progressValueString"] = toast.ProgressText;
-        data.Values["progressStatus"] = toast.ProgressStatus;
         return data;
     }
 
-    private static ToastNotification CreateNotification(RuntimeToast toast, NotificationData? data = null)
+    private static ToastNotification CreateNotification(
+        ToastContent content,
+        string tag,
+        NotificationData? data = null)
     {
-        string progressElement = toast.HasProgress
-            ? "<progress value=\"{progressValue}\" status=\"{progressStatus}\" valueStringOverride=\"{progressValueString}\" />"
-            : string.Empty;
-        string message = SecurityElement.Escape(toast.Message) ?? string.Empty;
-        string xml = $"<toast><visual><binding template=\"ToastGeneric\"><text>Mica Flyouts</text><text id=\"1\">{message}</text>{progressElement}</binding></visual></toast>";
-        var document = new XmlDocument();
-        document.LoadXml(xml);
-
-        var notification = new ToastNotification(document)
+        var notification = new ToastNotification(content.GetXml())
         {
-            Tag = ToastTag,
+            Tag = tag,
             Group = ToastGroup,
         };
         if (data is not null)
@@ -217,6 +259,7 @@ internal sealed partial class RuntimeToastNotifier : IDisposable
 
     private sealed record RuntimeToast(
         string Message,
+        string Tag,
         bool HasProgress,
         double? Progress,
         string ProgressText,

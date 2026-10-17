@@ -38,8 +38,10 @@ internal static class Program
             }
 
             Thread.Sleep(TimeSpan.FromMilliseconds(700));
+            Console.WriteLine("Updating the progress toast to installation for five seconds.");
             notifier.Installing();
-            Thread.Sleep(TimeSpan.FromMilliseconds(1800));
+            Thread.Sleep(TimeSpan.FromSeconds(5));
+            Console.WriteLine("Showing completion toast.");
             notifier.Completed();
         }
 
