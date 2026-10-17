@@ -6,8 +6,9 @@ This project reworks the Settings window with WinUI's built-in Fluent Design con
 
 ## Resource Usage
 
-| Metric | Original | MicaFlyouts | Reduction |
+|  | Original | MicaFlyouts | Reduction |
 | --- | ---: | ---: | ---: |
+| Startup time | 2,197.0 ms | 570.1 ms | 74.1% |
 | Memory usage | 86.2 MB | 53.2 MB | 38.3% |
 | Disk usage | 216 MB | 34 MB | 84.3% |
 
