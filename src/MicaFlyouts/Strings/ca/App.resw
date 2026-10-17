@@ -947,4 +947,16 @@ Pots ajudar a contribuir amb les traduccions a</value>
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>T'agrada l'aplicació? Dona-li una estrella a GitHub!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>Tecles que cal supervisar</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>Regles de filtratge</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>Durada i visibilitat</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>Resposta d'àudio</value>
+  </data>
 </root>

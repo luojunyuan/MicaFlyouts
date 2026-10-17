@@ -947,4 +947,16 @@ You can help contribute translations on</value>
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>Je vam MicaFlyouts všeč? Označite projekt z zvezdico na GitHubu!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>නිරීක්ෂණය කළ යුතු යතුරු</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>පෙරීමේ රීති</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>කාලසීමාව සහ දෘශ්‍යතාව</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>ශ්‍රව්‍ය ප්‍රතිචාර</value>
+  </data>
 </root>

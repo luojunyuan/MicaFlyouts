@@ -947,4 +947,16 @@
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>נהניתם מ-MicaFlyouts? תנו לפרויקט כוכב ב-GitHub!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>מקשים למעקב</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>כללי סינון</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>משך זמן ונראות</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>תגובת שמע</value>
+  </data>
 </root>

@@ -38,7 +38,6 @@ public sealed class OnboardingComponent : Component
                 RenderNavigation(services, t, step).Grid(row: 2).Margin(top: 24)))
             .Padding(36)
             .Background(SolidBackground)
-            .WithBorder(SurfaceStroke, 1)
             .CornerRadius(8);
     }
 

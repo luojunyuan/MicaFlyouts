@@ -947,4 +947,16 @@
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>هل تستمتع بالتطبيق؟ امنحه نجمة على GitHub!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>المفاتيح المطلوب مراقبتها</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>قواعد التصفية</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>المدة والظهور</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>استجابة الصوت</value>
+  </data>
 </root>

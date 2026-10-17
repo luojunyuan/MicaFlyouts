@@ -947,4 +947,16 @@ You can help contribute translations on</value>
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>MicaFlyouts பிடித்திருக்கிறதா? GitHub-இல் திட்டத்திற்கு நட்சத்திரம் அளிக்கவும்!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>கண்காணிக்க வேண்டிய விசைகள்</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>வடிகட்டுதல் விதிகள்</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>நேர அளவு மற்றும் தெரிவுநிலை</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>ஒலி எதிர்வினை</value>
+  </data>
 </root>

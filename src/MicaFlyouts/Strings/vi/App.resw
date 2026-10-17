@@ -946,4 +946,16 @@ Bạn có thể hỗ trợ dịch tại</value>
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>Bạn thích MicaFlyouts chứ? Hãy gắn sao cho dự án trên GitHub!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>Phím cần theo dõi</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>Quy tắc lọc</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>Thời lượng và khả năng hiển thị</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>Phản hồi âm thanh</value>
+  </data>
 </root>

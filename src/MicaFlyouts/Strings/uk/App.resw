@@ -947,4 +947,16 @@
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>Подобається MicaFlyouts? Поставте проєкту зірку на GitHub!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>Клавіші для відстеження</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>Правила фільтрування</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>Тривалість і видимість</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>Реакція на звук</value>
+  </data>
 </root>

@@ -947,4 +947,16 @@ tekrar, karıştırma ve oynatıcı bilgilerini gizler</value>
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>MicaFlyouts hoşunuza gitti mi? GitHub'da projeyi yıldızlayın!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>İzlenecek tuşlar</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>Filtreleme kuralları</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>Süre ve görünürlük</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>Ses tepkisi</value>
+  </data>
 </root>

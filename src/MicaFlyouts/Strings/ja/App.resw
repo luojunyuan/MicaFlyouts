@@ -947,4 +947,16 @@
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>MicaFlyoutsを気に入っていただけましたか？GitHubでプロジェクトにスターを付けてください！</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>監視するキー</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>フィルター規則</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>表示時間と表示状態</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>音声応答</value>
+  </data>
 </root>

@@ -947,4 +947,16 @@ Segíts te is a fordításban a(z)</value>
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>Tetszik a MicaFlyouts? Csillagozd a projektet a GitHubon!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>Figyelt billentyűk</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>Szűrési szabályok</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>Időtartam és láthatóság</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>Hangreakció</value>
+  </data>
 </root>

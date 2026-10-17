@@ -162,7 +162,6 @@ public sealed partial class AppServices : IDisposable
             return;
 
         ReactorApp.ShutdownPolicy = ShutdownPolicy.Explicit;
-        _ = ReactorApp.TryRegisterControlAssembly(typeof(SettingsCard).Assembly);
         StartupRegistration.Apply(Settings.Snapshot.Startup);
         _singleInstance.StartSettingsListener(() =>
         {
@@ -188,6 +187,7 @@ public sealed partial class AppServices : IDisposable
         if (firstRun)
         {
             Settings.Update(settings => settings with { LastKnownVersion = AppBranding.Version }, save: false);
+            Settings.SaveNow();
             OpenOnboarding();
         }
     }
@@ -534,6 +534,7 @@ public sealed partial class AppServices : IDisposable
                 MinHeight = 500,
                 Icon = AppBranding.WindowIcon,
                 StartPosition = WindowStartPosition.CenterOnCurrent,
+                ExtendsContentIntoTitleBar = true,
                 CornerStyle = WindowCornerStyle.Rounded,
                 Backdrop = BackdropChoice.Of(BackdropKind.Mica),
             },

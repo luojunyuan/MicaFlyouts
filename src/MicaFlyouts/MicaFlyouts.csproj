@@ -46,6 +46,11 @@
     <PackageReference Include="Kumo.H.NotifyIcon.Reactor" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(PublishAot)' == 'true'">
+    <!-- Required for AOT; trimming this assembly makes the Settings window crash on open. -->
+    <TrimmerRootAssembly Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
+  </ItemGroup>
+
   <ItemGroup>
     <AdditionalFiles Include="Infrastructure\Interop\NativeMethods.txt" />
     <AdditionalFiles Include="Strings\**\*.resw" />

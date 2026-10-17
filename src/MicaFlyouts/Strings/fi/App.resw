@@ -947,4 +947,16 @@ You can help contribute translations on</value>
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>Pidätkö MicaFlyoutsista? Anna projektille tähti GitHubissa!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>Valvottavat näppäimet</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>Suodatussäännöt</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>Kesto ja näkyvyys</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>Äänivaste</value>
+  </data>
 </root>

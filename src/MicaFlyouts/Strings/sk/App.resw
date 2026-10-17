@@ -947,4 +947,16 @@ Môžete pomôcť s prekladmi na</value>
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>Páči sa vám MicaFlyouts? Označte projekt hviezdičkou na GitHub!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>Sledované klávesy</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>Pravidlá filtrovania</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>Trvanie a viditeľnosť</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>Zvuková odozva</value>
+  </data>
 </root>

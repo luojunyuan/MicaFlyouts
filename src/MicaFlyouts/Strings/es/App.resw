@@ -947,4 +947,16 @@ Puedes ayudar a contribuir con las traducciones en</value>
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>¿Te gusta MicaFlyouts? ¡Dale una estrella en GitHub!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>Teclas que se supervisarán</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>Reglas de filtrado</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>Duración y visibilidad</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>Respuesta de audio</value>
+  </data>
 </root>

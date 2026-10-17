@@ -42,6 +42,16 @@ internal static class AppRuntime
         // flyout handlers before the first surface is mounted.
         Microsoft.UI.Reactor.ReactorApp.RegisterAllBuiltIns();
         Microsoft.UI.Reactor.ReactorApp.ShutdownPolicy = Microsoft.UI.Reactor.ShutdownPolicy.Explicit;
+        bool settingsControlsRegistered = Microsoft.UI.Reactor.ReactorApp.TryRegisterControlAssembly(
+            typeof(CommunityToolkit.WinUI.Controls.SettingsCard).Assembly);
+        logger.Info(settingsControlsRegistered
+            ? "Registered the SettingsControls XAML metadata provider."
+            : "The SettingsControls assembly has no XAML metadata provider.");
+        Microsoft.UI.Reactor.ReactorApplication.OnUnhandledException = exception =>
+        {
+            logger.Error("Unhandled WinUI exception.", exception);
+            return false;
+        };
         Microsoft.UI.Reactor.ReactorApp.Run(_ =>
         {
             services.OpenMainWindow();

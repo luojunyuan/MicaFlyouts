@@ -959,4 +959,16 @@
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>喜欢 MicaFlyouts 吗？请在 GitHub 上给项目点个 Star！</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>要监视的按键</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>筛选规则</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>停留与显示</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>音频响应</value>
+  </data>
 </root>

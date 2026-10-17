@@ -947,4 +947,16 @@ Můžete pomoct s překlady na</value>
   <data name="EnjoyingAppText" xml:space="preserve">
     <value>Líbí se vám aplikace? Označte ji hvězdičkou na GitHubu!</value>
   </data>
+  <data name="LockKeysKeysSectionTitle" xml:space="preserve">
+    <value>Sledované klávesy</value>
+  </data>
+  <data name="AppFilteringRulesSectionTitle" xml:space="preserve">
+    <value>Pravidla filtrování</value>
+  </data>
+  <data name="NextUpTimingSectionTitle" xml:space="preserve">
+    <value>Doba zobrazení</value>
+  </data>
+  <data name="TaskbarVisualizerAudioSectionTitle" xml:space="preserve">
+    <value>Zvuková odezva</value>
+  </data>
 </root>
