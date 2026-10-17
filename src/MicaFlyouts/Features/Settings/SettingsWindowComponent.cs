@@ -107,7 +107,6 @@ internal sealed class SettingsContentComponent : Component<SettingsContentProps>
                     setPage(selected);
             },
             IsSettingsVisible = false,
-            PaneTitle = t.Message(Loc.App.SettingsTitle),
             IsBackButtonVisible = NavigationViewBackButtonVisible.Collapsed,
             IsPaneToggleButtonVisible = false,
             IsPaneOpen = isPaneOpen,
