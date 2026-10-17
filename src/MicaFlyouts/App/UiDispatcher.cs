@@ -5,6 +5,14 @@ namespace MicaFlyouts.App;
 
 public sealed class UiDispatcher
 {
+    public static void Enqueue(Action action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+        var dispatcher = ReactorApp.UIDispatcher;
+        if (dispatcher is not null)
+            _ = dispatcher.TryEnqueue(new DispatcherQueueHandler(action));
+    }
+
     public static void EnqueueOrRun(Action action)
     {
         ArgumentNullException.ThrowIfNull(action);

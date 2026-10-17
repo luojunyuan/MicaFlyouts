@@ -5,6 +5,7 @@ public enum OnboardingStep
     Media,
     Volume,
     LockKeys,
+    Taskbar,
 }
 
 public sealed record OnboardingSnapshot(
@@ -24,6 +25,7 @@ public static class OnboardingRules
     {
         OnboardingStep.Media => OnboardingStep.Volume,
         OnboardingStep.Volume => OnboardingStep.LockKeys,
+        OnboardingStep.LockKeys => OnboardingStep.Taskbar,
         _ => null,
     };
 
@@ -31,6 +33,7 @@ public static class OnboardingRules
     {
         OnboardingStep.Volume => OnboardingStep.Media,
         OnboardingStep.LockKeys => OnboardingStep.Volume,
+        OnboardingStep.Taskbar => OnboardingStep.LockKeys,
         _ => null,
     };
 }

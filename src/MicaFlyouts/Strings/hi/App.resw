@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <data name="OnboardingTitle" xml:space="preserve"><value>शुरू करें</value></data>
+  <data name="MediaFlyoutAppearanceSectionTitle" xml:space="preserve"><value>दिखावट और लेआउट</value></data>
+  <data name="MediaFlyoutTimingSectionTitle" xml:space="preserve"><value>अवधि और दृश्यता</value></data>
+  <data name="MediaFlyoutTrackSectionTitle" xml:space="preserve"><value>ट्रैक की जानकारी</value></data>
+  <data name="MediaFlyoutControlsSectionTitle" xml:space="preserve"><value>प्लेबैक नियंत्रण</value></data>
+  <data name="MediaFlyoutBehaviorSectionTitle" xml:space="preserve"><value>मीडिया व्यवहार</value></data>
   <data name="TitleText" xml:space="preserve">
     <value>FluentFlyout विकल्प</value>
   </data>
@@ -937,5 +943,8 @@
   </data>
   <data name="ChooseSetting" xml:space="preserve">
     <value>Choose setting</value>
+  </data>
+  <data name="EnjoyingAppText" xml:space="preserve">
+    <value>MicaFlyouts पसंद आया? GitHub पर प्रोजेक्ट को स्टार दें!</value>
   </data>
 </root>

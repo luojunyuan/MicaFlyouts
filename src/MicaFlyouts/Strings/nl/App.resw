@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <data name="OnboardingTitle" xml:space="preserve"><value>Aan de slag</value></data>
+  <data name="MediaFlyoutAppearanceSectionTitle" xml:space="preserve"><value>Weergave en indeling</value></data>
+  <data name="MediaFlyoutTimingSectionTitle" xml:space="preserve"><value>Duur en zichtbaarheid</value></data>
+  <data name="MediaFlyoutTrackSectionTitle" xml:space="preserve"><value>Trackinformatie</value></data>
+  <data name="MediaFlyoutControlsSectionTitle" xml:space="preserve"><value>Afspeelbediening</value></data>
+  <data name="MediaFlyoutBehaviorSectionTitle" xml:space="preserve"><value>Mediagedrag</value></data>
   <data name="TitleText" xml:space="preserve">
     <value>FluentFlyout Instellingen</value>
   </data>
@@ -937,5 +943,8 @@ You can help contribute translations on</value>
   </data>
   <data name="ChooseSetting" xml:space="preserve">
     <value>Choose setting</value>
+  </data>
+  <data name="EnjoyingAppText" xml:space="preserve">
+    <value>Bevalt MicaFlyouts? Geef het project een ster op GitHub!</value>
   </data>
 </root>

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <data name="OnboardingTitle" xml:space="preserve"><value>はじめに</value></data>
+  <data name="MediaFlyoutAppearanceSectionTitle" xml:space="preserve"><value>外観とレイアウト</value></data>
+  <data name="MediaFlyoutTimingSectionTitle" xml:space="preserve"><value>表示時間と表示状態</value></data>
+  <data name="MediaFlyoutTrackSectionTitle" xml:space="preserve"><value>トラック情報</value></data>
+  <data name="MediaFlyoutControlsSectionTitle" xml:space="preserve"><value>再生コントロール</value></data>
+  <data name="MediaFlyoutBehaviorSectionTitle" xml:space="preserve"><value>メディアの動作</value></data>
   <data name="TitleText" xml:space="preserve">
     <value>FluentFlyout の設定</value>
   </data>
@@ -937,5 +943,8 @@
   </data>
   <data name="ChooseSetting" xml:space="preserve">
     <value>Choose setting</value>
+  </data>
+  <data name="EnjoyingAppText" xml:space="preserve">
+    <value>MicaFlyoutsを気に入っていただけましたか？GitHubでプロジェクトにスターを付けてください！</value>
   </data>
 </root>

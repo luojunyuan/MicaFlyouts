@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
+using MicaFlyouts.App;
 using MicaFlyouts.Domain.Updates;
 using MicaFlyouts.Infrastructure.Logging;
 using MicaFlyouts.Infrastructure.State;
@@ -8,7 +9,7 @@ namespace MicaFlyouts.Infrastructure.Updates;
 
 public sealed partial class UpdateCheckerService : IDisposable
 {
-    private const string ReleaseEndpoint = "https://api.github.com/repos/unchihugo/FluentFlyout/releases/latest";
+    private const string ReleaseEndpoint = AppBranding.LatestReleaseApiUrl;
     private readonly UpdateStore _store;
     private readonly AppLogger _logger;
     private readonly HttpClient _client;

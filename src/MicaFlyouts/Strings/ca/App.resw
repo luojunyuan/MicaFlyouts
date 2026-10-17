@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <data name="OnboardingTitle" xml:space="preserve"><value>Comença</value></data>
+  <data name="MediaFlyoutAppearanceSectionTitle" xml:space="preserve"><value>Aparença i disseny</value></data>
+  <data name="MediaFlyoutTimingSectionTitle" xml:space="preserve"><value>Durada i visibilitat</value></data>
+  <data name="MediaFlyoutTrackSectionTitle" xml:space="preserve"><value>Informació de la pista</value></data>
+  <data name="MediaFlyoutControlsSectionTitle" xml:space="preserve"><value>Controls de reproducció</value></data>
+  <data name="MediaFlyoutBehaviorSectionTitle" xml:space="preserve"><value>Comportament dels mitjans</value></data>
   <data name="TitleText" xml:space="preserve">
     <value>Paràmetres del FluentFlyout</value>
   </data>
@@ -937,5 +943,8 @@ Pots ajudar a contribuir amb les traduccions a</value>
   </data>
   <data name="ChooseSetting" xml:space="preserve">
     <value>Choose setting</value>
+  </data>
+  <data name="EnjoyingAppText" xml:space="preserve">
+    <value>T'agrada l'aplicació? Dona-li una estrella a GitHub!</value>
   </data>
 </root>

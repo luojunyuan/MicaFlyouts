@@ -1,0 +1,96 @@
+namespace MicaFlyouts.Features.Settings;
+
+internal sealed record OpenSourcePackage(string Name, string Version, string License, string Url);
+
+internal static class AboutPageData
+{
+    public static readonly string[] Developers =
+    [
+        "unchihugo",
+        "LiAuTraver",
+        "kitUIN",
+        "DmitriySalnikov",
+        "AksharDP",
+        "nopeless",
+        "xsm2",
+        "Simnico99",
+        "neegool",
+        "mclt0568",
+        "mak7im01",
+        "Hikaru11747",
+        "FireWall-code",
+        "Saransh",
+        "Jonas Schips",
+    ];
+
+    public static readonly string[] Translators =
+    [
+        "unchihugo",
+        "tnhung2011",
+        "xsm2",
+        "Ste3798",
+        "weiss-rn",
+        "lechixy",
+        "VeryFat123",
+        "ysfemreAlbyrk",
+        "CC-D-Y",
+        "LOGYT-Eberk",
+        "logounet",
+        "Nikolai-Misha",
+        "bropines",
+        "RandomKuchen",
+        "ebraheemelteyb",
+        "genotypePL",
+        "Pigeon0v0",
+        "fortIItude",
+        "maksymser",
+        "se34k",
+        "nath89-52",
+        "gustavo-bozzano",
+        "Xshadow9",
+        "Aris-Offline",
+        "Y-PLONI",
+        "bywhite0",
+        "Tomflame-4ever",
+        "Hykerisme",
+        "oski165",
+        "thinkii",
+        "trlef19",
+        "v3vishal",
+        "CielWhitefox",
+        "kek353",
+        "ThePerson-o",
+        "naturbrilian",
+        "avshalombegler",
+        "Atalanttore",
+        "NimiGames68",
+        "FenrirXVII",
+        "junior0liveira",
+        "AttackerMR",
+        "hayiamzhengxum",
+        "VolodymyrBryzh",
+        "havrlisan",
+        "Self4215",
+        "manuelitou",
+        "aic-6301",
+        "mak7im01",
+        "D4N_A",
+        "Haeil",
+        "FireWall-code",
+        "saini07ayush",
+        "biuseverinoneto",
+        "theantonyis",
+        "mlynado",
+        "Korvus",
+    ];
+
+    public static readonly OpenSourcePackage[] Packages =
+    [
+        new("CommunityToolkit.Labs.Notifications", "0.1.251217-build.2433", "MIT", "https://github.com/CommunityToolkit/Labs-Windows"),
+        new("CommunityToolkit.WinUI.Controls.SettingsControls", "8.3.260402-preview2", "MIT", "https://github.com/CommunityToolkit/Windows"),
+        new("Kumo.H.NotifyIcon.Reactor", "0.1.0-preview.1", "Not specified", "https://www.nuget.org/packages/Kumo.H.NotifyIcon.Reactor/0.1.0-preview.1"),
+        new("Microsoft.UI.Reactor", "0.1.0-preview.16", "MIT", "https://github.com/microsoft/microsoft-ui-reactor"),
+        new("Microsoft.Windows.CsWin32", "0.3.298", "MIT", "https://github.com/microsoft/CsWin32"),
+        new("NAudio", "2.3.0", "MIT", "https://github.com/naudio/NAudio"),
+    ];
+}

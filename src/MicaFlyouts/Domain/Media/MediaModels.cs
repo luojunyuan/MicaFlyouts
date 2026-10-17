@@ -59,7 +59,8 @@ public sealed record MediaSessionSnapshot(
     string AppDisplayName,
     string AppUserModelId,
     MediaTrackSnapshot Track,
-    bool IsFocused = false);
+    bool IsFocused = false,
+    byte[]? AppIcon = null);
 
 public sealed record MediaSnapshot(
     IReadOnlyList<MediaSessionSnapshot> Sessions,

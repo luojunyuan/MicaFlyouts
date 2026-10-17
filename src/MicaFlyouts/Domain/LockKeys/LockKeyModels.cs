@@ -16,7 +16,8 @@ public sealed record LockKeySnapshot(
     bool CapsLock,
     bool NumLock,
     bool ScrollLock,
-    bool Insert)
+    bool Insert,
+    LockKeyKind? ActiveKey = null)
 {
     public bool this[LockKeyKind key] => key switch
     {

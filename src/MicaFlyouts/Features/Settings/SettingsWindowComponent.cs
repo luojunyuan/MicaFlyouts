@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using MicaFlyouts.App;
 using MicaFlyouts.Domain.Localization;
 using MicaFlyouts.Domain.Settings;
@@ -10,6 +11,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using static MicaFlyouts.UI.Toolkit.SettingsCardElement;
 using static MicaFlyouts.UI.Toolkit.SettingsExpanderElement;
+using static Microsoft.UI.Reactor.Core.InfoBarElement;
 using static Microsoft.UI.Reactor.Core.Theme;
 using static Microsoft.UI.Reactor.Factories;
 
@@ -269,43 +271,64 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
     }
 
     private ScrollViewerElement Media(AppServices services, IntlAccessor t)
-        => Page(t.Message(Loc.App.MediaFlyoutTitle), t.Message(Loc.App.MediaFlyoutDescription),
+        => IllustratedPage(t.Message(Loc.App.MediaFlyoutTitle), t.Message(Loc.App.MediaFlyoutDescription),
+            "ms-appx:///Assets/FluentFlyoutDemo3.1.png",
             SettingCard(FluentSystemIcon.VideoPlayPause24, t.Message(Loc.App.TextBlockText1), t.Message(Loc.App.TextBlockText3),
                 Toggle(t, Props.Settings.MediaFlyoutEnabled, value => Update(services, s => s with { MediaFlyoutEnabled = value }))),
-            SettingCard(FluentSystemIcon.ArrowAutofitWidth24, t.Message(Loc.App.CompactLayoutTitle), t.Message(Loc.App.CompactLayoutDescription),
-                Toggle(t, Props.Settings.CompactLayout, value => Update(services, s => s with { CompactLayout = value }))),
-            SettingCard(FluentSystemIcon.Subtitles24, t.Message(Loc.App.ShowMediaPlayerNameTitle), t.Message(Loc.App.PlayerInformationDescription),
-                Toggle(t, Props.Settings.PlayerInfoEnabled, value => Update(services, s => s with { PlayerInfoEnabled = value }))),
-            SettingCard(FluentSystemIcon.SlideArrowRight24, t.Message(Loc.App.ShowSeekbarTitle), t.Message(Loc.App.ShowSeekbarDescription),
-                Toggle(t, Props.Settings.SeekbarEnabled, value => Update(services, s => s with { SeekbarEnabled = value }))),
-            SettingCard(FluentSystemIcon.ArrowRepeatAll24, t.Message(Loc.App.RepeatButtonTitle), t.Message(Loc.App.RepeatButtonDescription), HStack(8,
-                ToggleSwitch(Optional<bool>.Of(Props.Settings.RepeatEnabled),
-                    value => Update(services, s => s with { RepeatEnabled = value }),
-                    t.Message(Loc.App.MediaRepeat),
-                    t.Message(Loc.App.MediaRepeat)),
-                ToggleSwitch(Optional<bool>.Of(Props.Settings.ShuffleEnabled),
-                    value => Update(services, s => s with { ShuffleEnabled = value }),
-                    t.Message(Loc.App.MediaShuffle),
-                    t.Message(Loc.App.MediaShuffle)))),
-            SettingCard(FluentSystemIcon.TimerOff24, t.Message(Loc.App.MediaFlyoutAlwaysDisplay), t.Message(Loc.App.MediaFlyoutAlwaysDisplayDescription),
-                Toggle(t, Props.Settings.MediaFlyoutAlwaysDisplay, value => Update(services, s => s with { MediaFlyoutAlwaysDisplay = value }))),
-            SettingCard(FluentSystemIcon.Timer24, t.Message(Loc.App.FlyoutStayDurationTitle), t.Message(Loc.App.FlyoutStayDurationDescription),
-                Number(t, Props.Settings.Duration, value => Update(services, s => s with { Duration = value }))),
-            SettingCard(FluentSystemIcon.ArrowMove24, t.Message(Loc.App.FlyoutPositionTitle), t.Message(Loc.App.FlyoutPositionTitle),
-                Combo(t,
-                    [
-                        t.Message(Loc.App.PositionBottomLeft),
-                        t.Message(Loc.App.PositionBottomCenter),
-                        t.Message(Loc.App.PositionBottomRight),
-                        t.Message(Loc.App.PositionTopLeft),
-                        t.Message(Loc.App.PositionTopCenter),
-                        t.Message(Loc.App.PositionTopRight),
-                    ],
-                    Props.Settings.Position,
-                    value => Update(services, s => s with { Position = value }))));
+            Section(t.Message(Loc.App.MediaFlyoutAppearanceSectionTitle),
+                SettingCard(FluentSystemIcon.Color24, t.Message(Loc.App.BackgroundBlurTitle), t.Message(Loc.App.TextBlockText2),
+                    Combo(t,
+                        [
+                            t.Message(Loc.App.BackgroundBlurOption1),
+                            t.Message(Loc.App.BackgroundBlurOption2),
+                            t.Message(Loc.App.BackgroundBlurOption3),
+                            t.Message(Loc.App.BackgroundBlurOption4),
+                        ],
+                        Props.Settings.MediaFlyoutBackgroundBlur,
+                        static _ => { }),
+                    enabled: false),
+                SettingCard(FluentSystemIcon.ArrowAutofitWidth24, t.Message(Loc.App.CompactLayoutTitle), t.Message(Loc.App.CompactLayoutDescription),
+                    Toggle(t, Props.Settings.CompactLayout, value => Update(services, s => s with { CompactLayout = value }))),
+                SettingCard(FluentSystemIcon.ArrowMove24, t.Message(Loc.App.FlyoutPositionTitle), string.Empty,
+                    Combo(t,
+                        [
+                            t.Message(Loc.App.PositionBottomLeft),
+                            t.Message(Loc.App.PositionBottomCenter),
+                            t.Message(Loc.App.PositionBottomRight),
+                            t.Message(Loc.App.PositionTopLeft),
+                            t.Message(Loc.App.PositionTopCenter),
+                            t.Message(Loc.App.PositionTopRight),
+                        ],
+                        Props.Settings.Position,
+                        value => Update(services, s => s with { Position = value })))),
+            Section(t.Message(Loc.App.MediaFlyoutTimingSectionTitle),
+                SettingCard(FluentSystemIcon.Timer24, t.Message(Loc.App.FlyoutStayDurationTitle), t.Message(Loc.App.FlyoutStayDurationDescription),
+                    Number(t, Props.Settings.Duration, value => Update(services, s => s with { Duration = value }))),
+                SettingCard(FluentSystemIcon.TimerOff24, t.Message(Loc.App.MediaFlyoutAlwaysDisplay), t.Message(Loc.App.MediaFlyoutAlwaysDisplayDescription),
+                    Toggle(t, Props.Settings.MediaFlyoutAlwaysDisplay, value => Update(services, s => s with { MediaFlyoutAlwaysDisplay = value })))),
+            Section(t.Message(Loc.App.MediaFlyoutTrackSectionTitle),
+                SettingCard(FluentSystemIcon.AlignCenterHorizontal24, t.Message(Loc.App.CenterTitleArtistTitle), t.Message(Loc.App.CenterTitleArtistDescription),
+                    Toggle(t, Props.Settings.CenterTitleArtist, value => Update(services, s => s with { CenterTitleArtist = value }))),
+                SettingCard(FluentSystemIcon.Subtitles24, t.Message(Loc.App.ShowMediaPlayerNameTitle), t.Message(Loc.App.PlayerInformationDescription),
+                    Toggle(t, Props.Settings.PlayerInfoEnabled, value => Update(services, s => s with { PlayerInfoEnabled = value })))),
+            Section(t.Message(Loc.App.MediaFlyoutControlsSectionTitle),
+                SettingCard(FluentSystemIcon.ArrowRepeatAll24, t.Message(Loc.App.RepeatButtonTitle), t.Message(Loc.App.RepeatButtonDescription),
+                    Toggle(t, Props.Settings.RepeatEnabled, value => Update(services, s => s with { RepeatEnabled = value }))),
+                SettingCard(FluentSystemIcon.ArrowShuffle24, t.Message(Loc.App.ShuffleButtonTitle), t.Message(Loc.App.ShuffleButtonDescription),
+                    Toggle(t, Props.Settings.ShuffleEnabled, value => Update(services, s => s with { ShuffleEnabled = value }))),
+                SettingCard(FluentSystemIcon.SlideArrowRight24, t.Message(Loc.App.ShowSeekbarTitle), t.Message(Loc.App.ShowSeekbarDescription),
+                    Toggle(t, Props.Settings.SeekbarEnabled, value => Update(services, s => s with { SeekbarEnabled = value }))),
+                Info(t.Message(Loc.App.UnsupportedControlsWarning), InfoBarSeverity.Warning)),
+            Section(t.Message(Loc.App.MediaFlyoutBehaviorSectionTitle),
+                SettingCard(FluentSystemIcon.Pause24, t.Message(Loc.App.PauseOtherMediaTitle), t.Message(Loc.App.PauseOtherMediaDescription),
+                    Toggle(t, Props.Settings.PauseOtherSessionsEnabled, static _ => { }),
+                    enabled: false),
+                SettingCard(FluentSystemIcon.Speaker224, t.Message(Loc.App.MediaFlyoutExcludeVolumeTitle), t.Message(Loc.App.MediaFlyoutExcludeVolumeDescription),
+                    Toggle(t, Props.Settings.MediaFlyoutVolumeKeysExcluded, value => Update(services, s => s with { MediaFlyoutVolumeKeysExcluded = value })))));
 
     private ScrollViewerElement Volume(AppServices services, IntlAccessor t)
-        => Page(t.Message(Loc.App.VolumeFlyoutTitle), t.Message(Loc.App.VolumeFlyoutDescription),
+        => IllustratedPage(t.Message(Loc.App.VolumeFlyoutTitle), t.Message(Loc.App.VolumeFlyoutDescription),
+            "ms-appx:///Assets/FluentFlyoutVolumeDemo.png",
             SettingCard(FluentSystemIcon.Speaker224, t.Message(Loc.App.EnableVolumeFlyoutTitle), t.Message(Loc.App.EnableVolumeFlyoutDescription),
                 Toggle(t, Props.Settings.VolumeControlEnabled, value => Update(services, s => s with { VolumeControlEnabled = value }))),
             SettingCard(FluentSystemIcon.ArrowMove24, t.Message(Loc.App.VolumeAboveMediaFlyoutTitle), t.Message(Loc.App.VolumeAboveMediaFlyoutDescription),
@@ -318,7 +341,8 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
                 Number(t, Props.Settings.VolumeControlDuration, value => Update(services, s => s with { VolumeControlDuration = value }))));
 
     private ScrollViewerElement Taskbar(AppServices services, IntlAccessor t)
-        => Page(t.Message(Loc.App.TaskbarWidgetCustomizationTitle), t.Message(Loc.App.TaskbarWidgetDescription),
+        => IllustratedPage(t.Message(Loc.App.TaskbarWidgetCustomizationTitle), t.Message(Loc.App.TaskbarWidgetDescription),
+            "ms-appx:///Assets/FluentFlyoutDemo9.1.png",
             SettingCard(FluentSystemIcon.TextboxAlignBottom24, t.Message(Loc.App.TaskbarWidgetEnabledTitle), t.Message(Loc.App.TaskbarWidgetEnabledDescription),
                 Toggle(t, Props.Settings.TaskbarWidgetEnabled, value => Update(services, s => s with { TaskbarWidgetEnabled = value }))),
             SettingCard(FluentSystemIcon.ArrowMove24, t.Message(Loc.App.TaskbarWidgetPosition), t.Message(Loc.App.WidgetPositionDescription),
@@ -326,29 +350,50 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
                     [t.Message(Loc.App.PositionStart), t.Message(Loc.App.PositionCenter), t.Message(Loc.App.PositionEnd)],
                     Props.Settings.TaskbarWidgetPosition,
                     value => Update(services, s => s with { TaskbarWidgetPosition = value }))),
-            SettingCard(FluentSystemIcon.PaddingRight24, t.Message(Loc.App.TaskbarWidgetPaddingTitle), t.Message(Loc.App.TaskbarWidgetPaddingDescription),
-                Toggle(t, Props.Settings.TaskbarWidgetPadding, value => Update(services, s => s with { TaskbarWidgetPadding = value }))),
-            SettingCard(FluentSystemIcon.ArrowFit20, t.Message(Loc.App.TaskbarWidgetManualPaddingTitle), t.Message(Loc.App.TaskbarWidgetManualPaddingDescription),
-                Number(t, Props.Settings.TaskbarWidgetManualPadding, value => Update(services, s => s with { TaskbarWidgetManualPadding = value }))),
+            Info(t.Message(Loc.App.TaskbarWidgetVisualIssuesWarning), InfoBarSeverity.Informational),
+            SettingsGroup(FluentSystemIcon.Wrench24,
+                t.Message(Loc.App.TaskbarWidgetPaddingSettingsTitle),
+                t.Message(Loc.App.TaskbarWidgetPaddingSettingsDescription),
+                [
+                    SettingCard(FluentSystemIcon.PaddingRight24, t.Message(Loc.App.TaskbarWidgetPaddingTitle), t.Message(Loc.App.TaskbarWidgetPaddingDescription),
+                        Toggle(t, Props.Settings.TaskbarWidgetPadding, value => Update(services, s => s with { TaskbarWidgetPadding = value }))),
+                    SettingCard(FluentSystemIcon.ArrowFit20, t.Message(Loc.App.TaskbarWidgetManualPaddingTitle), t.Message(Loc.App.TaskbarWidgetManualPaddingDescription),
+                        Number(t, Props.Settings.TaskbarWidgetManualPadding, value => Update(services, s => s with { TaskbarWidgetManualPadding = value }))),
+                ]),
             SettingCard(FluentSystemIcon.ArrowAutofitWidth24, t.Message(Loc.App.TaskbarWidgetFixedWidthTitle), t.Message(Loc.App.TaskbarWidgetFixedWidthDescription),
                 Toggle(t, Props.Settings.TaskbarWidgetFixedWidth, value => Update(services, s => s with { TaskbarWidgetFixedWidth = value }))),
             SettingCard(FluentSystemIcon.EyeLines24, t.Message(Loc.App.TaskbarWidgetAutoHideTitle), t.Message(Loc.App.TaskbarWidgetAutoHideDescription),
                 Toggle(t, Props.Settings.TaskbarWidgetAutoHide, value => Update(services, s => s with { TaskbarWidgetAutoHide = value }))),
             SettingCard(FluentSystemIcon.Pause24, t.Message(Loc.App.TaskbarWidgetShowPauseOverlayTitle), t.Message(Loc.App.TaskbarWidgetShowPauseOverlayDescription),
-                Toggle(t, Props.Settings.TaskbarWidgetShowPauseOverlay, value => Update(services, s => s with { TaskbarWidgetShowPauseOverlay = value }))));
+                Toggle(t, Props.Settings.TaskbarWidgetShowPauseOverlay, value => Update(services, s => s with { TaskbarWidgetShowPauseOverlay = value }))),
+            SettingsGroup(FluentSystemIcon.ArrowAutofitWidth24,
+                t.Message(Loc.App.TaskbarWidgetScrollingTextTitle),
+                t.Message(Loc.App.TaskbarWidgetScrollingTextDescription),
+                [
+                    SettingCard(FluentSystemIcon.EyeLines24, t.Message(Loc.App.TaskbarWidgetScrollingTextLoopForeverTitle), t.Message(Loc.App.TaskbarWidgetScrollingTextLoopForeverDescription),
+                        Toggle(t, Props.Settings.TaskbarWidgetScrollingTextLoopForever, value => Update(services, s => s with { TaskbarWidgetScrollingTextLoopForever = value }))),
+                    SettingCard(FluentSystemIcon.ArrowFit20, t.Message(Loc.App.TaskbarWidgetScrollingTextSpeedTitle), t.Message(Loc.App.TaskbarWidgetScrollingTextSpeedDescription),
+                        Number(t, Props.Settings.TaskbarWidgetScrollingTextSpeed, value => Update(services, s => s with { TaskbarWidgetScrollingTextSpeed = value }))),
+                ],
+                headerContent: Toggle(t, Props.Settings.TaskbarWidgetScrollingEnabled, value => Update(services, s => s with { TaskbarWidgetScrollingEnabled = value }))));
 
     private ScrollViewerElement Visualizer(AppServices services, IntlAccessor t)
-        => Page(t.Message(Loc.App.TaskbarVisualizerTitle), t.Message(Loc.App.TaskbarVisualizerDescription),
+        => IllustratedPage(t.Message(Loc.App.TaskbarVisualizerTitle), t.Message(Loc.App.TaskbarVisualizerDescription),
+            "ms-appx:///Assets/FluentFlyoutTaskbar-NoTitle-Zoomed.png",
             SettingCard(FluentSystemIcon.SoundWaveCircle24, t.Message(Loc.App.TaskbarVisualizerEnabledTitle), t.Message(Loc.App.TaskbarVisualizerEnabledDescription),
                 Toggle(t, Props.Settings.TaskbarVisualizerEnabled, value => Update(services, s => s with { TaskbarVisualizerEnabled = value }))),
             SettingCard(FluentSystemIcon.DataBarVertical24, t.Message(Loc.App.TaskbarVisualizerBarCountTitle), t.Message(Loc.App.TaskbarVisualizerBarCountDescription),
                 Number(t, Props.Settings.TaskbarVisualizerBarCount, value => Update(services, s => s with { TaskbarVisualizerBarCount = value }))),
             SettingCard(FluentSystemIcon.AlignCenterHorizontal24, t.Message(Loc.App.TaskbarVisualizerCenteredBarsTitle), t.Message(Loc.App.TaskbarVisualizerCenteredBarsDescription),
                 Toggle(t, Props.Settings.TaskbarVisualizerCenteredBars, value => Update(services, s => s with { TaskbarVisualizerCenteredBars = value }))),
-            SettingCard(FluentSystemIcon.LineHorizontal120, t.Message(Loc.App.TaskbarVisualizerBaselineTitle), t.Message(Loc.App.TaskbarVisualizerBaselineDescription),
-                Toggle(t, Props.Settings.TaskbarVisualizerBaseline, value => Update(services, s => s with { TaskbarVisualizerBaseline = value }))),
-            SettingCard(FluentSystemIcon.EyeLines24, t.Message(Loc.App.BaselineAutoHideTitle), t.Message(Loc.App.TaskbarVisualizerBaselineAutoHideDescription),
-                Toggle(t, Props.Settings.TaskbarVisualizerBaselineAutoHide, value => Update(services, s => s with { TaskbarVisualizerBaselineAutoHide = value }))),
+            SettingsGroup(FluentSystemIcon.LineHorizontal120,
+                t.Message(Loc.App.TaskbarVisualizerBaselineTitle),
+                t.Message(Loc.App.TaskbarVisualizerBaselineDescription),
+                [
+                    SettingCard(FluentSystemIcon.EyeLines24, t.Message(Loc.App.BaselineAutoHideTitle), t.Message(Loc.App.TaskbarVisualizerBaselineAutoHideDescription),
+                        Toggle(t, Props.Settings.TaskbarVisualizerBaselineAutoHide, value => Update(services, s => s with { TaskbarVisualizerBaselineAutoHide = value }))),
+                ],
+                headerContent: Toggle(t, Props.Settings.TaskbarVisualizerBaseline, value => Update(services, s => s with { TaskbarVisualizerBaseline = value }))),
             SettingCard(FluentSystemIcon.BezierCurveSquare20, t.Message(Loc.App.TaskbarVisualizerAudioSensitivityTitle), t.Message(Loc.App.TaskbarVisualizerAudioSensitivityDescription),
                 Combo(t,
                     [t.Message(Loc.App.SensitivityLow), t.Message(Loc.App.SensitivityMedium), t.Message(Loc.App.SensitivityHigh)],
@@ -356,28 +401,37 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
                     value => Update(services, s => s with { TaskbarVisualizerAudioSensitivity = value + 1 }))));
 
     private ScrollViewerElement NextUp(AppServices services, IntlAccessor t)
-        => Page(t.Message(Loc.App.NextUpCustomizationTitle), t.Message(Loc.App.NextUpDescription),
+        => IllustratedPage(t.Message(Loc.App.NextUpCustomizationTitle), t.Message(Loc.App.NextUpDescription),
+            "ms-appx:///Assets/FluentFlyoutDemo4.1.png",
             SettingCard(FluentSystemIcon.MusicNote2Play20, t.Message(Loc.App.EnableNextUpTitle), t.Message(Loc.App.EnableNextUpDescription),
                 Toggle(t, Props.Settings.NextUpEnabled, value => Update(services, s => s with { NextUpEnabled = value }))),
             SettingCard(FluentSystemIcon.Timer24, t.Message(Loc.App.NextUpStayDurationTitle), t.Message(Loc.App.NextUpStayDurationDescription),
                 Number(t, Props.Settings.NextUpDuration, value => Update(services, s => s with { NextUpDuration = value }))));
 
     private ScrollViewerElement LockKeys(AppServices services, IntlAccessor t)
-        => Page(t.Message(Loc.App.LockKeysCustomizationTitle), t.Message(Loc.App.LockKeysDescription),
+        => IllustratedPage(t.Message(Loc.App.LockKeysCustomizationTitle), t.Message(Loc.App.LockKeysDescription),
+            "ms-appx:///Assets/FluentFlyoutDemo5.1.png",
             SettingCard(FluentSystemIcon.LockMultiple24, t.Message(Loc.App.EnableLockKeysTitle), t.Message(Loc.App.EnableLockKeysDescription),
                 Toggle(t, Props.Settings.LockKeysEnabled, value => Update(services, s => s with { LockKeysEnabled = value }))),
+            SettingCard(FluentSystemIcon.Timer24, t.Message(Loc.App.LockKeysStayDurationTitle), t.Message(Loc.App.LockKeysStayDurationDescription),
+                Number(t, Props.Settings.LockKeysDuration, value => Update(services, s => s with { LockKeysDuration = value }))),
+            SettingCard(FluentSystemIcon.TextFontInfo24, t.Message(Loc.App.LockKeysBoldUITitle), t.Message(Loc.App.LockKeysBoldUIDescription),
+                Toggle(t, Props.Settings.LockKeysBoldUi, value => Update(services, s => s with { LockKeysBoldUi = value }))),
+            SettingCard(FluentSystemIcon.Wand24, t.Message(Loc.App.LockKeysAnimatedTitle), t.Message(Loc.App.LockKeysAnimatedDescription),
+                Toggle(t, Props.Settings.LockKeysAnimated, value => Update(services, s => s with { LockKeysAnimated = value }))),
+            SettingCard(FluentSystemIcon.ShareScreenStart24, t.Message(Loc.App.LockKeysCursorUITitle), t.Message(Loc.App.LockKeysCursorUIDescription),
+                Combo(t,
+                    [t.Message(Loc.App.DefaultLockLayoutPosition), t.Message(Loc.App.MonitorWithFocusedWindow), t.Message(Loc.App.MonitorWithCursor)],
+                    Props.Settings.LockKeysMonitorPreference,
+                    value => Update(services, s => s with { LockKeysMonitorPreference = value }))),
+            SettingCard(FluentSystemIcon.Info24, t.Message(Loc.App.EnableInsertKeyTitle), t.Message(Loc.App.EnableInsertKeyDescription),
+                Toggle(t, Props.Settings.LockKeysInsertEnabled, value => Update(services, s => s with { LockKeysInsertEnabled = value }))),
             SettingCard(FluentSystemIcon.TextCaseTitle24, t.Message(Loc.App.EnableCapsTitle), t.Message(Loc.App.EnableCapsDescription),
                 Toggle(t, Props.Settings.LockKeysCapsEnabled, value => Update(services, s => s with { LockKeysCapsEnabled = value }))),
             SettingCard(FluentSystemIcon.NumberSymbol24, t.Message(Loc.App.EnableNumTitle), t.Message(Loc.App.EnableNumDescription),
                 Toggle(t, Props.Settings.LockKeysNumEnabled, value => Update(services, s => s with { LockKeysNumEnabled = value }))),
             SettingCard(FluentSystemIcon.ArrowBetweenDown24, t.Message(Loc.App.EnableScrollTitle), t.Message(Loc.App.EnableScrollDescription),
-                Toggle(t, Props.Settings.LockKeysScrollEnabled, value => Update(services, s => s with { LockKeysScrollEnabled = value }))),
-            SettingCard(FluentSystemIcon.Info24, t.Message(Loc.App.EnableInsertKeyTitle), t.Message(Loc.App.EnableInsertKeyDescription),
-                Toggle(t, Props.Settings.LockKeysInsertEnabled, value => Update(services, s => s with { LockKeysInsertEnabled = value }))),
-            SettingCard(FluentSystemIcon.Timer24, t.Message(Loc.App.LockKeysStayDurationTitle), t.Message(Loc.App.LockKeysStayDurationDescription),
-                Number(t, Props.Settings.LockKeysDuration, value => Update(services, s => s with { LockKeysDuration = value }))),
-            SettingCard(FluentSystemIcon.Wand24, t.Message(Loc.App.LockKeysAnimatedTitle), t.Message(Loc.App.LockKeysAnimatedDescription),
-                Toggle(t, Props.Settings.LockKeysAnimated, value => Update(services, s => s with { LockKeysAnimated = value }))));
+                Toggle(t, Props.Settings.LockKeysScrollEnabled, value => Update(services, s => s with { LockKeysScrollEnabled = value }))));
 
     private ScrollViewerElement System(AppServices services, IntlAccessor t)
     {
@@ -409,17 +463,83 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
                         .AutomationName(t.Message(Loc.App.FontFamilyTitle))));
     }
 
-    private ScrollViewerElement About(AppServices services, IntlAccessor t)
+    private static ScrollViewerElement About(AppServices services, IntlAccessor t)
     {
-        var version = string.IsNullOrWhiteSpace(Props.Settings.LastKnownVersion)
-            ? t.Message(Loc.App.DevelopmentVersion)
-            : Props.Settings.LastKnownVersion;
         return Page(t.Message(Loc.App.AboutTitle), t.Message(Loc.App.AboutDescription),
             SettingCard(FluentSystemIcon.Code24, AppBranding.Name, t.Message(Loc.App.AboutProjectDescription), VStack(8,
-                TextBlock(t.Message(Loc.App.VersionLabel, ("version", version))),
-                HyperlinkButton(t.Message(Loc.App.GitHubRepoLink), new Uri("https://github.com/unchihugo/FluentFlyout")),
-                Button(t.Message(Loc.App.CheckForUpdates), () => _ = services.Updater.CheckAsync(Props.Settings.LastKnownVersion))
-                    .AutomationName(t.Message(Loc.App.CheckForUpdates)))));
+                TextBlock(t.Message(Loc.App.VersionLabel, ("version", AppBranding.Version))),
+                RepositoryLink(t),
+                Button(t.Message(Loc.App.CheckForUpdates), () => _ = services.Updater.CheckAsync(AppBranding.Version))
+                    .AutomationName(t.Message(Loc.App.CheckForUpdates)))),
+            VStack(8,
+                Heading(t.Message(Loc.App.AboutContributorsTitle)),
+                Caption(t.Message(Loc.App.AboutContributorsDescription))
+                    .TextWrapping(TextWrapping.Wrap)
+                    .Opacity(0.75),
+                SettingsGroup(FluentSystemIcon.Code24, t.Message(Loc.App.DevelopersTitle), string.Empty, [],
+                    itemsHeader: TextBlock(string.Join(", ", AboutPageData.Developers))
+                        .FontSize(14)
+                        .TextWrapping(TextWrapping.Wrap)
+                        .Opacity(0.75)
+                        .MinWidth(0)
+                        .Margin(8)),
+                SettingsGroup(FluentSystemIcon.Globe24, t.Message(Loc.App.TranslatorsTitle), string.Empty, [],
+                    itemsHeader: TextBlock(string.Join(", ", AboutPageData.Translators.Order()))
+                        .FontSize(14)
+                        .TextWrapping(TextWrapping.Wrap)
+                        .Opacity(0.75)
+                        .MinWidth(0)
+                        .Margin(8))),
+            VStack(8,
+                Heading(t.Message(Loc.App.AboutOpenSourceLicensesTitle)),
+                Caption(t.Message(Loc.App.AboutOpenSourceLicensesDescription))
+                    .TextWrapping(TextWrapping.Wrap)
+                    .Opacity(0.75),
+                VStack(0, [.. AboutPageData.Packages.Select(RenderLicenseCard)])),
+            HStack(8,
+                Icon(SymbolIcon("SolidStar")).Width(24).Height(24),
+                TextBlock(t.Message(Loc.App.EnjoyingAppText))
+                    .FontSize(12)
+                    .TextWrapping(TextWrapping.Wrap)
+                    .Opacity(0.5)
+                    .MinWidth(0),
+                RepositoryLink(t))
+                .Margin(top: 20, bottom: 12));
+    }
+
+    private static ButtonElement RepositoryLink(IntlAccessor t)
+        => Button(HStack(4,
+                TextBlock(t.Message(Loc.App.GitHubRepoLink)),
+                FluentSystemIcons.CreateOpenLinkIcon()),
+            () => OpenUri(AppBranding.RepositoryUrl))
+            .SubtleButton()
+            .AutomationName(t.Message(Loc.App.GitHubRepoLink));
+
+    private static SettingsCardElement RenderLicenseCard(OpenSourcePackage package)
+        => (SettingsCard() with
+        {
+            Header = package.Name,
+            Description = $"{package.Version} | {package.License}",
+            IsClickEnabled = true,
+            IsActionIconVisible = true,
+            ActionIcon = FluentSystemIcons.CreateOpenLinkIcon(),
+            ActionIconToolTip = package.Name,
+            OnClick = () => OpenUri(package.Url),
+        })
+            .MinWidth(0)
+            .Margin(4)
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .AutomationName($"{package.Name}, {package.Version}, {package.License}");
+
+    private static void OpenUri(string url)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        }
+        catch
+        {
+        }
     }
 
     private ScrollViewerElement AppFiltering(AppServices services, IntlAccessor t)
@@ -430,17 +550,56 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
                 Combo(t, [t.Message(Loc.App.AppFilteringModeBlacklist), t.Message(Loc.App.AppFilteringModeWhitelist)],
                     Props.Settings.AppFilteringMode,
                     value => Update(services, s => s with { AppFilteringMode = value }))),
-            SettingCard(FluentSystemIcon.Info24, t.Message(Loc.App.AllowedAppsTitle), t.Message(Loc.App.AllowedAppsDescription),
-                TextBox(string.Join(Environment.NewLine, Props.Settings.AllowedApps),
-                    value => Update(services, s => s with { AllowedApps = Entries(value) }))
-                    .AutomationName(t.Message(Loc.App.AllowedAppsTitle))),
-            SettingCard(FluentSystemIcon.EyeOff24, t.Message(Loc.App.BlockedAppsTitle), t.Message(Loc.App.BlockedAppsDescription),
-                TextBox(string.Join(Environment.NewLine, Props.Settings.BlockedApps),
-                    value => Update(services, s => s with { BlockedApps = Entries(value) }))
-                    .AutomationName(t.Message(Loc.App.BlockedAppsTitle))));
+            SettingsGroup(FluentSystemIcon.Info24,
+                t.Message(Loc.App.AllowedAppsTitle),
+                t.Message(Loc.App.AllowedAppsDescription),
+                [],
+                itemsHeader: AppListEditor(Props.Settings.AllowedApps, t.Message(Loc.App.AllowedAppsTitle),
+                    value => Update(services, s => s with { AllowedApps = Entries(value) })),
+                expanded: true,
+                visible: Props.Settings.AppFilteringMode == 1,
+                enabled: Props.Settings.AppFilteringEnabled),
+            SettingsGroup(FluentSystemIcon.EyeOff24,
+                t.Message(Loc.App.BlockedAppsTitle),
+                t.Message(Loc.App.BlockedAppsDescription),
+                [],
+                itemsHeader: AppListEditor(Props.Settings.BlockedApps, t.Message(Loc.App.BlockedAppsTitle),
+                    value => Update(services, s => s with { BlockedApps = Entries(value) })),
+                expanded: true,
+                visible: Props.Settings.AppFilteringMode == 0,
+                enabled: Props.Settings.AppFilteringEnabled));
 
     private ScrollViewerElement Advanced(AppServices services, IntlAccessor t)
         => Page(t.Message(Loc.App.AdvancedSettingsTitle), t.Message(Loc.App.AdvancedDescription),
+            SettingsGroup(FluentSystemIcon.Wand24,
+                t.Message(Loc.App.AnimationSettingsTitle),
+                t.Message(Loc.App.AnimationSettingsDescription),
+                [
+                    SettingCard(FluentSystemIcon.Wand24, t.Message(Loc.App.AnimationDurationScaleTitle), t.Message(Loc.App.AnimationDurationScaleDescription),
+                        Combo(t,
+                            [t.Message(Loc.App.AnimationSpeedOff), "0.5x", "1x", "1.5x", "2x", "3x"],
+                            Props.Settings.FlyoutAnimationSpeed,
+                            value => Update(services, s => s with { FlyoutAnimationSpeed = value }))),
+                    SettingCard(FluentSystemIcon.BezierCurveSquare20, t.Message(Loc.App.AnimationEasingStyleTitle), t.Message(Loc.App.AnimationEasingStyleDescription),
+                        Combo(t,
+                            [t.Message(Loc.App.EasingLinear), t.Message(Loc.App.EasingSine), t.Message(Loc.App.EasingQuadratic), t.Message(Loc.App.EasingCubic)],
+                            Props.Settings.FlyoutAnimationEasingStyle,
+                            value => Update(services, s => s with { FlyoutAnimationEasingStyle = value }))),
+                ],
+                itemsHeader: Info(t.Message(Loc.App.NativeExperienceInfo), InfoBarSeverity.Informational).Margin(8)),
+            SettingsGroup(FluentSystemIcon.Color24,
+                t.Message(Loc.App.AcrylicWindowTitle),
+                t.Message(Loc.App.AcrylicWindowDescription),
+                [
+                    SettingCard(FluentSystemIcon.VideoPlayPause24, t.Message(Loc.App.MediaFlyoutTitle), string.Empty,
+                        Toggle(t, Props.Settings.MediaFlyoutAcrylicWindowEnabled, value => Update(services, s => s with { MediaFlyoutAcrylicWindowEnabled = value }))),
+                    SettingCard(FluentSystemIcon.MusicNote2Play20, t.Message(Loc.App.NextUpCustomizationTitle), string.Empty,
+                        Toggle(t, Props.Settings.NextUpAcrylicWindowEnabled, value => Update(services, s => s with { NextUpAcrylicWindowEnabled = value }))),
+                    SettingCard(FluentSystemIcon.LockMultiple24, t.Message(Loc.App.LockKeysCustomizationTitle), string.Empty,
+                        Toggle(t, Props.Settings.LockKeysAcrylicWindowEnabled, value => Update(services, s => s with { LockKeysAcrylicWindowEnabled = value }))),
+                    SettingCard(FluentSystemIcon.SpeakerSettings24, t.Message(Loc.App.VolumeFlyoutTitle), string.Empty,
+                        Toggle(t, Props.Settings.VolumeMixerAcrylicWindowEnabled, value => Update(services, s => s with { VolumeMixerAcrylicWindowEnabled = value }))),
+                ]),
             SettingCard(FluentSystemIcon.ArrowCounterclockwise24, t.Message(Loc.App.LegacyTaskbarWidthTitle), t.Message(Loc.App.LegacyTaskbarWidthDescription),
                 Toggle(t, Props.Settings.LegacyTaskbarWidthEnabled, value => Update(services, s => s with { LegacyTaskbarWidthEnabled = value }))),
             SettingCard(FluentSystemIcon.Bug24, t.Message(Loc.App.AnonymousUsageDataTitle), t.Message(Loc.App.AnonymousUsageDataDescription),
@@ -456,11 +615,38 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
                 Button(t.Message(Loc.App.SaveNow), services.Settings.SaveNow)
                     .AutomationName(t.Message(Loc.App.SaveNow)))));
 
-    private static ScrollViewerElement Page(string title, string description, params Element[] cards)
-        => ScrollViewer(VStack(16,
+    private static ScrollViewerElement Page(string title, string description, params Element[] content)
+        => PageContent(title,
+            Caption(description).TextWrapping(TextWrapping.Wrap).Opacity(0.7),
+            content);
+
+    private static ScrollViewerElement IllustratedPage(
+        string title,
+        string description,
+        string imageUri,
+        params Element[] content)
+        => PageContent(title,
+            Grid(
+                [GridSize.Px(164), GridSize.Star()],
+                [GridSize.Auto],
+                Border((Image(imageUri) with { Stretch = "UniformToFill" }).Width(164).Height(98).AutomationName(title))
+                    .CornerRadius(10)
+                    .Grid(row: 0, column: 0),
+                TextBlock(description)
+                    .FontSize(14)
+                    .TextWrapping(TextWrapping.Wrap)
+                    .Opacity(0.7)
+                    .MinWidth(0)
+                    .HorizontalAlignment(HorizontalAlignment.Stretch)
+                    .Grid(row: 0, column: 1)
+                    .Padding(left: 12)),
+            content);
+
+    private static ScrollViewerElement PageContent(string title, Element introduction, Element[] content)
+        => ScrollViewer(VStack(24,
                 Heading(title),
-                Caption(description).TextWrapping(TextWrapping.Wrap).Opacity(0.7),
-                VStack(12, cards))
+                introduction,
+                VStack(4, content))
                 .MinWidth(0)
                 .HorizontalAlignment(HorizontalAlignment.Stretch))
             .Set(scrollViewer =>
@@ -470,7 +656,18 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
             })
             .Padding(24);
 
-    private static SettingsCardElement SettingCard(FluentSystemIcon icon, string header, string description, Element content)
+    private static StackElement Section(string title, params Element[] content)
+        => VStack(4,
+                TextBlock(title).FontSize(14).SemiBold().Opacity(0.8),
+                VStack(4, content))
+            .Margin(top: 8, bottom: 8);
+
+    private static SettingsCardElement SettingCard(
+        FluentSystemIcon icon,
+        string header,
+        string description,
+        Element content,
+        bool enabled = true)
         => (SettingsCard() with
         {
             Header = header,
@@ -479,7 +676,64 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
             Content = content,
         })
             .MinWidth(0)
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .Set(card => card.IsEnabled = enabled);
+
+    private static SettingsExpanderElement SettingsGroup(
+        FluentSystemIcon icon,
+        string header,
+        string description,
+        Element[] items,
+        Element? headerContent = null,
+        Element? itemsHeader = null,
+        bool expanded = false,
+        bool visible = true,
+        bool enabled = true)
+    {
+        var group = SettingsExpander() with
+        {
+            Header = header,
+            Description = description,
+            HeaderIcon = FluentSystemIcons.Create(icon, 24),
+            IsExpanded = expanded,
+            Items = items,
+        };
+        if (headerContent is not null)
+            group = group with { Content = headerContent };
+        if (itemsHeader is not null)
+            group = group with { ItemsHeader = itemsHeader };
+
+        return group.MinWidth(0)
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .Set(expander =>
+            {
+                expander.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+                expander.IsEnabled = enabled;
+            });
+    }
+
+    private static InfoBarElement Info(string title, InfoBarSeverity severity)
+        => (InfoBar() with
+        {
+            Title = title,
+            Severity = severity,
+            IsOpen = true,
+            IsClosable = false,
+        })
             .HorizontalAlignment(HorizontalAlignment.Stretch);
+
+    private static TextBoxElement AppListEditor(
+        IReadOnlyList<string> apps,
+        string automationName,
+        Action<string> setter)
+        => TextBox(string.Join(Environment.NewLine, apps), setter)
+            .AutomationName(automationName)
+            .Height(120)
+            .Set(textBox =>
+            {
+                textBox.AcceptsReturn = true;
+                textBox.TextWrapping = TextWrapping.Wrap;
+            });
 
     private static ToggleSwitchElement Toggle(IntlAccessor t, bool value, Action<bool> setter)
         => ToggleSwitch(Optional<bool>.Of(value), setter)

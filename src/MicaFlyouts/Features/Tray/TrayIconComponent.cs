@@ -79,9 +79,9 @@ public sealed class TrayIconComponent : HNotifyComponent
         var menu = HNotifyMenu.Create(TrayMenu.Create(
             localization,
             AppRuntime.Services.Commands.ShowSettings,
-            () => OpenUrl("https://github.com/unchihugo/FluentFlyout"),
+            () => OpenUrl(AppBranding.RepositoryUrl),
             () => OpenUrl(AppRuntime.Services.Logger.LogDirectory),
-            () => OpenUrl("https://github.com/unchihugo/FluentFlyout/issues/new/choose"),
+            () => OpenUrl(AppBranding.IssuesUrl),
             AppRuntime.Services.Commands.Exit));
 
         var presenterStyle = new Style

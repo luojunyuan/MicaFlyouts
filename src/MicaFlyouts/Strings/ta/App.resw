@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <data name="OnboardingTitle" xml:space="preserve"><value>தொடங்குங்கள்</value></data>
+  <data name="MediaFlyoutAppearanceSectionTitle" xml:space="preserve"><value>தோற்றம் மற்றும் அமைப்பு</value></data>
+  <data name="MediaFlyoutTimingSectionTitle" xml:space="preserve"><value>நேர அளவு மற்றும் தெரிவுநிலை</value></data>
+  <data name="MediaFlyoutTrackSectionTitle" xml:space="preserve"><value>பாடல் தகவல்</value></data>
+  <data name="MediaFlyoutControlsSectionTitle" xml:space="preserve"><value>இயக்கக் கட்டுப்பாடுகள்</value></data>
+  <data name="MediaFlyoutBehaviorSectionTitle" xml:space="preserve"><value>மீடியா நடத்தை</value></data>
   <data name="HomeTitle" xml:space="preserve">
     <value>முகப்பு</value>
   </data>
@@ -937,5 +943,8 @@ You can help contribute translations on</value>
   </data>
   <data name="ChooseSetting" xml:space="preserve">
     <value>Choose setting</value>
+  </data>
+  <data name="EnjoyingAppText" xml:space="preserve">
+    <value>MicaFlyouts பிடித்திருக்கிறதா? GitHub-இல் திட்டத்திற்கு நட்சத்திரம் அளிக்கவும்!</value>
   </data>
 </root>

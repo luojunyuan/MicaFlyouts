@@ -19,16 +19,14 @@ public sealed record SettingsHomeProps(SettingsSnapshot Settings, Action<Setting
 
 internal sealed class SettingsHomeComponent : Component<SettingsHomeProps>
 {
-    private static readonly Uri ReleasesUri = new("https://github.com/unchihugo/FluentFlyout/releases");
+    private static readonly Uri ReleasesUri = new(AppBranding.ReleasesUrl);
 
     public override Element Render()
     {
         var services = AppRuntime.Services;
         var t = UseIntl();
         var update = UseExternalStore(services.UpdateStore.Subscribe, () => services.UpdateStore.Snapshot);
-        var version = string.IsNullOrWhiteSpace(Props.Settings.LastKnownVersion)
-            ? t.Message(Loc.App.DevelopmentVersion)
-            : Props.Settings.LastKnownVersion;
+        var version = AppBranding.Version;
 
         return ScrollViewer(VStack(20,
                 HStack(10, Heading(AppBranding.Name), Caption(version).Opacity(0.6)),
@@ -94,7 +92,7 @@ internal sealed class SettingsHomeComponent : Component<SettingsHomeProps>
                     : "Accept";
         Action onClick = isAvailable && update.Result?.ReleaseUri is { } releaseUri
             ? () => OpenUri(releaseUri)
-            : () => _ = services.Updater.CheckAsync(settings.LastKnownVersion);
+            : () => _ = services.Updater.CheckAsync(AppBranding.Version);
 
         return Button(HStack(12,
                     Icon(SymbolIcon(icon))
@@ -174,10 +172,10 @@ internal sealed class SettingsHomeComponent : Component<SettingsHomeProps>
         => HStack(12,
             HyperlinkButton(
                 t.Message(Loc.App.GitHubRepoLink),
-                new Uri("https://github.com/unchihugo/FluentFlyout")),
+                new Uri(AppBranding.RepositoryUrl)),
             HyperlinkButton(
                 t.Message(Loc.App.TrayIcon_ReportBugOption),
-                new Uri("https://github.com/unchihugo/FluentFlyout/issues/new/choose")),
+                new Uri(AppBranding.IssuesUrl)),
             Button(HStack(6,
                     Icon(SymbolIcon("OpenFile")).Width(16).Height(16),
                     TextBlock(t.Message(Loc.App.TrayIcon_ViewLogsOption))),

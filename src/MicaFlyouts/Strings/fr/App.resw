@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <data name="OnboardingTitle" xml:space="preserve"><value>Premiers pas</value></data>
+  <data name="MediaFlyoutAppearanceSectionTitle" xml:space="preserve"><value>Apparence et disposition</value></data>
+  <data name="MediaFlyoutTimingSectionTitle" xml:space="preserve"><value>Durée et visibilité</value></data>
+  <data name="MediaFlyoutTrackSectionTitle" xml:space="preserve"><value>Informations sur le titre</value></data>
+  <data name="MediaFlyoutControlsSectionTitle" xml:space="preserve"><value>Commandes de lecture</value></data>
+  <data name="MediaFlyoutBehaviorSectionTitle" xml:space="preserve"><value>Comportement des médias</value></data>
   <data name="PositionBottomLeft" xml:space="preserve">
     <value> En bas à gauche</value>
   </data>
@@ -937,5 +943,8 @@ Vous pouvez contribuer aux traductions sur</value>
   </data>
   <data name="ChooseSetting" xml:space="preserve">
     <value>Choose setting</value>
+  </data>
+  <data name="EnjoyingAppText" xml:space="preserve">
+    <value>Vous appréciez MicaFlyouts ? Ajoutez une étoile au projet sur GitHub !</value>
   </data>
 </root>

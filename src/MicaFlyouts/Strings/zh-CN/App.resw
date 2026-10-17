@@ -3,11 +3,29 @@
   <data name="TitleText" xml:space="preserve">
     <value>FluentFlyout 设置</value>
   </data>
+  <data name="OnboardingTitle" xml:space="preserve">
+    <value>快速入门</value>
+  </data>
   <data name="MediaFlyoutTitle" xml:space="preserve">
     <value>媒体浮窗</value>
   </data>
   <data name="MediaFlyoutDescription" xml:space="preserve">
     <value>在播放媒体时、按下键盘上的任意媒体控制按键或音量按键（播放 / 暂停、音量增大 / 减小等）时，出现该浮窗。会显示媒体信息、播放控制按钮和其它内容。</value>
+  </data>
+  <data name="MediaFlyoutAppearanceSectionTitle" xml:space="preserve">
+    <value>外观与布局</value>
+  </data>
+  <data name="MediaFlyoutTimingSectionTitle" xml:space="preserve">
+    <value>停留与显示</value>
+  </data>
+  <data name="MediaFlyoutTrackSectionTitle" xml:space="preserve">
+    <value>曲目信息</value>
+  </data>
+  <data name="MediaFlyoutControlsSectionTitle" xml:space="preserve">
+    <value>播放控制</value>
+  </data>
+  <data name="MediaFlyoutBehaviorSectionTitle" xml:space="preserve">
+    <value>媒体行为</value>
   </data>
   <data name="TextBlockText1" xml:space="preserve">
     <value>开启媒体浮窗</value>
@@ -937,5 +955,8 @@
   </data>
   <data name="ChooseSetting" xml:space="preserve">
     <value>选择设置</value>
+  </data>
+  <data name="EnjoyingAppText" xml:space="preserve">
+    <value>喜欢 MicaFlyouts 吗？请在 GitHub 上给项目点个 Star！</value>
   </data>
 </root>

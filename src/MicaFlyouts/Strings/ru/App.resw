@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <data name="OnboardingTitle" xml:space="preserve"><value>Начать</value></data>
+  <data name="MediaFlyoutAppearanceSectionTitle" xml:space="preserve"><value>Внешний вид и макет</value></data>
+  <data name="MediaFlyoutTimingSectionTitle" xml:space="preserve"><value>Длительность и видимость</value></data>
+  <data name="MediaFlyoutTrackSectionTitle" xml:space="preserve"><value>Информация о дорожке</value></data>
+  <data name="MediaFlyoutControlsSectionTitle" xml:space="preserve"><value>Элементы управления воспроизведением</value></data>
+  <data name="MediaFlyoutBehaviorSectionTitle" xml:space="preserve"><value>Поведение мультимедиа</value></data>
   <data name="BackgroundBlurOption1" xml:space="preserve">
     <value> Отключено</value>
   </data>
@@ -937,5 +943,8 @@
   </data>
   <data name="ChooseSetting" xml:space="preserve">
     <value>Choose setting</value>
+  </data>
+  <data name="EnjoyingAppText" xml:space="preserve">
+    <value>Нравится MicaFlyouts? Поставьте проекту звезду на GitHub!</value>
   </data>
 </root>

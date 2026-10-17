@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <data name="OnboardingTitle" xml:space="preserve"><value>快速入門</value></data>
   <data name="TitleText" xml:space="preserve">
     <value>FluentFlyout 設定</value>
   </data>
@@ -8,6 +9,21 @@
   </data>
   <data name="MediaFlyoutDescription" xml:space="preserve">
     <value>當正在播放媒體時，按下鍵盤上的任一媒體鍵或音量鍵（播放/暫停、音量增加/減少等），即可顯示浮動視窗。該視窗會顯示媒體資訊，以及播放控制等功能。</value>
+  </data>
+  <data name="MediaFlyoutAppearanceSectionTitle" xml:space="preserve">
+    <value>外觀與版面</value>
+  </data>
+  <data name="MediaFlyoutTimingSectionTitle" xml:space="preserve">
+    <value>停留與顯示</value>
+  </data>
+  <data name="MediaFlyoutTrackSectionTitle" xml:space="preserve">
+    <value>曲目資訊</value>
+  </data>
+  <data name="MediaFlyoutControlsSectionTitle" xml:space="preserve">
+    <value>播放控制</value>
+  </data>
+  <data name="MediaFlyoutBehaviorSectionTitle" xml:space="preserve">
+    <value>媒體行為</value>
   </data>
   <data name="TextBlockText1" xml:space="preserve">
     <value>啟用媒體彈出視窗</value>
@@ -937,5 +953,8 @@
   </data>
   <data name="ChooseSetting" xml:space="preserve">
     <value>選擇設定</value>
+  </data>
+  <data name="EnjoyingAppText" xml:space="preserve">
+    <value>喜歡 MicaFlyouts 嗎？請在 GitHub 上為專案加星！</value>
   </data>
 </root>

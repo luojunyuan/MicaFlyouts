@@ -6,6 +6,9 @@
   <data name="HomeTitle" xml:space="preserve">
     <value>Home</value>
   </data>
+  <data name="OnboardingTitle" xml:space="preserve">
+    <value>Get started</value>
+  </data>
   <data name="Enabled" xml:space="preserve">
     <value>Enabled</value>
   </data>
@@ -29,6 +32,21 @@
   </data>
   <data name="MediaFlyoutDescription" xml:space="preserve">
     <value>When listening to media, press any media or volume key (play/pause, volume up/down, etc.) on your keyboard to display the flyout. Displays media info, along with playback controls and more.</value>
+  </data>
+  <data name="MediaFlyoutAppearanceSectionTitle" xml:space="preserve">
+    <value>Appearance and layout</value>
+  </data>
+  <data name="MediaFlyoutTimingSectionTitle" xml:space="preserve">
+    <value>Duration and visibility</value>
+  </data>
+  <data name="MediaFlyoutTrackSectionTitle" xml:space="preserve">
+    <value>Track information</value>
+  </data>
+  <data name="MediaFlyoutControlsSectionTitle" xml:space="preserve">
+    <value>Playback controls</value>
+  </data>
+  <data name="MediaFlyoutBehaviorSectionTitle" xml:space="preserve">
+    <value>Media behavior</value>
   </data>
   <data name="TextBlockText1" xml:space="preserve">
     <value>Enable Media Flyout</value>
@@ -587,10 +605,13 @@ hides repeat, shuffle and player info</value>
     <value>Open Source Licenses</value>
   </data>
   <data name="AboutOpenSourceLicensesDescription" xml:space="preserve">
-    <value>FluentFlyout is built with the following open source packages:</value>
+    <value>MicaFlyouts uses the following open source packages:</value>
   </data>
   <data name="GitHubRepoLink" xml:space="preserve">
     <value>GitHub Repository</value>
+  </data>
+  <data name="EnjoyingAppText" xml:space="preserve">
+    <value>Enjoying MicaFlyouts? Star the project on GitHub!</value>
   </data>
   <data name="SponsorMeLink" xml:space="preserve">
     <value>Sponsor me</value>

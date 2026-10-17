@@ -10,8 +10,13 @@ using MicaFlyouts.Infrastructure.Settings;
 using MicaFlyouts.Infrastructure.State;
 using MicaFlyouts.Infrastructure.Updates;
 using MicaFlyouts.Infrastructure.Windows;
+using MicaFlyouts.Infrastructure.Interop;
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
+using Microsoft.UI.Dispatching;
+using MicaFlyouts.Domain.Flyouts;
+using MicaFlyouts.Domain.Settings;
+using MicaFlyouts.Domain.Windows;
 using MicaFlyouts.UI.Animation;
 using static Microsoft.UI.Reactor.Factories;
 using MicaFlyouts.Features.LockKeys;
@@ -36,6 +41,9 @@ public sealed partial class AppServices : IDisposable
     private Action? _mediaUnsubscribe;
     private Action? _settingsUnsubscribe;
     private ReactorWindow? _mainWindow;
+    private DispatcherQueueTimer? _mediaFlyoutDismissTimer;
+    private DispatcherQueueTimer? _lockKeysDismissTimer;
+    private bool? _lockKeysAcrylicBackdrop;
     private string _lastTrack = string.Empty;
     private int _started;
     private int _exitRequested;
@@ -128,8 +136,8 @@ public sealed partial class AppServices : IDisposable
             new WindowSpec
             {
                 Title = "Mica Flyouts",
-                Width = 310,
-                Height = 116,
+                Width = FlyoutWindowDimensions.MediaFlyoutWidthDip,
+                Height = FlyoutWindowDimensions.MediaFlyoutHeightDip,
                 Icon = AppBranding.WindowIcon,
                 Style = WindowStyle.None,
                 Level = WindowLevel.AlwaysOnTop,
@@ -165,6 +173,8 @@ public sealed partial class AppServices : IDisposable
         Notifications.Initialize();
         _mediaUnsubscribe = MediaStore.Subscribe(OnMediaChanged);
         _settingsUnsubscribe = Settings.Subscribe(OnSettingsChanged);
+        InitializeMediaFlyoutDismissTimer();
+        InitializeLockKeysDismissTimer();
         Media.Start();
         Audio.Start();
         Visualizer.Start();
@@ -177,7 +187,7 @@ public sealed partial class AppServices : IDisposable
         bool firstRun = string.IsNullOrWhiteSpace(Settings.Snapshot.LastKnownVersion);
         if (firstRun)
         {
-            Settings.Update(settings => settings with { LastKnownVersion = "v1.0.0" }, save: false);
+            Settings.Update(settings => settings with { LastKnownVersion = AppBranding.Version }, save: false);
             OpenOnboarding();
         }
     }
@@ -189,6 +199,49 @@ public sealed partial class AppServices : IDisposable
             Localization.Apply();
             StartupRegistration.Apply(Settings.Snapshot.Startup);
             SyncTaskbarWindows();
+
+            var settings = Settings.Snapshot;
+            var lockKeysWindowKey = new WindowKey("lock-keys");
+            if (_windows.TryGet(lockKeysWindowKey, out var lockWindow) && lockWindow is not null)
+            {
+                if (_lockKeysAcrylicBackdrop != settings.LockKeysAcrylicWindowEnabled)
+                {
+                    lockWindow.Update(lockWindow.Spec with
+                    {
+                        Backdrop = BackdropChoice.Of(settings.LockKeysAcrylicWindowEnabled
+                            ? BackdropKind.DesktopAcrylic
+                            : BackdropKind.None),
+                    });
+                    _lockKeysAcrylicBackdrop = settings.LockKeysAcrylicWindowEnabled;
+                }
+
+                if (!settings.LockKeysEnabled)
+                {
+                    _lockKeysDismissTimer?.Stop();
+                    if (lockWindow.IsVisible)
+                        LockKeysFlyoutAnimationCoordinator.Hide(lockWindow, settings);
+                }
+                else if (lockWindow.IsVisible)
+                {
+                    RestartLockKeysDismissTimer(settings);
+                }
+            }
+            else if (!settings.LockKeysEnabled)
+            {
+                _lockKeysDismissTimer?.Stop();
+            }
+
+            if (!settings.MediaFlyoutEnabled || MediaStore.Snapshot.ActiveSession is null)
+                HideMediaFlyout(settings);
+            else if (settings.MediaFlyoutAlwaysDisplay)
+            {
+                _mediaFlyoutDismissTimer?.Stop();
+                if (_mainWindow?.IsVisible == true
+                    || MediaStore.Snapshot.ActiveSession?.Track.PlaybackStatus == MediaPlaybackStatus.Playing)
+                    ShowMediaFlyout();
+            }
+            else if (_mainWindow?.IsVisible == true)
+                ShowMediaFlyout();
         });
     }
 
@@ -206,7 +259,12 @@ public sealed partial class AppServices : IDisposable
         {
             UiDispatcher.EnqueueOrRun(() => OpenNextUp(current.Track));
         }
-        else if (current is not null && current.Track.PlaybackStatus == MediaPlaybackStatus.Playing
+        else if (current is null)
+        {
+            UiDispatcher.EnqueueOrRun(() => HideMediaFlyout(Settings.Snapshot));
+        }
+        else if (current.Track.PlaybackStatus == MediaPlaybackStatus.Playing
+            && Settings.Snapshot.MediaFlyoutEnabled
             && Settings.Snapshot.MediaFlyoutAlwaysDisplay)
         {
             UiDispatcher.EnqueueOrRun(ShowMediaFlyout);
@@ -231,24 +289,114 @@ public sealed partial class AppServices : IDisposable
                 UiDispatcher.EnqueueOrRun(ShowMediaFlyout);
             return;
         }
-        if (!keyEvent.IsKeyUp || !settings.LockKeysEnabled || FullscreenService.IsFullscreenApplicationRunning())
+        if (!keyEvent.IsKeyUp || !settings.LockKeysEnabled)
             return;
 
-        bool enabled = keyEvent.VirtualKey switch
+        LockKeyKind? activeKey = keyEvent.VirtualKey switch
         {
-            KeyboardHookService.CapsLock => settings.LockKeysCapsEnabled,
-            KeyboardHookService.NumLock => settings.LockKeysNumEnabled,
-            KeyboardHookService.ScrollLock => settings.LockKeysScrollEnabled,
-            KeyboardHookService.Insert => settings.LockKeysInsertEnabled,
+            KeyboardHookService.CapsLock => LockKeyKind.CapsLock,
+            KeyboardHookService.NumLock => LockKeyKind.NumLock,
+            KeyboardHookService.ScrollLock => LockKeyKind.ScrollLock,
+            KeyboardHookService.Insert => LockKeyKind.Insert,
+            _ => null,
+        };
+        if (activeKey is not { } key || !IsLockKeyEnabled(settings, key))
+            return;
+        // Read the toggle state after the low-level hook has returned to Windows.
+        UiDispatcher.Enqueue(() => ShowLockKey(key));
+    }
+
+    private void ShowLockKey(LockKeyKind key)
+    {
+        var settings = Settings.Snapshot;
+        if (!settings.LockKeysEnabled || !IsLockKeyEnabled(settings, key)
+            || settings.DisableIfFullscreen && FullscreenService.IsFullscreenApplicationRunning())
+            return;
+
+        LockKeyStore.Set(KeyboardHookService.ReadSnapshot() with { ActiveKey = key });
+        var window = GetOrCreateLockKeysWindow(settings);
+        var monitor = GetLockKeysMonitor(settings);
+        LockKeysFlyoutAnimationCoordinator.Show(window, settings, monitor);
+        RestartLockKeysDismissTimer(settings);
+    }
+
+    private ReactorWindow GetOrCreateLockKeysWindow(SettingsSnapshot settings)
+    {
+        var key = new WindowKey("lock-keys");
+        if (_windows.TryGet(key, out var existing) && existing is not null)
+            return existing;
+
+        var window = _windows.OpenOrActivate(
+            key,
+            new WindowSpec
+            {
+                Title = "Lock Keys",
+                Width = 220,
+                Height = 50,
+                Icon = AppBranding.WindowIcon,
+                Style = WindowStyle.None,
+                Level = WindowLevel.AlwaysOnTop,
+                ResizeMode = WindowResizeMode.NoResize,
+                ShowInTaskbar = false,
+                ShowInSwitcher = false,
+                NoActivate = true,
+                CornerStyle = WindowCornerStyle.RoundedSmall,
+                StartPosition = WindowStartPosition.Manual,
+                ManualPosition = (-10000, -10000),
+                Opacity = 0,
+                Backdrop = BackdropChoice.Of(settings.LockKeysAcrylicWindowEnabled
+                    ? BackdropKind.DesktopAcrylic
+                    : BackdropKind.None),
+            },
+            static () => new LockKeysWindowComponent());
+        window.Hide();
+        _lockKeysAcrylicBackdrop = settings.LockKeysAcrylicWindowEnabled;
+        return window;
+    }
+
+    private static MonitorSnapshot GetLockKeysMonitor(SettingsSnapshot settings)
+        => settings.LockKeysMonitorPreference switch
+        {
+            1 => MonitorService.ForWindow(NativeWindowApi.GetForegroundWindow()),
+            2 => MonitorService.ForCursor(),
+            _ => MonitorService.Select(settings.FlyoutSelectedMonitor),
+        };
+
+    private static bool IsLockKeyEnabled(SettingsSnapshot settings, LockKeyKind key)
+        => key switch
+        {
+            LockKeyKind.CapsLock => settings.LockKeysCapsEnabled,
+            LockKeyKind.NumLock => settings.LockKeysNumEnabled,
+            LockKeyKind.ScrollLock => settings.LockKeysScrollEnabled,
+            LockKeyKind.Insert => settings.LockKeysInsertEnabled,
             _ => false,
         };
-        if (!enabled)
+
+    private void InitializeLockKeysDismissTimer()
+    {
+        var dispatcher = ReactorApp.UIDispatcher;
+        if (dispatcher is null)
             return;
-        UiDispatcher.EnqueueOrRun(() =>
+
+        _lockKeysDismissTimer = dispatcher.CreateTimer();
+        _lockKeysDismissTimer.IsRepeating = false;
+        _lockKeysDismissTimer.Tick += (_, _) =>
         {
-            LockKeyStore.Set(KeyboardHookService.ReadSnapshot());
-            OpenLockKeys();
-        });
+            _lockKeysDismissTimer?.Stop();
+            var settings = Settings.Snapshot;
+            if (_windows.TryGet(new WindowKey("lock-keys"), out var window) && window?.IsVisible == true)
+                LockKeysFlyoutAnimationCoordinator.Hide(window, settings);
+        };
+    }
+
+    private void RestartLockKeysDismissTimer(SettingsSnapshot settings)
+    {
+        if (_lockKeysDismissTimer is null)
+            return;
+
+        _lockKeysDismissTimer.Stop();
+        _lockKeysDismissTimer.Interval = TimeSpan.FromMilliseconds(Math.Max(1, settings.LockKeysDuration));
+        _lockKeysDismissTimer.Start();
     }
 
     public void OpenSettings()
@@ -275,20 +423,59 @@ public sealed partial class AppServices : IDisposable
 
     public void ShowMediaFlyout()
     {
-        if (_mainWindow is null || MediaStore.Snapshot.ActiveSession is null)
+        var settings = Settings.Snapshot;
+        var active = MediaStore.Snapshot.ActiveSession;
+        if (_mainWindow is null || active is null || !settings.MediaFlyoutEnabled)
             return;
-        _mainWindow.Show();
-        WindowAnimationCoordinator.Show(_mainWindow, Settings.Snapshot);
+        WindowAnimationCoordinator.Show(_mainWindow, settings, active.Track);
+        RestartMediaFlyoutDismissTimer(settings);
     }
 
     public void ToggleMediaFlyout()
     {
         if (_mainWindow?.IsVisible == true)
         {
-            WindowAnimationCoordinator.Hide(_mainWindow, Settings.Snapshot);
+            HideMediaFlyout(Settings.Snapshot);
             return;
         }
         ShowMediaFlyout();
+    }
+
+    private void InitializeMediaFlyoutDismissTimer()
+    {
+        var dispatcher = ReactorApp.UIDispatcher;
+        if (dispatcher is null)
+            return;
+
+        _mediaFlyoutDismissTimer = dispatcher.CreateTimer();
+        _mediaFlyoutDismissTimer.IsRepeating = false;
+        _mediaFlyoutDismissTimer.Tick += (_, _) =>
+        {
+            _mediaFlyoutDismissTimer?.Stop();
+            var settings = Settings.Snapshot;
+            if (!settings.MediaFlyoutAlwaysDisplay && settings.MediaFlyoutEnabled && _mainWindow is { IsVisible: true } window)
+                WindowAnimationCoordinator.Hide(window, settings, MediaStore.Snapshot.ActiveSession?.Track);
+        };
+    }
+
+    private void RestartMediaFlyoutDismissTimer(SettingsSnapshot settings)
+    {
+        if (settings.MediaFlyoutAlwaysDisplay || _mediaFlyoutDismissTimer is null)
+        {
+            _mediaFlyoutDismissTimer?.Stop();
+            return;
+        }
+
+        _mediaFlyoutDismissTimer.Stop();
+        _mediaFlyoutDismissTimer.Interval = TimeSpan.FromMilliseconds(Math.Max(1, settings.Duration));
+        _mediaFlyoutDismissTimer.Start();
+    }
+
+    private void HideMediaFlyout(SettingsSnapshot settings)
+    {
+        _mediaFlyoutDismissTimer?.Stop();
+        if (_mainWindow?.IsVisible == true)
+            WindowAnimationCoordinator.Hide(_mainWindow, settings, MediaStore.Snapshot.ActiveSession?.Track);
     }
 
     private void OpenVolumeFlyout()
@@ -334,26 +521,6 @@ public sealed partial class AppServices : IDisposable
                 Backdrop = BackdropChoice.Of(BackdropKind.DesktopAcrylic),
             },
             () => new NextUpWindowComponent(track));
-
-    private void OpenLockKeys()
-        => _windows.OpenOrActivate(
-            new WindowKey("lock-keys"),
-            new WindowSpec
-            {
-                Title = "Lock Keys",
-                Width = 160,
-                Height = 50,
-                Icon = AppBranding.WindowIcon,
-                Style = WindowStyle.None,
-                Level = WindowLevel.AlwaysOnTop,
-                ResizeMode = WindowResizeMode.NoResize,
-                ShowInTaskbar = false,
-                ShowInSwitcher = false,
-                NoActivate = true,
-                CornerStyle = WindowCornerStyle.RoundedSmall,
-                Backdrop = BackdropChoice.Of(BackdropKind.DesktopAcrylic),
-            },
-            static () => new LockKeysWindowComponent());
 
     private void OpenOnboarding()
         => _windows.OpenOrActivate(
@@ -453,6 +620,10 @@ public sealed partial class AppServices : IDisposable
             return;
         _mediaUnsubscribe?.Invoke();
         _settingsUnsubscribe?.Invoke();
+        _mediaFlyoutDismissTimer?.Stop();
+        _mediaFlyoutDismissTimer = null;
+        _lockKeysDismissTimer?.Stop();
+        _lockKeysDismissTimer = null;
         _tray.Close();
         _keyboard.Dispose();
         Taskbar.Dispose();

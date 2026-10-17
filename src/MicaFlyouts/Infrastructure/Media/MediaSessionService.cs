@@ -4,9 +4,12 @@ using MicaFlyouts.Infrastructure.Logging;
 using MicaFlyouts.Infrastructure.Settings;
 using MicaFlyouts.Infrastructure.State;
 using MicaFlyouts.Infrastructure.Windows;
+using System.Collections.Concurrent;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Runtime.CompilerServices;
 using Windows.Media;
 using Windows.Media.Control;
+using Windows.ApplicationModel;
 using Windows.Storage.Streams;
 
 namespace MicaFlyouts.Infrastructure.Media;
@@ -28,6 +31,7 @@ public sealed partial class MediaSessionService(
     private readonly MediaPlayerResolver _resolver = resolver;
     private readonly AppLogger _logger = logger;
     private readonly Dictionary<string, GlobalSystemMediaTransportControlsSession> _subscribedSessions = [with(StringComparer.Ordinal)];
+    private readonly ConcurrentDictionary<string, Task<MediaPlayerDisplayInfo>> _playerDisplayInfo = new(StringComparer.OrdinalIgnoreCase);
     private GlobalSystemMediaTransportControlsSessionManager? _manager;
     private Action? _settingsUnsubscribe;
     private int _started;
@@ -178,7 +182,9 @@ public sealed partial class MediaSessionService(
             var properties = await session.TryGetMediaPropertiesAsync();
             var playback = session.GetPlaybackInfo();
             var timeline = session.GetTimelineProperties();
-            var player = _resolver.Resolve(session.SourceAppUserModelId);
+            string appUserModelId = session.SourceAppUserModelId ?? string.Empty;
+            var player = _resolver.Resolve(appUserModelId);
+            var playerInfo = await GetPlayerDisplayInfoAsync(appUserModelId, player.DisplayName).ConfigureAwait(false);
             var status = MapStatus(playback?.PlaybackStatus);
             var controls = new MediaPlaybackCapabilities(
                 playback?.Controls?.IsPlayEnabled == true,
@@ -186,8 +192,8 @@ public sealed partial class MediaSessionService(
                 playback?.Controls?.IsPreviousEnabled == true,
                 playback?.Controls?.IsNextEnabled == true,
                 playback?.Controls?.IsPlaybackPositionEnabled == true,
-                playback?.Controls?.IsChannelDownEnabled == true || playback?.Controls?.IsChannelUpEnabled == true,
-                playback?.Controls?.IsFastForwardEnabled == true || playback?.Controls?.IsRewindEnabled == true);
+                playback?.Controls?.IsRepeatEnabled == true,
+                playback?.Controls?.IsShuffleEnabled == true);
             var track = new MediaTrackSnapshot(
                 properties?.Title ?? string.Empty,
                 properties?.Artist ?? string.Empty,
@@ -202,13 +208,14 @@ public sealed partial class MediaSessionService(
                 MapRepeat(playback?.AutoRepeatMode));
             return new MediaSessionSnapshot(
                 SessionKey(session),
-                player.DisplayName,
-                session.SourceAppUserModelId ?? string.Empty,
+                playerInfo.DisplayName,
+                appUserModelId,
                 track,
                 string.Equals(
                     _manager?.GetCurrentSession() is { } current ? SessionKey(current) : null,
                     SessionKey(session),
-                    StringComparison.Ordinal));
+                    StringComparison.Ordinal),
+                playerInfo.Icon);
         }
         catch (Exception exception)
         {
@@ -216,6 +223,40 @@ public sealed partial class MediaSessionService(
             return null;
         }
     }
+
+    private Task<MediaPlayerDisplayInfo> GetPlayerDisplayInfoAsync(string appUserModelId, string fallbackName)
+    {
+        if (string.IsNullOrWhiteSpace(appUserModelId))
+            return Task.FromResult(new MediaPlayerDisplayInfo(fallbackName, null));
+        return _playerDisplayInfo.GetOrAdd(appUserModelId, id => ReadPlayerDisplayInfoAsync(id, fallbackName));
+    }
+
+    private static async Task<MediaPlayerDisplayInfo> ReadPlayerDisplayInfoAsync(string appUserModelId, string fallbackName)
+    {
+        try
+        {
+            var display = AppInfo.GetFromAppUserModelId(appUserModelId).DisplayInfo;
+            byte[]? icon = null;
+            var logo = display.GetLogo(new global::Windows.Foundation.Size(16, 16));
+            if (logo is not null)
+            {
+                using var stream = await logo.OpenReadAsync();
+                using var managed = stream.AsStreamForRead();
+                using var memory = new MemoryStream();
+                await managed.CopyToAsync(memory).ConfigureAwait(false);
+                icon = memory.ToArray();
+            }
+
+            string name = string.IsNullOrWhiteSpace(display.DisplayName) ? fallbackName : display.DisplayName;
+            return new MediaPlayerDisplayInfo(name, icon);
+        }
+        catch
+        {
+            return new MediaPlayerDisplayInfo(fallbackName, null);
+        }
+    }
+
+    private sealed record MediaPlayerDisplayInfo(string DisplayName, byte[]? Icon);
 
     private bool IsAllowed(MediaSessionSnapshot session)
     {
