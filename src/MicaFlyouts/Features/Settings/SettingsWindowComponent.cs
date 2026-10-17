@@ -100,7 +100,7 @@ internal sealed class SettingsContentComponent : Component<SettingsContentProps>
         Action<bool> setPaneOpen,
         IntlAccessor t)
     {
-        var navigation = NavigationView(menu, content) with
+        var navigation = (NavigationView(menu, content) with
         {
             SelectedTag = SettingsSearchIndex.Tag(page),
             OnSelectedTagChanged = tag =>
@@ -118,7 +118,12 @@ internal sealed class SettingsContentComponent : Component<SettingsContentProps>
             [
                 PageItem(t.Message(Loc.App.AboutTitle), SettingsPage.About, FluentSystemIcon.Info24),
             ],
-        };
+        }).Set(control =>
+        {
+            var transparentBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
+            control.Resources["NavigationViewContentBackground"] = transparentBrush;
+            control.Resources["NavigationViewContentGridBorderBrush"] = transparentBrush;
+        });
 
         return navigation.Grid(row: 1);
     }
