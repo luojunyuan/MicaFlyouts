@@ -144,6 +144,7 @@ internal sealed partial class RuntimeToastNotifier : IDisposable
                         continue;
                     }
 
+                    ToastNotificationManager.History.Remove(ProgressToastTag, ToastGroup, AppUserModelId);
                     notifier.Show(CreateNotification(content, toast.Tag));
                     progressToastActive = false;
                 }
