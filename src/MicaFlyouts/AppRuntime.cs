@@ -16,9 +16,26 @@ internal static class AppRuntime
             return;
         }
 
+        var logger = new Infrastructure.Logging.AppLogger();
+        try
+        {
+            Infrastructure.Runtime.WindowsAppSdkRuntimeSetup.EnsureRuntime(logger);
+        }
+        catch (Exception exception)
+        {
+            try
+            {
+                logger.Error("Windows App SDK runtime setup failed; continuing startup.", exception);
+            }
+            catch (Exception loggingException)
+            {
+                System.Diagnostics.Debug.WriteLine($"Could not log Windows App SDK runtime setup failure: {loggingException}");
+            }
+        }
+
         // AppServices is process-scoped: ReactorApp.Run only returns once the
         // app is shutting down, so there is nothing to release afterwards.
-        var services = App.Bootstrap.Create(singleInstance);
+        var services = App.Bootstrap.Create(singleInstance, logger);
         Current = services;
 
         // Tray menus are created after startup, so register their built-in

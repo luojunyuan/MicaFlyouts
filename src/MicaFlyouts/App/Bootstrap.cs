@@ -13,9 +13,9 @@ namespace MicaFlyouts.App;
 
 public static class Bootstrap
 {
-    public static AppServices Create(SingleInstanceService singleInstance)
+    public static AppServices Create(SingleInstanceService singleInstance, AppLogger? appLogger = null)
     {
-        var logger = new AppLogger();
+        var logger = appLogger ?? new AppLogger();
         var settings = new SettingsStore(new JsonSettingsRepository(), logger);
         var mediaStore = new MediaStore();
         var volumeStore = new VolumeStore();

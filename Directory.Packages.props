@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageVersion Include="CommunityToolkit.Labs.Notifications" Version="0.1.251217-build.2433" />
     <PackageVersion Include="Microsoft.UI.Reactor" Version="0.1.0-preview.16" />
     <PackageVersion Include="Microsoft.WindowsAppSDK.Runtime" Version="2.5.1" />
     <PackageVersion Include="Microsoft.WindowsAppSDK.WinUI" Version="2.3.9" />

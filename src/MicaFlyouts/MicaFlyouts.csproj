@@ -32,6 +32,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Labs.Notifications" />
     <PackageReference Include="Microsoft.UI.Reactor" />
     <PackageReference Include="Microsoft.WindowsAppSDK.Runtime" />
     <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" />
