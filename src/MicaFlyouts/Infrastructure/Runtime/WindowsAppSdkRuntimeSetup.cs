@@ -141,11 +141,10 @@ internal static class WindowsAppSdkRuntimeSetup
         if (status != Win32Foundation.WIN32_ERROR.NO_ERROR)
             throw PackageQueryError(familyName, status);
 
-        return packageNames
+        return [.. packageNames
             .Take(checked((int)count))
             .Where(static packageName => packageName != default)
-            .Select(static packageName => packageName.ToString())
-            .ToArray();
+            .Select(static packageName => packageName.ToString())];
     }
 
     private static bool PackageFullNameMatches(string fullName, string architecture, Version minimumVersion)

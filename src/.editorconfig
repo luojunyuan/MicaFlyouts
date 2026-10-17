@@ -1,0 +1,5 @@
+root = true
+
+[*.cs]
+dotnet_style_prefer_collection_expression = when_types_loosely_match
+dotnet_diagnostic.IDE0305.severity = error
