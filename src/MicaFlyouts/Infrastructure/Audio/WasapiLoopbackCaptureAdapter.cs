@@ -1,3 +1,4 @@
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
 
 namespace MicaFlyouts.Infrastructure.Audio;
@@ -15,12 +16,14 @@ public interface IAudioLoopbackCapture : IDisposable
 /// </summary>
 public sealed partial class WasapiLoopbackCaptureAdapter : IAudioLoopbackCapture
 {
-    private readonly WasapiLoopbackCapture _capture;
+    private readonly WasapiRecorder _capture;
     private int _disposed;
 
     public WasapiLoopbackCaptureAdapter()
     {
-        _capture = new WasapiLoopbackCapture();
+        _capture = new WasapiRecorderBuilder()
+            .WithLoopbackCapture()
+            .Build();
         _capture.DataAvailable += Capture_DataAvailable;
     }
 
@@ -38,7 +41,11 @@ public sealed partial class WasapiLoopbackCaptureAdapter : IAudioLoopbackCapture
             _capture.StopRecording();
     }
 
-    private void Capture_DataAvailable(object? sender, WaveInEventArgs args)
+    private void Capture_DataAvailable(
+        ReadOnlySpan<byte> buffer,
+        AudioClientBufferFlags flags,
+        long devicePosition,
+        long qpcPosition)
     {
         if (Volatile.Read(ref _disposed) != 0)
             return;
@@ -46,27 +53,30 @@ public sealed partial class WasapiLoopbackCaptureAdapter : IAudioLoopbackCapture
         var format = _capture.WaveFormat;
         int channels = Math.Max(1, format.Channels);
         int bytesPerSample = Math.Max(1, format.BitsPerSample / 8);
-        int frameCount = args.BytesRecorded / Math.Max(1, bytesPerSample * channels);
+        int frameCount = buffer.Length / Math.Max(1, bytesPerSample * channels);
         var samples = new float[frameCount];
-        for (int frame = 0; frame < frameCount; frame++)
+        if ((flags & AudioClientBufferFlags.Silent) == 0)
         {
-            double total = 0;
-            for (int channel = 0; channel < channels; channel++)
+            for (int frame = 0; frame < frameCount; frame++)
             {
-                int offset = (frame * channels + channel) * bytesPerSample;
-                total += ReadSample(args.Buffer, offset, format);
+                double total = 0;
+                for (int channel = 0; channel < channels; channel++)
+                {
+                    int offset = (frame * channels + channel) * bytesPerSample;
+                    total += ReadSample(buffer, offset, format);
+                }
+                samples[frame] = (float)(total / channels);
             }
-            samples[frame] = (float)(total / channels);
         }
         SamplesAvailable?.Invoke(samples, format.SampleRate);
     }
 
-    private static double ReadSample(byte[] buffer, int offset, WaveFormat format)
+    private static double ReadSample(ReadOnlySpan<byte> buffer, int offset, WaveFormat format)
     {
         if (format.Encoding == WaveFormatEncoding.IeeeFloat && format.BitsPerSample == 32)
-            return BitConverter.ToSingle(buffer, offset);
+            return BitConverter.ToSingle(buffer.Slice(offset, sizeof(float)));
         if (format.BitsPerSample == 16)
-            return BitConverter.ToInt16(buffer, offset) / 32768d;
+            return BitConverter.ToInt16(buffer.Slice(offset, sizeof(short))) / 32768d;
         if (format.BitsPerSample == 24)
         {
             int value = buffer[offset] | buffer[offset + 1] << 8 | buffer[offset + 2] << 16;
@@ -75,7 +85,7 @@ public sealed partial class WasapiLoopbackCaptureAdapter : IAudioLoopbackCapture
             return value / 8388608d;
         }
         if (format.BitsPerSample == 32)
-            return BitConverter.ToInt32(buffer, offset) / 2147483648d;
+            return BitConverter.ToInt32(buffer.Slice(offset, sizeof(int))) / 2147483648d;
         return 0;
     }
 

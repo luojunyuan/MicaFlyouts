@@ -88,9 +88,9 @@ internal static class AboutPageData
     [
         new("CommunityToolkit.Labs.Notifications", "0.1.251217-build.2433", "MIT", "https://github.com/CommunityToolkit/Labs-Windows"),
         new("CommunityToolkit.WinUI.Controls.SettingsControls", "8.3.260402-preview2", "MIT", "https://github.com/CommunityToolkit/Windows"),
-        new("Kumo.H.NotifyIcon.Reactor", "0.1.0-preview.1", "Not specified", "https://www.nuget.org/packages/Kumo.H.NotifyIcon.Reactor/0.1.0-preview.1"),
+        new("Kumo.H.NotifyIcon.Reactor", "0.1.0-preview.2", "MIT", "https://github.com/kumoproject/Kumo.H.NotifyIcon.Reactor"),
         new("Microsoft.UI.Reactor", "0.1.0-preview.16", "MIT", "https://github.com/microsoft/microsoft-ui-reactor"),
-        new("Microsoft.Windows.CsWin32", "0.3.298", "MIT", "https://github.com/microsoft/CsWin32"),
-        new("NAudio", "2.3.0", "MIT", "https://github.com/naudio/NAudio"),
+        new("Microsoft.Windows.CsWin32", "0.3.363", "MIT", "https://github.com/microsoft/CsWin32"),
+        new("NAudio", "3.2.0", "MIT", "https://github.com/naudio/NAudio"),
     ];
 }

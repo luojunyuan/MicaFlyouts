@@ -269,7 +269,7 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
             SettingsPage.NextUp => NextUp(services, t),
             SettingsPage.LockKeys => LockKeys(services, t),
             SettingsPage.System => System(services, t),
-            SettingsPage.About => About(services, t),
+            SettingsPage.About => About(t),
             SettingsPage.AppFiltering => AppFiltering(services, t),
             _ => Advanced(services, t),
         };
@@ -489,48 +489,44 @@ public sealed class SettingsPageComponent : Component<SettingsPageProps>
                         .AutomationName(t.Message(Loc.App.SaveNow))))));
     }
 
-    private static ScrollViewerElement About(AppServices services, IntlAccessor t)
+    private static ScrollViewerElement About(IntlAccessor t)
     {
-        return Page(t.Message(Loc.App.AboutTitle), t.Message(Loc.App.AboutDescription),
-            SettingCard(FluentSystemIcon.Code24, AppBranding.Name, t.Message(Loc.App.AboutProjectDescription), VStack(8,
-                TextBlock(t.Message(Loc.App.VersionLabel, ("version", AppBranding.Version))),
-                RepositoryLink(t),
-                Button(t.Message(Loc.App.CheckForUpdates), () => _ = services.Updater.CheckAsync(AppBranding.Version))
-                    .AutomationName(t.Message(Loc.App.CheckForUpdates)))),
-            VStack(8,
-                Heading(t.Message(Loc.App.AboutContributorsTitle)),
-                Caption(t.Message(Loc.App.AboutContributorsDescription))
-                    .TextWrapping(TextWrapping.Wrap)
-                    .Opacity(0.75),
-                SettingsGroup(FluentSystemIcon.Code24, t.Message(Loc.App.DevelopersTitle), string.Empty, [],
-                    itemsHeader: TextBlock(string.Join(", ", AboutPageData.Developers))
-                        .FontSize(14)
+        return PageContent(t.Message(Loc.App.AboutContributorsTitle),
+            Caption(t.Message(Loc.App.AboutContributorsDescription))
+                .TextWrapping(TextWrapping.Wrap)
+                .Opacity(0.75),
+            [
+                VStack(8,
+                    SettingsGroup(FluentSystemIcon.Code24, t.Message(Loc.App.DevelopersTitle), string.Empty, [],
+                        itemsHeader: TextBlock(string.Join(", ", AboutPageData.Developers))
+                            .FontSize(14)
+                            .TextWrapping(TextWrapping.Wrap)
+                            .Opacity(0.75)
+                            .MinWidth(0)
+                            .Margin(8)),
+                    SettingsGroup(FluentSystemIcon.Globe24, t.Message(Loc.App.TranslatorsTitle), string.Empty, [],
+                        itemsHeader: TextBlock(string.Join(", ", AboutPageData.Translators.Order()))
+                            .FontSize(14)
+                            .TextWrapping(TextWrapping.Wrap)
+                            .Opacity(0.75)
+                            .MinWidth(0)
+                            .Margin(8))),
+                VStack(8,
+                    Heading(t.Message(Loc.App.AboutOpenSourceLicensesTitle)),
+                    Caption(t.Message(Loc.App.AboutOpenSourceLicensesDescription))
                         .TextWrapping(TextWrapping.Wrap)
-                        .Opacity(0.75)
-                        .MinWidth(0)
-                        .Margin(8)),
-                SettingsGroup(FluentSystemIcon.Globe24, t.Message(Loc.App.TranslatorsTitle), string.Empty, [],
-                    itemsHeader: TextBlock(string.Join(", ", AboutPageData.Translators.Order()))
-                        .FontSize(14)
+                        .Opacity(0.75),
+                    VStack(0, [.. AboutPageData.Packages.Select(RenderLicenseCard)])),
+                HStack(8,
+                    Icon(SymbolIcon("SolidStar")).Width(24).Height(24),
+                    TextBlock(t.Message(Loc.App.EnjoyingAppText))
+                        .FontSize(12)
                         .TextWrapping(TextWrapping.Wrap)
-                        .Opacity(0.75)
-                        .MinWidth(0)
-                        .Margin(8))),
-            VStack(8,
-                Heading(t.Message(Loc.App.AboutOpenSourceLicensesTitle)),
-                Caption(t.Message(Loc.App.AboutOpenSourceLicensesDescription))
-                    .TextWrapping(TextWrapping.Wrap)
-                    .Opacity(0.75),
-                VStack(0, [.. AboutPageData.Packages.Select(RenderLicenseCard)])),
-            HStack(8,
-                Icon(SymbolIcon("SolidStar")).Width(24).Height(24),
-                TextBlock(t.Message(Loc.App.EnjoyingAppText))
-                    .FontSize(12)
-                    .TextWrapping(TextWrapping.Wrap)
-                    .Opacity(0.5)
-                    .MinWidth(0),
-                RepositoryLink(t))
-                .Margin(top: 20, bottom: 12));
+                        .Opacity(0.5)
+                        .MinWidth(0),
+                    RepositoryLink(t))
+                    .Margin(top: 20, bottom: 12),
+            ]);
     }
 
     private static ButtonElement RepositoryLink(IntlAccessor t)
