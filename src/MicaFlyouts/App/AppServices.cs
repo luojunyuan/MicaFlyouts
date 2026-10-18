@@ -190,6 +190,8 @@ public sealed partial class AppServices : IDisposable
 
         _tray.Start();
 
+        _ = Updater.CheckAsync(AppBranding.Version);
+
         SyncTaskbarWindows();
         bool firstRun = string.IsNullOrWhiteSpace(Settings.Snapshot.LastKnownVersion);
         if (firstRun)
@@ -691,6 +693,7 @@ public sealed partial class AppServices : IDisposable
         if (Interlocked.Exchange(ref _exitRequested, 1) != 0)
             return;
 
+        Updater.StartPendingInstallOnExit(Environment.ProcessId);
         Environment.Exit(0);
     }
 

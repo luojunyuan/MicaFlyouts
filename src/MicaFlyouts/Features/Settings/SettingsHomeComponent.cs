@@ -93,9 +93,7 @@ internal sealed class SettingsHomeComponent : Component<SettingsHomeProps>
                 : update.Result is null
                     ? "Refresh"
                     : "Accept";
-        Action onClick = isAvailable && update.Result?.ReleaseUri is { } releaseUri
-            ? () => OpenUri(releaseUri)
-            : () => _ = services.Updater.CheckAsync(AppBranding.Version);
+        Action onClick = () => _ = services.Updater.CheckAsync(AppBranding.Version);
 
         return Button(HStack(12,
                     Icon(SymbolIcon(icon))

@@ -71,6 +71,7 @@ internal static class UpdateInstaller
             ExtractArchive(archivePath, packageDirectory);
             ValidatePayload(packageDirectory);
             SpawnApplyHelper(packageDirectory, installDirectory, parentProcessId);
+            TryDeleteFile(archivePath);
         }
         catch
         {
