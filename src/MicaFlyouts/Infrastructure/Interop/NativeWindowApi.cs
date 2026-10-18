@@ -86,6 +86,20 @@ public static unsafe class NativeWindowApi
         _ = SetWindowPosition(child, 0, 0, 1, 1);
     }
 
+    public static void DetachEmbeddedWindow(nint child)
+    {
+        if (child == 0)
+            return;
+
+        var style = GetWindowLongPtr(child, Win32Messaging.WINDOW_LONG_PTR_INDEX.GWL_STYLE).ToInt64();
+        if ((style & WsChild) == 0)
+            return;
+
+        style = (style & ~WsChild) | WsPopup;
+        SetWindowLongPtr(child, Win32Messaging.WINDOW_LONG_PTR_INDEX.GWL_STYLE, new nint(style));
+        SetParent(child, 0);
+    }
+
     public static bool SetWindowPosition(
         nint hwnd,
         int left,

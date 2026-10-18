@@ -551,61 +551,76 @@ public sealed partial class AppServices : IDisposable
         if (Volatile.Read(ref _disposed) != 0)
             return;
         var settings = Settings.Snapshot;
+        var widgetKey = new WindowKey("taskbar-widget");
+        var widget = GetOrCreateTaskbarWindow(
+            widgetKey,
+            new WindowSpec
+            {
+                Title = "Mica Flyouts Taskbar Widget",
+                Width = 100,
+                Height = 40,
+                Icon = AppBranding.WindowIcon,
+                Style = WindowStyle.None,
+                ResizeMode = WindowResizeMode.NoResize,
+                ShowInTaskbar = false,
+                ShowInSwitcher = false,
+                NoActivate = true,
+                StartPosition = WindowStartPosition.Manual,
+                ManualPosition = (-10000, -10000),
+                Opacity = 0,
+            },
+            static () => new TaskbarWidgetWindowComponent());
         if (settings.TaskbarWidgetEnabled)
         {
-            var widget = _windows.OpenOrActivate(
-                new WindowKey("taskbar-widget"),
-                new WindowSpec
-                {
-                    Title = "Mica Flyouts Taskbar Widget",
-                    Width = 100,
-                    Height = 40,
-                    Icon = AppBranding.WindowIcon,
-                    Style = WindowStyle.None,
-                    ResizeMode = WindowResizeMode.NoResize,
-                    ShowInTaskbar = false,
-                    ShowInSwitcher = false,
-                    NoActivate = true,
-                    StartPosition = WindowStartPosition.Manual,
-                    ManualPosition = (-10000, -10000),
-                    Opacity = 0,
-                },
-                static () => new TaskbarWidgetWindowComponent());
             widget.Hide();
             Taskbar.AttachWidgetWindow(widget);
         }
         else
         {
-            _windows.Close(new WindowKey("taskbar-widget"));
+            HideTaskbarWindow(widgetKey);
         }
 
+        var visualizerKey = new WindowKey("taskbar-visualizer");
+        var visualizer = GetOrCreateTaskbarWindow(
+            visualizerKey,
+            new WindowSpec
+            {
+                Title = "Mica Flyouts Visualizer",
+                Width = 84,
+                Height = 40,
+                Icon = AppBranding.WindowIcon,
+                Style = WindowStyle.None,
+                ResizeMode = WindowResizeMode.NoResize,
+                ShowInTaskbar = false,
+                ShowInSwitcher = false,
+                NoActivate = true,
+                StartPosition = WindowStartPosition.Manual,
+                ManualPosition = (-10000, -10000),
+                Opacity = 0,
+            },
+            static () => new TaskbarVisualizerWindowComponent());
         if (settings.TaskbarVisualizerEnabled)
         {
-            var visualizer = _windows.OpenOrActivate(
-                new WindowKey("taskbar-visualizer"),
-                new WindowSpec
-                {
-                    Title = "Mica Flyouts Visualizer",
-                    Width = 84,
-                    Height = 40,
-                    Icon = AppBranding.WindowIcon,
-                    Style = WindowStyle.None,
-                    ResizeMode = WindowResizeMode.NoResize,
-                    ShowInTaskbar = false,
-                    ShowInSwitcher = false,
-                    NoActivate = true,
-                    StartPosition = WindowStartPosition.Manual,
-                    ManualPosition = (-10000, -10000),
-                    Opacity = 0,
-                },
-                static () => new TaskbarVisualizerWindowComponent());
             visualizer.Hide();
             Taskbar.AttachVisualizerWindow(visualizer);
         }
         else
         {
-            _windows.Close(new WindowKey("taskbar-visualizer"));
+            HideTaskbarWindow(visualizerKey);
         }
+    }
+
+    private ReactorWindow GetOrCreateTaskbarWindow(WindowKey key, WindowSpec specification, Func<Component> rootFactory)
+    {
+        if (_windows.TryGet(key, out var existing) && existing is not null)
+            return existing;
+        return _windows.OpenOrActivate(key, specification, rootFactory);
+    }
+
+    private void HideTaskbarWindow(WindowKey key)
+    {
+        if (_windows.TryGet(key, out var window) && window is not null)
+            window.Hide();
     }
 
     private void Exit()

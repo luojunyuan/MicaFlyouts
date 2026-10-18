@@ -32,6 +32,12 @@ public sealed partial class TaskbarHostService(
     private Action? _mediaUnsubscribe;
     private Action? _settingsUnsubscribe;
     private nint _attachedTaskbar;
+    private nint _automationTaskbar;
+    private PixelRect? _nativeWidgetsRect;
+    private PixelRect? _systemTrayRect;
+    private DateTime _automationLastAttemptUtc = DateTime.MinValue;
+    private bool _automationQueryPending;
+    private int _automationGeneration;
     private int _disposed;
 
     public TaskbarSnapshot Snapshot => _store.Snapshot;
@@ -61,9 +67,13 @@ public sealed partial class TaskbarHostService(
 
     public void DetachWindows()
     {
+        var widgetWindow = _widgetWindow;
+        var visualizerWindow = _visualizerWindow;
         _widgetWindow = null;
         _visualizerWindow = null;
         _attachedTaskbar = 0;
+        DetachEmbeddedWindow(widgetWindow);
+        DetachEmbeddedWindow(visualizerWindow);
     }
 
     public void Refresh()
@@ -87,6 +97,16 @@ public sealed partial class TaskbarHostService(
         nint taskbar = FindTaskbarForMonitor(targetMonitor);
         PixelRect taskbarRect = PixelRect.Empty;
         bool available = taskbar != 0 && NativeWindowApi.TryGetWindowRect(taskbar, out taskbarRect);
+
+        if (taskbar != _attachedTaskbar)
+        {
+            _automationGeneration++;
+            _automationQueryPending = false;
+            _automationTaskbar = 0;
+            _nativeWidgetsRect = null;
+            _systemTrayRect = null;
+            _automationLastAttemptUtc = DateTime.MinValue;
+        }
 
         bool vertical = available && taskbarRect.Height > taskbarRect.Width;
         var media = _media.Snapshot.ActiveSession;
@@ -113,12 +133,6 @@ public sealed partial class TaskbarHostService(
         var settings = _settings.Snapshot;
         _ = _media.Snapshot.ActiveSession;
         var monitors = MonitorService.GetMonitors();
-        PixelRect? nativeWidgets = TaskbarAutomationService.TryGetRect(_attachedTaskbar, "WidgetsButton", out var widgetRect)
-            ? widgetRect
-            : null;
-        PixelRect? systemTray = TaskbarAutomationService.TryGetRect(_attachedTaskbar, "SystemTrayIcon", out var trayRect)
-            ? trayRect
-            : null;
         var layout = TaskbarLayoutCalculator.Calculate(new TaskbarLayoutInput(
             _store.Snapshot.TaskbarRect,
             MonitorService.ForWindow(_attachedTaskbar).DpiScale,
@@ -134,11 +148,81 @@ public sealed partial class TaskbarHostService(
             settings.TaskbarWidgetManualPadding,
             settings.LegacyTaskbarWidthEnabled,
             monitors.Count > 0 && _store.Snapshot.TargetMonitorId == monitors[0].DeviceId,
-            nativeWidgets,
-            systemTray));
+            _nativeWidgetsRect,
+            _systemTrayRect));
 
         AttachWindow(_widgetWindow, layout.WidgetRect, _attachedTaskbar);
         AttachWindow(_visualizerWindow, layout.VisualizerRect, _attachedTaskbar);
+        RefreshAutomationRects(_attachedTaskbar, settings);
+    }
+
+    private void RefreshAutomationRects(nint taskbar, MicaFlyouts.Domain.Settings.SettingsSnapshot settings)
+    {
+        if (taskbar == 0 || (!settings.TaskbarWidgetEnabled && !settings.TaskbarVisualizerEnabled)
+            || _automationQueryPending)
+            return;
+        if (_automationTaskbar == taskbar && (_nativeWidgetsRect is not null || _systemTrayRect is not null))
+            return;
+        if (_automationTaskbar == taskbar
+            && DateTime.UtcNow - _automationLastAttemptUtc < TimeSpan.FromSeconds(10))
+            return;
+
+        _automationTaskbar = taskbar;
+        _automationLastAttemptUtc = DateTime.UtcNow;
+        _automationQueryPending = true;
+        int generation = ++_automationGeneration;
+
+        // Defer the COM query until the current UI callback has returned; Explorer may
+        // query the embedded window's UI Automation provider while searching its tree.
+        UiDispatcher.Enqueue(() =>
+        {
+            if (generation != _automationGeneration
+                || Volatile.Read(ref _disposed) != 0
+                || taskbar != _attachedTaskbar)
+            {
+                if (generation == _automationGeneration)
+                    _automationQueryPending = false;
+                return;
+            }
+
+            _ = QueryAutomationRectsAsync(taskbar, generation);
+        });
+    }
+
+    private async Task QueryAutomationRectsAsync(nint taskbar, int generation)
+    {
+        PixelRect? widgets = null;
+        PixelRect? tray = null;
+        try
+        {
+            (widgets, tray) = await Task.Run(() =>
+            {
+                PixelRect? widgetRect = TaskbarAutomationService.TryGetRect(taskbar, "WidgetsButton", out var foundWidgetRect)
+                    ? foundWidgetRect
+                    : null;
+                PixelRect? trayRect = TaskbarAutomationService.TryGetRect(taskbar, "SystemTrayIcon", out var foundTrayRect)
+                    ? foundTrayRect
+                    : null;
+                return (widgetRect, trayRect);
+            }).ConfigureAwait(false);
+        }
+        catch
+        {
+        }
+
+        UiDispatcher.EnqueueOrRun(() =>
+        {
+            if (generation != _automationGeneration)
+                return;
+
+            _automationQueryPending = false;
+            if (Volatile.Read(ref _disposed) != 0 || taskbar != _attachedTaskbar)
+                return;
+
+            _nativeWidgetsRect = widgets;
+            _systemTrayRect = tray;
+            AttachWindows();
+        });
     }
 
     private static void AttachWindow(ReactorWindow? window, PixelRect rect, nint taskbar)
@@ -155,6 +239,14 @@ public sealed partial class TaskbarHostService(
         _ = NativeWindowApi.SetWindowPosition(child, position.X, position.Y, rect.Width, rect.Height);
         window.SetOpacity(1);
         window.Show();
+    }
+
+    private static void DetachEmbeddedWindow(ReactorWindow? window)
+    {
+        if (window is null)
+            return;
+        nint child = WindowNative.GetWindowHandle(window.NativeWindow);
+        NativeWindowApi.DetachEmbeddedWindow(child);
     }
 
     private static nint FindTaskbarForMonitor(MicaFlyouts.Domain.Windows.MonitorSnapshot target)
