@@ -45,6 +45,9 @@ public sealed partial class AppServices : IDisposable
     private DispatcherQueueTimer? _mediaFlyoutDismissTimer;
     private DispatcherQueueTimer? _lockKeysDismissTimer;
     private bool? _lockKeysAcrylicBackdrop;
+    private bool? _mediaFlyoutAcrylicBackdrop;
+    private long _mediaFlyoutDismissAtTick;
+    private bool _mediaFlyoutPointerWasOver;
     private string _lastTrack = string.Empty;
     private int _started;
     private int _exitRequested;
@@ -132,6 +135,7 @@ public sealed partial class AppServices : IDisposable
     {
         if (_mainWindow is not null)
             return;
+        bool acrylicEnabled = Settings.Snapshot.MediaFlyoutAcrylicWindowEnabled;
         _mainWindow = _windows.OpenOrActivate(
             new WindowKey("main-media"),
             new WindowSpec
@@ -150,9 +154,12 @@ public sealed partial class AppServices : IDisposable
                 StartPosition = WindowStartPosition.Manual,
                 ManualPosition = (-10000, -10000),
                 Opacity = 0,
-                Backdrop = BackdropChoice.Of(BackdropKind.DesktopAcrylic),
+                Backdrop = BackdropChoice.Of(acrylicEnabled
+                    ? BackdropKind.DesktopAcrylic
+                    : BackdropKind.Mica),
             },
             static () => new MediaFlyoutWindowComponent());
+        _mediaFlyoutAcrylicBackdrop = acrylicEnabled;
         _mainWindow.Hide();
     }
 
@@ -202,6 +209,18 @@ public sealed partial class AppServices : IDisposable
             SyncTaskbarWindows();
 
             var settings = Settings.Snapshot;
+            if (_mainWindow is { } mediaWindow
+                && _mediaFlyoutAcrylicBackdrop != settings.MediaFlyoutAcrylicWindowEnabled)
+            {
+                mediaWindow.Update(mediaWindow.Spec with
+                {
+                    Backdrop = BackdropChoice.Of(settings.MediaFlyoutAcrylicWindowEnabled
+                        ? BackdropKind.DesktopAcrylic
+                        : BackdropKind.Mica),
+                });
+                _mediaFlyoutAcrylicBackdrop = settings.MediaFlyoutAcrylicWindowEnabled;
+            }
+
             var lockKeysWindowKey = new WindowKey("lock-keys");
             if (_windows.TryGet(lockKeysWindowKey, out var lockWindow) && lockWindow is not null)
             {
@@ -449,13 +468,41 @@ public sealed partial class AppServices : IDisposable
             return;
 
         _mediaFlyoutDismissTimer = dispatcher.CreateTimer();
-        _mediaFlyoutDismissTimer.IsRepeating = false;
+        _mediaFlyoutDismissTimer.Interval = TimeSpan.FromMilliseconds(100);
+        _mediaFlyoutDismissTimer.IsRepeating = true;
         _mediaFlyoutDismissTimer.Tick += (_, _) =>
         {
-            _mediaFlyoutDismissTimer?.Stop();
             var settings = Settings.Snapshot;
-            if (!settings.MediaFlyoutAlwaysDisplay && settings.MediaFlyoutEnabled && _mainWindow is { IsVisible: true } window)
-                WindowAnimationCoordinator.Hide(window, settings, MediaStore.Snapshot.ActiveSession?.Track);
+            if (settings.MediaFlyoutAlwaysDisplay
+                || !settings.MediaFlyoutEnabled
+                || _mainWindow is not { IsVisible: true } window)
+            {
+                _mediaFlyoutDismissTimer?.Stop();
+                _mediaFlyoutPointerWasOver = false;
+                return;
+            }
+
+            bool pointerOverMedia = IsPointerOverWindow(window);
+            bool pointerOverVolume = settings.VolumeControlEnabled
+                && settings.VolumeControlAboveMediaFlyout
+                && _windows.TryGet(new WindowKey("volume"), out var volumeWindow)
+                && volumeWindow is { IsVisible: true }
+                && IsPointerOverWindow(volumeWindow);
+            if (pointerOverMedia || pointerOverVolume)
+            {
+                _mediaFlyoutPointerWasOver = true;
+                return;
+            }
+
+            if (_mediaFlyoutPointerWasOver)
+            {
+                _mediaFlyoutPointerWasOver = false;
+                _mediaFlyoutDismissAtTick = Environment.TickCount64 + Math.Max(1, settings.Duration);
+                return;
+            }
+
+            if (Environment.TickCount64 >= _mediaFlyoutDismissAtTick)
+                HideMediaFlyout(settings);
         };
     }
 
@@ -467,16 +514,32 @@ public sealed partial class AppServices : IDisposable
             return;
         }
 
-        _mediaFlyoutDismissTimer.Stop();
-        _mediaFlyoutDismissTimer.Interval = TimeSpan.FromMilliseconds(Math.Max(1, settings.Duration));
+        _mediaFlyoutPointerWasOver = false;
+        _mediaFlyoutDismissAtTick = Environment.TickCount64 + Math.Max(1, settings.Duration);
+        _mediaFlyoutDismissTimer.Interval = TimeSpan.FromMilliseconds(100);
+        _mediaFlyoutDismissTimer.IsRepeating = true;
         _mediaFlyoutDismissTimer.Start();
     }
 
     private void HideMediaFlyout(SettingsSnapshot settings)
     {
         _mediaFlyoutDismissTimer?.Stop();
+        _mediaFlyoutPointerWasOver = false;
         if (_mainWindow?.IsVisible == true)
             WindowAnimationCoordinator.Hide(_mainWindow, settings, MediaStore.Snapshot.ActiveSession?.Track);
+    }
+
+    private static bool IsPointerOverWindow(ReactorWindow window)
+    {
+        var handle = WinRT.Interop.WindowNative.GetWindowHandle(window.NativeWindow);
+        if (!NativeWindowApi.TryGetWindowRect(handle, out var bounds)
+            || !NativeWindowApi.TryGetCursorPosition(out var cursor))
+            return false;
+
+        return cursor.X >= bounds.Left
+            && cursor.X < bounds.Right
+            && cursor.Y >= bounds.Top
+            && cursor.Y < bounds.Bottom;
     }
 
     private void OpenVolumeFlyout()

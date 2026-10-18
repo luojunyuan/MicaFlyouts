@@ -4,10 +4,15 @@ using MicaFlyouts.Domain.Settings;
 using MicaFlyouts.UI.Components;
 using MicaFlyouts.UI.Toolkit;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Reactor;
 using Microsoft.UI.Reactor.Core;
 using Microsoft.UI.Reactor.Localization;
+using Microsoft.UI.Reactor.Hosting;
+using System.Runtime.InteropServices.WindowsRuntime;
 using static MicaFlyouts.UI.Components.IconButton;
 using static MicaFlyouts.UI.Components.TextComponents;
 using static Microsoft.UI.Reactor.Core.Theme;
@@ -39,9 +44,17 @@ public sealed class MediaFlyoutComponent : Component
         double max = Math.Max(track.Timeline.MaxSeek.TotalSeconds, min + 1);
 
         return Component<FlyoutSurface, FlyoutSurfaceProps>(new FlyoutSurfaceProps(
-            Child: RenderMediaLayout(active, settings, position, min, max, services, t),
+            Child: Grid(
+                [GridSize.Star()],
+                [GridSize.Star()],
+                Component<MediaArtworkBackground, MediaArtworkBackgroundProps>(new MediaArtworkBackgroundProps(
+                    track.Thumbnail,
+                    settings.MediaFlyoutBackgroundBlur)).Grid(row: 0, column: 0),
+                RenderMediaLayout(active, settings, position, min, max, services, t)
+                    .Grid(row: 0, column: 0)
+                    .Padding(12)),
             Radius: 8,
-            Padding: 12));
+            Padding: 0));
     }
 
     private static GridElement RenderMediaLayout(
@@ -93,10 +106,26 @@ public sealed class MediaFlyoutComponent : Component
             : track.Title;
         var artist = track.Artist;
         var alignment = settings.CenterTitleArtist ? TextAlignment.Center : TextAlignment.Left;
+        string trackToolTip = BuildTrackToolTip(title, artist);
+        Element titleRow = MarqueeText(title)
+            .FontSize(14)
+            .SemiBold()
+            .TextAlignment(alignment)
+            .ToolTip(trackToolTip, PlacementMode.Top);
+        if (settings.MediaFlyoutAlwaysDisplay)
+        {
+            titleRow = HStack(4,
+                titleRow.Flex(grow: 1, basis: 0),
+                RenderCloseButton(services, t));
+        }
 
         return VStack(4,
-            MarqueeText(title).FontSize(14).SemiBold().TextAlignment(alignment),
-            MarqueeText(artist).FontSize(14).Opacity(0.55).TextAlignment(alignment),
+            titleRow,
+            MarqueeText(artist)
+                .FontSize(14)
+                .Opacity(0.55)
+                .TextAlignment(alignment)
+                .ToolTip(trackToolTip, PlacementMode.Top),
             HStack(8,
                 RenderMediaControls(track, settings, services, t, compact: false),
                 settings.PlayerInfoEnabled ? RenderPlayerInfo(session, services) : Empty())
@@ -117,16 +146,40 @@ public sealed class MediaFlyoutComponent : Component
             ? t.Message(Loc.App.UnknownTitle)
             : track.Title;
         var artist = track.Artist;
+        string trackToolTip = BuildTrackToolTip(title, artist);
 
         return HStack(8,
             VStack(2,
-                MarqueeText(title).FontSize(13).SemiBold(),
-                MarqueeText(artist).FontSize(12).Opacity(0.55))
-                .Width(216)
+                MarqueeText(title)
+                    .FontSize(13)
+                    .SemiBold()
+                    .ToolTip(trackToolTip, PlacementMode.Top),
+                MarqueeText(artist)
+                    .FontSize(12)
+                    .Opacity(0.55)
+                    .ToolTip(trackToolTip, PlacementMode.Top))
+                .Width(settings.MediaFlyoutAlwaysDisplay ? 184 : 216)
                 .MinWidth(0),
-            RenderMediaControls(track, settings, services, t, compact: true))
+            RenderMediaControls(
+                track,
+                settings,
+                services,
+                t,
+                compact: true,
+                trailingControl: settings.MediaFlyoutAlwaysDisplay ? RenderCloseButton(services, t) : null))
             .VAlign(VerticalAlignment.Center);
     }
+
+    private static string BuildTrackToolTip(string title, string artist)
+        => string.IsNullOrWhiteSpace(artist) ? title : $"{title}\n\n{artist}";
+
+    private static ButtonElement RenderCloseButton(AppServices services, IntlAccessor t)
+        => Create("\uE8BB", t.Message(Loc.App.CloseButton), services.ToggleMediaFlyout)
+            .ToolTip(t.Message(Loc.App.CloseButton), PlacementMode.Top)
+            .Background(TransparentBackground)
+            .BorderThickness(new Thickness(0))
+            .Padding(new Thickness(0))
+            .CornerRadius(new CornerRadius(6));
 
     private static ButtonElement RenderPlayerInfo(MediaSessionSnapshot session, AppServices services)
         => Button(HStack(4,
@@ -146,7 +199,8 @@ public sealed class MediaFlyoutComponent : Component
         SettingsSnapshot settings,
         AppServices services,
         IntlAccessor t,
-        bool compact)
+        bool compact,
+        Element? trailingControl = null)
     {
         bool canTogglePlayback = track.PlaybackStatus == MediaPlaybackStatus.Playing
             ? track.Capabilities.CanPause
@@ -198,6 +252,8 @@ public sealed class MediaFlyoutComponent : Component
                 () => _ = services.Media.SetShuffleAsync(!track.IsShuffleActive),
                 isEnabled: track.Capabilities.CanShuffle,
                 opacity: !track.Capabilities.CanShuffle ? 0.35 : track.IsShuffleActive ? 1 : 0.5));
+        if (trailingControl is not null)
+            controls.Add(trailingControl);
 
         return HStack(8, [.. controls]).VAlign(VerticalAlignment.Center);
     }
@@ -228,5 +284,68 @@ public sealed class MediaFlyoutComponent : Component
             onValueChanged: next => _ = services.Media.SeekAsync(TimeSpan.FromSeconds(next)))
             .Height(18)
             .WithKey("seekbar");
+    }
+}
+
+public sealed record MediaArtworkBackgroundProps(byte[]? Thumbnail, int Style);
+
+public sealed class MediaArtworkBackground : Component<MediaArtworkBackgroundProps>
+{
+    public override Element Render()
+    {
+        var (bitmap, setBitmap) = UseState<BitmapImage?>(null);
+        byte[]? bytes = Props.Thumbnail;
+        UseEffect(() =>
+        {
+            var cancellation = new CancellationTokenSource();
+            if (bytes is { Length: > 0 })
+                _ = LoadAsync(bytes, setBitmap, cancellation.Token);
+            else
+                setBitmap(null);
+            return () => cancellation.Cancel();
+        }, bytes is { Length: > 0 } ? HashCode.Combine(bytes.Length, bytes[0]) : 0);
+
+        if (Props.Style is < 1 or > 3 || bytes is not { Length: > 0 } || bitmap is null)
+            return Empty();
+
+        double scale = Props.Style == 2 ? 1.8 : 1.2;
+        double opacity = Props.Style switch
+        {
+            1 => 0.42,
+            2 => 0.32,
+            _ => 0.26,
+        };
+        var image = new Image
+        {
+            Stretch = Props.Style == 2 ? Stretch.Fill : Stretch.UniformToFill,
+            IsHitTestVisible = false,
+            Opacity = opacity,
+            RenderTransformOrigin = new Windows.Foundation.Point(0.5, 0.5),
+            RenderTransform = new ScaleTransform { ScaleX = scale, ScaleY = scale },
+        };
+        return new XamlHostElement(
+            () => image,
+            control => ((Image)control).Source = bitmap);
+    }
+
+    private static async Task LoadAsync(byte[] bytes, Action<BitmapImage?> setBitmap, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var image = new BitmapImage { DecodePixelWidth = 96 };
+            using var stream = new Windows.Storage.Streams.InMemoryRandomAccessStream();
+            await stream.WriteAsync(bytes.AsBuffer());
+            stream.Seek(0);
+            await image.SetSourceAsync(stream);
+            cancellationToken.ThrowIfCancellationRequested();
+            setBitmap(image);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch
+        {
+            setBitmap(null);
+        }
     }
 }
