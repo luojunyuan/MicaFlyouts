@@ -4,9 +4,9 @@
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <RootNamespace>MicaFlyouts</RootNamespace>
     <AssemblyName>MicaFlyouts</AssemblyName>
-    <Version>215.0.1</Version>
-    <AssemblyVersion>215.0.1.0</AssemblyVersion>
-    <FileVersion>215.0.1.0</FileVersion>
+    <Version>215.0.2</Version>
+    <AssemblyVersion>215.0.2.0</AssemblyVersion>
+    <FileVersion>215.0.2.0</FileVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>

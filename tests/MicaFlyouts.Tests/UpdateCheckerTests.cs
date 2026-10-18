@@ -32,7 +32,7 @@ public sealed class UpdateCheckerTests : IDisposable
         var result = await service.CheckAsync("215.0.0");
 
         Assert.True(result?.IsAvailable);
-        Assert.Equal("215.0.1", result?.LatestVersion);
+        Assert.Equal("215.0.2", result?.LatestVersion);
         Assert.Equal(1, downloadRequests);
         Assert.True(store.Snapshot.IsReadyToInstall);
         Assert.False(store.Snapshot.IsDownloading);
@@ -82,12 +82,12 @@ public sealed class UpdateCheckerTests : IDisposable
             Architecture.Arm64 => "win-arm64",
             var architecture => throw new PlatformNotSupportedException($"Test host architecture {architecture} is not supported."),
         };
-        string assetName = $"MicaFlyouts-215.0.1-{runtimeIdentifier}.zip";
-        string assetUrl = $"https://github.com/luojunyuan/MicaFlyouts/releases/download/v215.0.1/{assetName}";
+        string assetName = $"MicaFlyouts-215.0.2-{runtimeIdentifier}.zip";
+        string assetUrl = $"https://github.com/luojunyuan/MicaFlyouts/releases/download/v215.0.2/{assetName}";
         string releaseJson = JsonSerializer.Serialize(new
         {
-            tag_name = "v215.0.1",
-            html_url = "https://github.com/luojunyuan/MicaFlyouts/releases/tag/v215.0.1",
+            tag_name = "v215.0.2",
+            html_url = "https://github.com/luojunyuan/MicaFlyouts/releases/tag/v215.0.2",
             assets = new[]
             {
                 new

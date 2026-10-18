@@ -6,7 +6,7 @@ namespace MicaFlyouts.App;
 internal static class AppBranding
 {
     public const string Name = "Mica Flyouts";
-    public const string Version = "215.0.1";
+    public const string Version = "215.0.2";
     public const string IconPath = "Assets\\MicaFlyouts.ico";
     public const string IconUri = "ms-appx:///Assets/MicaFlyouts.ico";
     public const string RepositoryUrl = "https://github.com/luojunyuan/MicaFlyouts";
